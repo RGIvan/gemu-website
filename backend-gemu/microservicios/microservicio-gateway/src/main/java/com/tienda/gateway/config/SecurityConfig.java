@@ -14,11 +14,16 @@ public class SecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/usuarios/login", "/api/usuarios/registro").permitAll()
+                        .pathMatchers(
+                                "/api/usuarios/login",
+                                "/api/usuarios/crear",
+                                "/api/auth/**"
+                        ).permitAll()
                         .anyExchange().authenticated()
                 )
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable);
+
         return http.build();
     }
 }

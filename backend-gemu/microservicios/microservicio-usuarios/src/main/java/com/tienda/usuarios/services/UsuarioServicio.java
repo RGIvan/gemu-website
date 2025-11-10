@@ -2,6 +2,7 @@ package com.tienda.usuarios.services;
 
 import com.tienda.usuarios.models.Usuario;
 import com.tienda.usuarios.repositories.UsuarioRepositorio;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -10,11 +11,14 @@ public class UsuarioServicio {
 
     private final UsuarioRepositorio usuarioRepositorio;
 
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     public UsuarioServicio(UsuarioRepositorio usuarioRepository) {
         this.usuarioRepositorio = usuarioRepository;
     }
 
     public Usuario crearUsuario(Usuario usuario) {
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return usuarioRepositorio.save(usuario);
     }
 
