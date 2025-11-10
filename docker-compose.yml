@@ -1,0 +1,101 @@
+services:
+  # Base de datos
+  db:
+    image: postgres:15
+    container_name: postgres-gemu
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # Microservicio de usuarios
+  usuarios:
+    build: ./backend-gemu/microservicios/microservicio-usuarios
+    container_name: microservicio-usuarios
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASS}
+    depends_on:
+      - db
+
+  # Microservicio de facturas
+  facturas:
+    build: ./backend-gemu/microservicios/microservicio-facturas
+    container_name: microservicio-facturas
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASS}
+    depends_on:
+      - db
+
+  # Microservicio de pedidos
+  pedidos:
+    build: ./backend-gemu/microservicios/microservicio-pedidos
+    container_name: microservicio-pedidos
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASS}
+    depends_on:
+      - db
+
+  # Microservicio de videojuegos
+  videojuegos:
+    build: ./backend-gemu/microservicios/microservicio-videojuegos
+    container_name: microservicio-videojuegos
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASS}
+    depends_on:
+      - db
+
+  # Microservicio gateway
+  gateway:
+    build: ./backend-gemu/microservicios/microservicio-gateway
+    container_name: microservicio-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASS}
+    depends_on:
+      - db
+      - usuarios
+      - facturas
+      - pedidos
+      - videojuegos
+      
+  # Frontend
+  frontend:
+    build: ./frontend-gemu
+    container_name: frontend-gemu
+    ports:
+      - "3000:3000"
+      - "5555:5555"
+    volumes:
+      - ./frontend-gemu:/app
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: ${DATABASE_URL} # Prisma
+    command: npm run dev -- --port 3000 --hostname 0.0.0.0
+    depends_on:
+      - db
+      - gateway
+volumes:
+  pgdata:
