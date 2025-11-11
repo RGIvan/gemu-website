@@ -67,6 +67,11 @@ export interface Variant {
   priceId?: string; // opcional si manejas IDs de precio
 }
 
+export type VariantsDocument = {
+  color: string;
+  priceId: string;
+};
+
 export interface EnrichedProduct {
   productId: string;
   _id: string;
