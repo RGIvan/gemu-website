@@ -2,14 +2,13 @@
 
 import { prisma } from "@/libs/prisma";
 import { EnrichedProduct } from "@/types/types";
-import { videojuegos } from "@prisma/client";
 
 /**
  * 🔹 Obtener todos los productos (videojuegos)
  */
 export const getAllProducts = async (): Promise<EnrichedProduct[]> => {
   try {
-    const products: videojuegos[] = await prisma.videojuegos.findMany();
+    const products = await prisma.videojuegos.findMany();
 
     return products.map(
       (p): EnrichedProduct => ({
@@ -37,7 +36,7 @@ export const getCategoryProducts = async (
   category: string
 ): Promise<EnrichedProduct[]> => {
   try {
-    const products: videojuegos[] = await prisma.videojuegos.findMany({
+    const products = await prisma.videojuegos.findMany({
       where: { categoria: category },
     });
 
@@ -67,7 +66,7 @@ export const getRandomProducts = async (
   productId: bigint
 ): Promise<EnrichedProduct[]> => {
   try {
-    const allProducts: videojuegos[] = await prisma.videojuegos.findMany();
+    const allProducts = await prisma.videojuegos.findMany();
 
     // Barajar aleatoriamente
     const shuffled = allProducts.sort(() => 0.5 - Math.random());
@@ -102,7 +101,7 @@ export const getProduct = async (
 ): Promise<EnrichedProduct> => {
   try {
     const productId = typeof id === "string" ? BigInt(id) : id;
-    const product: videojuegos | null = await prisma.videojuegos.findUnique({
+    const product = await prisma.videojuegos.findUnique({
       where: { id: productId },
     });
 
