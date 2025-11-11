@@ -70,7 +70,7 @@ const Signin = () => {
             <div className="text-sm">{error}</div>
           </div>
         )}
-        <h1 className="w-full mb-5 text-2xl font-bold">Logéate</h1>
+        <h1 className="w-full mb-5 text-2xl font-bold">Login</h1>
 
         <label className={labelStyles}>Email:</label>
         <input
@@ -135,7 +135,7 @@ const Signin = () => {
           className="w-full bg-black border border-solid border-[#2E2E2E] py-1.5 mt-2.5 rounded transition-all hover:bg-[#1F1F1F] hover:border-[#454545] text-13"
           type="submit"
         >
-          Signup
+          Login
         </button>
 
         <div className="relative flex items-center justify-center w-full h-10">
@@ -178,7 +178,7 @@ const Signin = () => {
               fill="#EA4335"
             ></path>
           </svg>{" "}
-          Logéate con Google
+          Login con Google
         </button>
         <Link
           href="/register"
