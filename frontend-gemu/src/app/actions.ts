@@ -3,21 +3,24 @@
 import { prisma } from "@/libs/prisma";
 import { EnrichedProduct } from "@/types/types";
 
+/** Tipo auxiliar de los productos en la DB */
+type VideojuegoDB = {
+  id: bigint;
+  nombre: string;
+  categoria: string;
+  precio: number;
+  existencias: number;
+};
+
 /**
  * 🔹 Obtener todos los productos (videojuegos)
  */
 export const getAllProducts = async (): Promise<EnrichedProduct[]> => {
   try {
-    const products = await prisma.videojuegos.findMany();
+    const products: VideojuegoDB[] = await prisma.videojuegos.findMany();
 
     return products.map(
-      (p: {
-        id: bigint;
-        nombre: string;
-        categoria: string;
-        precio: number;
-        existencias: number;
-      }): EnrichedProduct => ({
+      (p: VideojuegoDB): EnrichedProduct => ({
         id: p.id,
         _id: p.id.toString(),
         name: p.nombre,
@@ -42,12 +45,12 @@ export const getCategoryProducts = async (
   category: string
 ): Promise<EnrichedProduct[]> => {
   try {
-    const products = await prisma.videojuegos.findMany({
+    const products: VideojuegoDB[] = await prisma.videojuegos.findMany({
       where: { categoria: category },
     });
 
     return products.map(
-      (p): EnrichedProduct => ({
+      (p: VideojuegoDB): EnrichedProduct => ({
         id: p.id,
         _id: p.id.toString(),
         name: p.nombre,
@@ -69,19 +72,19 @@ export const getCategoryProducts = async (
  * 🔹 Obtener productos aleatorios (excluyendo uno específico)
  */
 export const getRandomProducts = async (
-  productId: bigint
+  excludeProductId: bigint
 ): Promise<EnrichedProduct[]> => {
   try {
-    const allProducts = await prisma.videojuegos.findMany();
+    const products: VideojuegoDB[] = await prisma.videojuegos.findMany();
 
     // Barajar aleatoriamente
-    const shuffled = allProducts.sort(() => 0.5 - Math.random());
+    const shuffled = products.sort(() => 0.5 - Math.random());
     const randomProducts = shuffled
-      .filter((p) => p.id !== productId)
+      .filter((p: VideojuegoDB) => p.id !== excludeProductId)
       .slice(0, 6);
 
     return randomProducts.map(
-      (p): EnrichedProduct => ({
+      (p: VideojuegoDB): EnrichedProduct => ({
         id: p.id,
         _id: p.id.toString(),
         name: p.nombre,
@@ -106,14 +109,13 @@ export const getProduct = async (
   id: string | bigint
 ): Promise<EnrichedProduct> => {
   try {
-    const productId = typeof id === "string" ? BigInt(id) : id;
-    const product = await prisma.videojuegos.findUnique({
+    const productId: bigint = typeof id === "string" ? BigInt(id) : id;
+
+    const product: VideojuegoDB | null = await prisma.videojuegos.findUnique({
       where: { id: productId },
     });
 
-    if (!product) {
-      throw new Error(`Product with ID ${id} not found`);
-    }
+    if (!product) throw new Error(`Product with ID ${id} not found`);
 
     return {
       id: product.id,
