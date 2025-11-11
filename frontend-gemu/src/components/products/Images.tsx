@@ -26,7 +26,7 @@ export const Images = ({
   priority,
   sizes,
 }: {
-  image: [string];
+  image: string[]; // <-- cambio aquí
   name: string;
   width: number;
   height: number;
@@ -45,22 +45,18 @@ export const Images = ({
         loader={cloudinaryLoader}
         width={width}
         height={height}
-        src={image[0]}
+        src={image[0] || ""} // <-- fallback seguro
         alt={name}
         priority={priority}
         className="w-full max-w-img aspect-[2/3] brightness-90"
         onLoad={handleImageLoadComplete}
         sizes={sizes}
       />
-      <div
-        className={
-          !imageLoaded
-            ? "absolute top-0 right-0 w-full aspect-[2/3] bg-black"
-            : "hidden"
-        }
-      >
-        <Skeleton className="w-full aspect-[2/3] rounded-b-none" />
-      </div>
+      {!imageLoaded && (
+        <div className="absolute top-0 right-0 w-full aspect-[2/3] bg-black">
+          <Skeleton className="w-full aspect-[2/3] rounded-b-none" />
+        </div>
+      )}
     </div>
   );
 };

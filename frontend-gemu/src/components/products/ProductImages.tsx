@@ -7,14 +7,17 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { Images } from "./Images";
-import { VariantsDocument } from "@/types/types";
+import { Variant } from "@/types/types"; // <--- Tipo actualizado
 
-interface ProductImages {
+interface ProductImagesProps {
   name: string;
-  selectedVariant: VariantsDocument | undefined;
+  selectedVariant?: Variant;
 }
 
-export const ProductImages = ({ name, selectedVariant }: ProductImages) => {
+export const ProductImages = ({
+  name,
+  selectedVariant,
+}: ProductImagesProps) => {
   if (!selectedVariant || !selectedVariant.images) {
     return (
       <Skeleton className="w-full rounded-b-none aspect-[2/3] min-w-[250px] lg:aspect-[4/6] lg:min-w-[560px]" />
@@ -23,13 +26,11 @@ export const ProductImages = ({ name, selectedVariant }: ProductImages) => {
 
   return (
     <>
+      {/* Carousel para pantallas pequeñas */}
       <div className="flex lg:hidden">
         <Carousel
           className="w-full min-w-[250px] rounded-md overflow-hidden"
-          opts={{
-            align: "start",
-            loop: true,
-          }}
+          opts={{ align: "start", loop: true }}
         >
           <CarouselContent>
             {selectedVariant.images.map((image: string, index: number) => (
@@ -39,11 +40,11 @@ export const ProductImages = ({ name, selectedVariant }: ProductImages) => {
                   name={`${name} ${selectedVariant.color} - Image ${index + 1}`}
                   width={384}
                   height={576}
-                  priority={index === 0 ? true : false}
+                  priority={index === 0}
                   sizes="(max-width: 994px) 100vw,
-                  (max-width: 1304px) 50vw,
-                  (max-width: 1500px) 25vw,
-                  33vw"
+                         (max-width: 1304px) 50vw,
+                         (max-width: 1500px) 25vw,
+                         33vw"
                 />
               </CarouselItem>
             ))}
@@ -51,6 +52,7 @@ export const ProductImages = ({ name, selectedVariant }: ProductImages) => {
         </Carousel>
       </div>
 
+      {/* Grid para pantallas grandes */}
       <div className="lg:grid hidden grid-cols-2 gap-0.5 min-w-grid-img">
         {selectedVariant.images.map((image: string, index: number) => (
           <div
@@ -64,8 +66,8 @@ export const ProductImages = ({ name, selectedVariant }: ProductImages) => {
               height={1275}
               priority={true}
               sizes="(max-width: 1024px) 100vw,
-              (max-width: 1300px) 50vw,
-              (max-width: 1536px) 33vw"
+                     (max-width: 1300px) 50vw,
+                     (max-width: 1536px) 33vw"
             />
           </div>
         ))}

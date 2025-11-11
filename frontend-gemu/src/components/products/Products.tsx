@@ -1,9 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { Images } from "./Images";
-import { EnrichedProducts } from "@/types/types";
+import { EnrichedProduct } from "@/types/types";
 import dynamic from "next/dynamic";
 import { Skeleton } from "../ui/skeleton";
-import { Wishlists, getTotalWishlist } from "@/app/(carts)/wishlist/action";
+import { getTotalWishlist } from "@/app/(carts)/wishlist/action";
 import { Session, getServerSession } from "next-auth";
 import { authOptions } from "@/libs/auth";
 
@@ -19,17 +21,21 @@ const ProductCartInfo = dynamic(() => import("../cart/ProductCartInfo"), {
   loading: () => <Skeleton className="w-24 h-8" />,
 });
 
+interface ProductsProps {
+  products: EnrichedProduct[];
+  extraClassname?: string;
+}
+
 export const Products = async ({
   products,
   extraClassname = "",
-}: {
-  products: EnrichedProducts[];
-  extraClassname: string;
-}) => {
+}: ProductsProps) => {
   const session: Session | null = await getServerSession(authOptions);
   const hasMissingQuantity = products.some((product) => !product.quantity);
   const wishlist =
-    hasMissingQuantity && session?.user ? await getTotalWishlist() : undefined;
+    hasMissingQuantity && session?.user
+      ? await getTotalWishlist(session.user._id) // pasar userId como string
+      : undefined;
 
   const gridClassname = [
     "grid gap-x-3.5 gap-y-6 sm:gap-y-9",
@@ -48,11 +54,12 @@ export const Products = async ({
           category,
           quantity,
           productId,
-          image,
+          image = [], // fallback a array vacío
           name,
           price,
           purchased,
         } = product;
+
         const productLink = `/${category}/${quantity ? productId : _id}`;
         const containerClassname = [
           "flex justify-between border border-solid border-border-primary rounded-md overflow-hidden",
@@ -77,7 +84,7 @@ export const Products = async ({
           <div className={containerClassname} key={index}>
             <Link href={productLink} className={linkClassname}>
               <Images
-                image={image}
+                image={image.length > 0 ? [image[0]] : [""]} // siempre al menos un string
                 name={name}
                 width={280}
                 height={425}
@@ -99,8 +106,8 @@ export const Products = async ({
                 ) : (
                   <WishlistButton
                     session={session}
-                    productId={JSON.stringify(_id)}
-                    wishlistString={JSON.stringify(wishlist)}
+                    productId={_id}
+                    wishlistString={wishlist ? JSON.stringify(wishlist) : "{}"} // siempre string
                   />
                 )}
               </div>

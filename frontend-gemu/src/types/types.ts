@@ -65,12 +65,8 @@ export interface Factura {
 export interface Variant {
   color: string;
   priceId?: string; // opcional si manejas IDs de precio
+  images?: string[];
 }
-
-export type VariantsDocument = {
-  color: string;
-  priceId: string;
-};
 
 export interface EnrichedProduct {
   productId: string;
@@ -84,6 +80,7 @@ export interface EnrichedProduct {
   total: number;
   sizes?: string[]; // <-- añadimos tamaños
   variants?: Variant[]; // <-- añadimos variantes
+  purchased?: boolean;
 }
 
 // types.ts
