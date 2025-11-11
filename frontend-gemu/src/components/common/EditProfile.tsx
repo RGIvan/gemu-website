@@ -1,3 +1,5 @@
+"use client";
+
 import {
   DialogContent,
   DialogDescription,
@@ -5,22 +7,62 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserDocument } from "@/types/types";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+interface UserProfile {
+  name: string;
+  email: string;
+  phone?: string | null;
+}
 
 export default function EditProfile() {
-  const [user, setUser] = useState<UserDocument>({} as UserDocument);
   const { data: session, update } = useSession();
+  const [user, setUser] = useState<UserProfile>({
+    name: "",
+    email: "",
+    phone: "",
+  });
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (session && session.user) {
-      setUser(session.user as UserDocument);
+    if (session?.user) {
+      setUser({
+        name: session.user.name || "",
+        email: session.user.email || "",
+        phone: session.user.phone || "",
+      });
     }
   }, [session]);
+
+  const handleSave = async () => {
+    if (!session?.user?._id) {
+      toast.error("User not found");
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/usuario/actualizar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: session.user._id, ...user }),
+      });
+      if (!res.ok) throw new Error("Failed to update profile");
+
+      const updatedUser = await res.json();
+      // Actualiza la sesión localmente
+      await update({ ...session.user, ...updatedUser });
+      toast.success("Profile updated successfully!");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.message || "Error updating profile");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <DialogContent className="sm:max-w-[425px]">
@@ -37,31 +79,30 @@ export default function EditProfile() {
           </Label>
           <Input
             id="name"
-            defaultValue={session?.user.name}
+            value={user.name}
             onChange={(e) => setUser({ ...user, name: e.target.value })}
             className="col-span-3"
           />
         </div>
         <div className="grid items-center grid-cols-4 gap-4">
-          <Label htmlFor="Email" className="text-right">
+          <Label htmlFor="email" className="text-right">
             Email
           </Label>
           <Input
             id="email"
-            defaultValue={session?.user.email}
-            disabled={session?.user.image ? true : false}
+            value={user.email}
+            disabled={!!session?.user?.image}
             onChange={(e) => setUser({ ...user, email: e.target.value })}
             className="col-span-3"
           />
         </div>
         <div className="grid items-center grid-cols-4 gap-4">
-          <Label htmlFor="Phone" className="text-right">
+          <Label htmlFor="phone" className="text-right">
             Phone
           </Label>
           <Input
             id="phone"
-            defaultValue={session?.user.phone}
-            disabled={session?.user.image ? true : false}
+            value={user.phone || ""}
             onChange={(e) => setUser({ ...user, phone: e.target.value })}
             className="col-span-3"
           />
@@ -69,12 +110,11 @@ export default function EditProfile() {
       </div>
       <DialogFooter>
         <button
-          onClick={() => {
-            update({ ...user });
-          }}
+          onClick={handleSave}
+          disabled={isSaving}
           className="text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
         >
-          Save changes
+          {isSaving ? "Saving..." : "Save changes"}
         </button>
       </DialogFooter>
     </DialogContent>

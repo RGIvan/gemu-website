@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useMemo, useCallback } from "react";
-import { Wishlists, delItem, addItem } from "@/app/(carts)/wishlist/action";
-import { Schema } from "mongoose";
 import { Session } from "next-auth";
 import { toast } from "sonner";
+import { addItem, delItem, Wishlist } from "@/app/(carts)/wishlist/action";
 
 interface WishlistButtonProps {
   session: Session | null;
@@ -17,36 +16,37 @@ const WishlistButton = ({
   productId,
   wishlistString,
 }: WishlistButtonProps) => {
-  const id: Schema.Types.ObjectId = useMemo(
-    () => JSON.parse(productId),
-    [productId]
-  );
+  const userId = session?.user._id;
 
   const isFavorite = useMemo(() => {
-    if (session?.user && wishlistString) {
-      const wishlist: Wishlists = JSON.parse(wishlistString);
+    if (userId && wishlistString) {
+      const wishlist: Wishlist = JSON.parse(wishlistString);
       return wishlist.items.some(
-        (wishlistProduct) =>
-          wishlistProduct.productId.toString() === id.toString()
+        (wishlistProduct) => wishlistProduct.productId === productId
       );
     }
     return false;
-  }, [session, wishlistString, id]);
+  }, [userId, wishlistString, productId]);
 
   const handleFavorites = useCallback(async () => {
-    if (session?.user?._id) {
-      if (isFavorite) {
-        await delItem(id);
-      } else {
-        await addItem(id);
-      }
-    } else {
-      const warningMessage =
-        "You must be registered to be able to add a product to the wishlist.";
-      console.warn(warningMessage);
-      toast.warning(warningMessage);
+    if (!userId) {
+      toast.warning(
+        "You must be registered to be able to add a product to the wishlist."
+      );
+      return;
     }
-  }, [session, isFavorite, id]);
+
+    try {
+      if (isFavorite) {
+        await delItem(productId, userId);
+      } else {
+        await addItem(productId, userId);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred while updating your wishlist.");
+    }
+  }, [userId, isFavorite, productId]);
 
   return (
     <button

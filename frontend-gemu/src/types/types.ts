@@ -62,16 +62,23 @@ export interface Factura {
 // -----------------------------
 // Tipos enriquecidos para frontend
 // -----------------------------
+export interface Variant {
+  color: string;
+  priceId?: string; // opcional si manejas IDs de precio
+}
+
 export interface EnrichedProduct {
-  productId: string; // string porque viene del frontend/cart
+  productId: string;
+  _id: string;
   id: bigint;
   name: string;
   category: string;
+  image: string[];
   price: number;
   quantity: number;
   total: number;
-  image?: string[];
-  _id: string; // copia de productId
+  sizes?: string[]; // <-- añadimos tamaños
+  variants?: Variant[]; // <-- añadimos variantes
 }
 
 // types.ts
@@ -106,6 +113,14 @@ export interface CartItem {
 export interface Cart {
   userId: string;
   items: CartItem[];
+}
+
+export interface CartItemDocument {
+  productId: string;
+  quantity: number;
+  variantId?: string;
+  size?: string;
+  color?: string;
 }
 
 // -----------------------------

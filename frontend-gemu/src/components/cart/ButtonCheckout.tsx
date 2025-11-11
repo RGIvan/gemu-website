@@ -1,14 +1,14 @@
 "use client";
 
 import axios from "axios";
-import { ItemDocument } from "@/types/types";
+import { CartItemDocument } from "@/types/types";
 import { useTransition, useCallback, useMemo } from "react";
 import { Loader } from "../common/Loader";
 import { toast } from "sonner";
 import { Session } from "next-auth";
 
 interface ButtonCheckoutProps {
-  cartWithProducts: ItemDocument[];
+  cartWithProducts: CartItemDocument[];
   session: Session | null;
 }
 
@@ -17,7 +17,7 @@ const ButtonCheckout = ({ cartWithProducts, session }: ButtonCheckoutProps) => {
 
   const lineItems = useMemo(
     () =>
-      cartWithProducts.map((cartItem: ItemDocument) => ({
+      cartWithProducts.map((cartItem: CartItemDocument) => ({
         productId: cartItem.productId,
         quantity: cartItem.quantity,
         variantId: cartItem.variantId,
