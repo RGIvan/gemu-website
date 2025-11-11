@@ -1,5 +1,3 @@
-"use client";
-
 import { Products } from "@/components/products/Products";
 import Link from "next/link";
 import { getItems } from "./action";
