@@ -1,10 +1,13 @@
 // types.ts
 
+// -----------------------------
+// Modelos principales (correspondientes a Prisma)
+// -----------------------------
 export interface Usuario {
   id: bigint;
   nombre: string;
   apellidos: string;
-  correoElectronico: string;
+  correo_electronico: string;
   password: string;
   telefono?: string | null;
   direccion?: string | null;
@@ -56,8 +59,11 @@ export interface Factura {
   estado?: string | null;
 }
 
-// Versiones "enriched" para frontend, si quieres manejar datos combinados
+// -----------------------------
+// Tipos enriquecidos para frontend
+// -----------------------------
 export interface EnrichedProduct {
+  productId: string; // string porque viene del frontend/cart
   id: bigint;
   name: string;
   category: string;
@@ -65,11 +71,12 @@ export interface EnrichedProduct {
   quantity: number;
   total: number;
   image?: string[];
+  _id: string; // copia de productId
 }
 
 export interface EnrichedOrder {
   id: bigint;
-  orderNumber: string;
+  orderNumber?: string;
   userId: bigint;
   name: string;
   email: string;
@@ -82,6 +89,63 @@ export interface EnrichedOrder {
   status?: string | null;
 }
 
+// -----------------------------
+// Tipos para carrito / checkout
+// -----------------------------
+export interface CartItem {
+  productId: string;
+  quantity: number;
+  price: number;
+  size?: string;
+  color?: string;
+  image?: string[];
+  purchased?: boolean;
+}
+
+export interface Cart {
+  userId: string;
+  items: CartItem[];
+}
+
+// -----------------------------
+// Tipos para documentos de pedidos del frontend
+// -----------------------------
+export type ProductsDocument = {
+  productId: bigint;
+  quantity: number;
+  price: number;
+  size?: string;
+  color?: string;
+  image: string[];
+  purchased?: boolean;
+};
+
+export type OrderDocument = {
+  _id: string;
+  orderId?: string;
+  orderNumber?: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: {
+    line1?: string;
+    line2?: string;
+    city?: string;
+    state?: string;
+    postal_code?: string;
+    country?: string;
+  };
+  products: ProductsDocument[];
+  purchaseDate?: Date;
+  expectedDeliveryDate?: Date;
+  total_price: number;
+};
+
+export type OrdersDocument = OrderDocument[];
+
+// -----------------------------
+// Otros tipos
+// -----------------------------
 export interface Favorites {
   userId: bigint;
   favorites: string[];

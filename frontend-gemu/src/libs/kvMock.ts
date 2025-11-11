@@ -1,8 +1,11 @@
-import * as VercelKV from "@vercel/kv";
+import { VercelKV } from "@vercel/kv";
 
 export const kv =
   process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
-    ? VercelKV
+    ? new VercelKV({
+        url: process.env.KV_REST_API_URL,
+        token: process.env.KV_REST_API_TOKEN,
+      })
     : {
         store: new Map<string, any>(),
         async get(key: string) {

@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/libs/auth";
 import { Session } from "next-auth";
-import { kv } from "@vercel/kv";
+import { kv } from "@/libs/kvMock";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/libs/prisma";
 

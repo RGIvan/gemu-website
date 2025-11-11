@@ -1,168 +1,127 @@
 "use server";
 
-import { connectDB } from "@/libs/mongodb";
-import { Orders } from "@/models/Orders";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/libs/auth";
+import { prisma } from "@/libs/prisma";
 import { Session } from "next-auth";
-import {
-  EnrichedProducts,
-  OrderDocument,
-  OrdersDocument,
-  ProductsDocument,
-  VariantsDocument,
-} from "@/types/types";
-import { Product } from "@/models/Products";
-import Stripe from "stripe";
+import { EnrichedProduct } from "@/types/types";
 import { emptyCart, getItems } from "@/app/(carts)/cart/action";
 
-connectDB();
-
-export const getUserOrders = async () => {
-  try {
-    const session: Session | null = await getServerSession(authOptions);
-    const userId = session?.user._id;
-    const userOrders: OrdersDocument | null = await Orders.findOne({ userId });
-
-    if (userOrders && userOrders.orders && userOrders.orders.length > 0) {
-      userOrders.orders.sort((a: OrderDocument, b: OrderDocument) => {
-        const dateA = new Date(a.purchaseDate.toString());
-        const dateB = new Date(b.purchaseDate.toString());
-        return dateB.getTime() - dateA.getTime();
-      });
-    }
-
-    return userOrders;
-  } catch (error) {
-    console.error("Error getting orders:", error);
-  }
+export type Cart = {
+  userId: string;
+  items: Array<{
+    productId: string;
+    quantity: number;
+    price: number;
+    color?: string;
+    size?: string;
+    image?: string[];
+  }>;
 };
 
-export const getOrder = async (orderId: string) => {
-  try {
-    const session: Session | null = await getServerSession(authOptions);
-    const userId = session?.user._id;
-    const userOrders: OrdersDocument | null = await Orders.findOne({ userId });
-    const orderFound: OrderDocument | undefined = userOrders?.orders.find(
-      (order: OrderDocument) => order._id.toString() === orderId.toString()
-    );
+// Obtener los productos del carrito con información enriquecida
+export async function getCartItems(userId: string) {
+  if (!userId) return [];
 
-    if (!orderFound) {
-      console.log("Order not found");
-      return null;
-    }
+  const cart = await getItems(userId);
+  if (!cart) return [];
 
-    const enrichedProducts = await Promise.all(
-      orderFound.products.map(async (product: ProductsDocument) => {
-        const matchingProduct = await Product.findById(product.productId);
-        if (matchingProduct) {
-          const matchingVariant = matchingProduct.variants.find(
-            (variant: VariantsDocument) => variant.color === product.color
-          );
-          if (matchingVariant) {
-            return {
-              productId: matchingProduct._id,
-              name: matchingProduct.name,
-              category: matchingProduct.category,
-              image: [matchingVariant.images[0]],
-              price: matchingProduct.price,
-              purchased: true,
-              color: product.color,
-              size: product.size,
-              quantity: product.quantity,
-            };
-          }
-        }
-        return null;
-      })
-    );
+  const enrichedCart: EnrichedProduct[] = [];
 
-    const filteredEnrichedProducts = enrichedProducts.filter(
-      (product) => product !== null
-    );
+  for (const item of cart) {
+    const product = await prisma.videojuegos.findUnique({
+      where: { id: BigInt(item.productId) },
+    });
 
-    const enrichedOrder = {
-      name: orderFound.name,
-      email: orderFound.email,
-      phone: orderFound.phone,
-      address: orderFound.address,
-      products: filteredEnrichedProducts,
-      orderId: orderFound.orderId,
-      purchaseDate: orderFound.purchaseDate,
-      expectedDeliveryDate: orderFound.expectedDeliveryDate,
-      total_price: orderFound.total_price,
-      orderNumber: orderFound.orderNumber,
-      _id: orderFound._id,
-    };
+    if (!product) continue;
 
-    return enrichedOrder;
-  } catch (error) {
-    console.error("Error getting order:", error);
-    return null;
-  }
-};
-
-export const saveOrder = async (data: Stripe.Checkout.Session) => {
-  try {
-    const userId = data.metadata?.userId;
-    if (!userId || !data) {
-      console.error("Missing information.");
-      return null;
-    }
-
-    const cart = await getItems(userId);
-    if (!cart) {
-      console.error("Products or cart not found.");
-      return null;
-    }
-
-    const products = cart.map((item) => ({
-      productId: item.productId,
+    enrichedCart.push({
+      productId: product.id.toString(),
+      id: product.id,
+      name: product.nombre,
+      category: product.categoria,
+      image: item.image || [],
+      price: product.precio,
       quantity: item.quantity,
-      size: item.size,
-      color: item.color,
-      image: item.image,
-    }));
-
-    const newOrder: any = {
-      name: data.customer_details?.name,
-      email: data.customer_details?.email,
-      phone: data.customer_details?.phone,
-      address: {
-        line1: data.customer_details?.address?.line1,
-        line2: data.customer_details?.address?.line2,
-        city: data.customer_details?.address?.city,
-        state: data.customer_details?.address?.state,
-        postal_code: data.customer_details?.address?.postal_code,
-        country: data.customer_details?.address?.country,
-      },
-      products: products,
-      orderId: data.id,
-      total_price: data.amount_total,
-    };
-
-    const userOrders: OrdersDocument | null = await Orders.findOne({ userId });
-
-    if (userOrders) {
-      const orderIdMatch = userOrders.orders.some(
-        (order: OrderDocument) => order.orderId === data.id
-      );
-      if (!orderIdMatch) {
-        userOrders.orders.push(newOrder);
-        await Orders.findOneAndUpdate({ userId: userId }, userOrders, {
-          new: true,
-        });
-        console.log("Order successfully updated.");
-      } else {
-        console.info("This order has already been saved.");
-      }
-    } else {
-      await Orders.create({ userId, orders: [newOrder] });
-      console.info("New order document created and saved successfully.");
-    }
-
-    await emptyCart(userId);
-  } catch (error) {
-    console.error("Error saving the order:", error);
+      total: item.quantity * product.precio,
+      _id: item.productId,
+    });
   }
-};
+
+  return enrichedCart;
+}
+
+// Guardar un pedido en la base de datos
+export async function saveOrder(
+  session: Session | null,
+  cartItems: Cart["items"],
+  paymentInfo: any
+) {
+  if (!session?.user._id || !cartItems || cartItems.length === 0) return;
+
+  const userId = BigInt(session.user._id);
+
+  // Crear pedido principal
+  const newPedido = await prisma.pedidos.create({
+    data: {
+      usuario_id: userId,
+      fecha_pedido: new Date(),
+      total_sin_iva: cartItems.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      ),
+      iva_total: 0, // calcular IVA si quieres
+      total_con_iva: cartItems.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      ),
+      metodo_pago: paymentInfo?.method || "unknown",
+      direccion_envio: paymentInfo?.address || "",
+      estado: "Pendiente",
+      detalle_pedidos: {
+        create: cartItems.map((item) => ({
+          producto_id: BigInt(item.productId),
+          cantidad: item.quantity,
+          precio_unitario: item.price,
+          subtotal: item.quantity * item.price,
+        })),
+      },
+    },
+  });
+
+  // Limpiar carrito
+  await emptyCart(session.user._id);
+
+  return newPedido;
+}
+
+// Obtener todos los pedidos del usuario
+export async function getUserOrders(session: Session | null) {
+  if (!session?.user._id) return [];
+
+  const userId = BigInt(session.user._id);
+
+  const orders = await prisma.pedidos.findMany({
+    where: { usuario_id: userId },
+    include: {
+      detalle_pedidos: { include: { videojuegos: true } },
+    },
+    orderBy: { fecha_pedido: "desc" },
+  });
+
+  // Mapear a tipo enriquecido
+  return orders.map((order) => ({
+    id: order.id,
+    usuario_id: order.usuario_id,
+    fecha_pedido: order.fecha_pedido,
+    total_con_iva: order.total_con_iva,
+    estado: order.estado,
+    detalle_pedidos: order.detalle_pedidos.map((item) => ({
+      productId: item.producto_id.toString(),
+      name: item.videojuegos.nombre,
+      category: item.videojuegos.categoria,
+      price: item.precio_unitario,
+      quantity: item.cantidad,
+      total: item.subtotal || item.precio_unitario.toNumber() * item.cantidad,
+      image: [], // si quieres agregar imágenes, adapta aquí
+    })),
+  }));
+}

@@ -6,7 +6,7 @@ import { authOptions } from "@/libs/auth";
 import { Suspense } from "react";
 import { Loader } from "@/components/common/Loader";
 import dynamic from "next/dynamic";
-import { EnrichedProducts } from "@/types/types";
+import { EnrichedProduct } from "@/types/types";
 
 const ButtonCheckout = dynamic(
   () => import("../../../components/cart/ButtonCheckout"),
@@ -17,7 +17,7 @@ const ButtonCheckout = dynamic(
         Continue
       </p>
     ),
-  },
+  }
 );
 
 export async function generateMetadata() {
@@ -71,13 +71,13 @@ const ProductsCart = async ({ session }: { session: Session }) => {
       .reduce(
         (total: number, cartItem: any) =>
           total + cartItem.price * cartItem.quantity,
-        0,
+        0
       )
       .toFixed(2);
   };
 
-  const filteredCart: EnrichedProducts[] | undefined = await getItems(
-    session.user._id,
+  const filteredCart: EnrichedProduct[] | undefined = await getItems(
+    session.user._id
   );
   const totalPrice = calculateTotalPrice(filteredCart);
 

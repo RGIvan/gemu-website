@@ -13,13 +13,15 @@ export const getAllProducts = async (): Promise<EnrichedProduct[]> => {
 
     return products.map(
       (p): EnrichedProduct => ({
-        id: p.id.toString(),
+        id: p.id, // bigint, consistente con types.ts
+        _id: p.id.toString(), // string para frontend/cart
         name: p.nombre,
         category: p.categoria,
         price: p.precio,
         quantity: p.existencias,
-        total: p.precio,
+        total: p.precio * p.existencias, // total real
         image: [],
+        productId: p.id.toString(),
       })
     );
   } catch (error) {
@@ -41,13 +43,15 @@ export const getCategoryProducts = async (
 
     return products.map(
       (p): EnrichedProduct => ({
-        id: p.id.toString(),
+        id: p.id,
+        _id: p.id.toString(),
         name: p.nombre,
         category: p.categoria,
         price: p.precio,
         quantity: p.existencias,
-        total: p.precio,
+        total: p.precio * p.existencias,
         image: [],
+        productId: p.id.toString(),
       })
     );
   } catch (error) {
@@ -60,7 +64,7 @@ export const getCategoryProducts = async (
  * 🔹 Obtener productos aleatorios (excluyendo uno específico)
  */
 export const getRandomProducts = async (
-  productId: number
+  productId: bigint
 ): Promise<EnrichedProduct[]> => {
   try {
     const allProducts: videojuegos[] = await prisma.videojuegos.findMany();
@@ -68,22 +72,57 @@ export const getRandomProducts = async (
     // Barajar aleatoriamente
     const shuffled = allProducts.sort(() => 0.5 - Math.random());
     const randomProducts = shuffled
-      .filter((p) => Number(p.id) !== productId)
+      .filter((p) => p.id !== productId)
       .slice(0, 6);
 
     return randomProducts.map(
       (p): EnrichedProduct => ({
-        id: p.id.toString(),
+        id: p.id,
+        _id: p.id.toString(),
         name: p.nombre,
         category: p.categoria,
         price: p.precio,
         quantity: p.existencias,
-        total: p.precio,
+        total: p.precio * p.existencias,
         image: [],
+        productId: p.id.toString(),
       })
     );
   } catch (error) {
     console.error("Error getting random products:", error);
     throw new Error("Failed to fetch random products");
+  }
+};
+
+/**
+ * 🔹 Obtener un producto por ID
+ */
+export const getProduct = async (
+  id: string | bigint
+): Promise<EnrichedProduct> => {
+  try {
+    const productId = typeof id === "string" ? BigInt(id) : id;
+    const product: videojuegos | null = await prisma.videojuegos.findUnique({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      throw new Error(`Product with ID ${id} not found`);
+    }
+
+    return {
+      id: product.id,
+      _id: product.id.toString(),
+      name: product.nombre,
+      category: product.categoria,
+      price: product.precio,
+      quantity: product.existencias,
+      total: product.precio * product.existencias,
+      image: [],
+      productId: product.id.toString(),
+    };
+  } catch (error) {
+    console.error("Error getting product:", error);
+    throw new Error("Failed to fetch product");
   }
 };
