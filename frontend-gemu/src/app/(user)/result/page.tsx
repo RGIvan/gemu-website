@@ -44,7 +44,6 @@ const CheckoutSuccess = async ({
   );
 };
 
-export default CheckoutSuccess;
 async function sendEmail(response: any) {
   try {
     await fetch("/api/send-email", {
@@ -84,3 +83,5 @@ async function fetchCheckoutData(session_id: string) {
     return null;
   }
 }
+
+export default CheckoutSuccess;

@@ -7,7 +7,9 @@ import { authOptions } from "@/libs/auth";
 import { Session } from "next-auth";
 import { Cart, CartItem } from "@/types/types";
 
-// Obtener el carrito
+// -----------------------------
+// Obtener items del carrito
+// -----------------------------
 export async function getItems(
   userId: string
 ): Promise<CartItem[] | undefined> {
@@ -16,12 +18,25 @@ export async function getItems(
   return cart?.items || [];
 }
 
+// -----------------------------
+// Obtener total de items en el carrito
+// -----------------------------
+export async function getTotalItems(session: Session | null): Promise<number> {
+  const userId = session?.user._id;
+  if (!userId) return 0;
+
+  const cart: Cart | null = await kv.get(`cart-${userId}`);
+  return cart?.items.reduce((sum, item) => sum + item.quantity, 0) || 0;
+}
+
+// -----------------------------
 // Agregar un item al carrito
+// -----------------------------
 export async function addItem(item: CartItem) {
   const session: Session | null = await getServerSession(authOptions);
-  if (!session?.user._id) return;
+  const userId = session?.user._id;
+  if (!userId) return;
 
-  const userId = session.user._id;
   let cart: Cart | null = await kv.get(`cart-${userId}`);
 
   if (!cart) {
@@ -42,10 +57,12 @@ export async function addItem(item: CartItem) {
   }
 
   await kv.set(`cart-${userId}`, cart);
-  revalidatePath(`/cart`);
+  revalidatePath("/cart");
 }
 
-// Eliminar un item completo
+// -----------------------------
+// Eliminar un item completo del carrito
+// -----------------------------
 export async function delItem(item: CartItem) {
   const session: Session | null = await getServerSession(authOptions);
   const userId = session?.user._id;
@@ -67,7 +84,9 @@ export async function delItem(item: CartItem) {
   revalidatePath("/cart");
 }
 
+// -----------------------------
 // Eliminar una unidad de un item
+// -----------------------------
 export async function delOneItem(item: CartItem) {
   const session: Session | null = await getServerSession(authOptions);
   const userId = session?.user._id;
@@ -84,7 +103,7 @@ export async function delOneItem(item: CartItem) {
         i.color === item.color
       ) {
         if (i.quantity > 1) return { ...i, quantity: i.quantity - 1 };
-        return null;
+        return null; // eliminar si queda 0
       }
       return i;
     })
@@ -94,7 +113,9 @@ export async function delOneItem(item: CartItem) {
   revalidatePath("/cart");
 }
 
+// -----------------------------
 // Vaciar carrito completo
+// -----------------------------
 export async function emptyCart(userId: string) {
   let cart: Cart | null = await kv.get(`cart-${userId}`);
   if (cart) {

@@ -6,7 +6,7 @@ import { authOptions } from "@/libs/auth";
 import { Suspense } from "react";
 import { Loader } from "@/components/common/Loader";
 import dynamic from "next/dynamic";
-import { EnrichedProduct } from "@/types/types";
+import { CartItem, EnrichedProduct } from "@/types/types";
 
 const ButtonCheckout = dynamic(
   () => import("../../../components/cart/ButtonCheckout"),
@@ -52,7 +52,7 @@ const CartPage = async () => {
         shopping cart.
       </p>
       <Link
-        className="flex font-medium	 items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
+        className="flex font-medium items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
         href="/login"
       >
         Login
@@ -62,62 +62,62 @@ const CartPage = async () => {
 };
 
 const ProductsCart = async ({ session }: { session: Session }) => {
-  const calculateTotalPrice = (cart: any) => {
-    if (!cart || cart.length === 0) {
-      return 0;
-    }
+  const cartItems: CartItem[] | undefined = await getItems(session.user._id);
 
-    return cart
-      .reduce(
-        (total: number, cartItem: any) =>
-          total + cartItem.price * cartItem.quantity,
-        0
-      )
-      .toFixed(2);
-  };
-
-  const filteredCart: EnrichedProduct[] | undefined = await getItems(
-    session.user._id
-  );
-  const totalPrice = calculateTotalPrice(filteredCart);
-
-  if (filteredCart && filteredCart?.length > 0) {
+  if (!cartItems || cartItems.length === 0) {
     return (
-      <div className="pt-12">
-        <h2 className="mb-5 text-xl font-bold sm:text-2xl">
-          YOUR SHOPPING CART
-        </h2>
-        <Products products={filteredCart} extraClassname={"cart-ord-mobile"} />
-
-        <div className="fixed left-[50%] translate-x-[-50%] bottom-4 w-[90%] z-10 sm:w-[360px] rounded-xl overflow-hidden flex bg-black border border-solid border-border-primary h-min">
-          <div className="flex flex-col p-2.5 justify-center w-1/2 gap-2 text-center">
-            <div className="flex gap-2.5 justify-center text-sm">
-              <span>Total:</span>
-              <span>{totalPrice}€</span>
-            </div>
-            <span className="text-xs">+ TAX INCL.</span>
-          </div>
-          <div className="w-1/2 border-l border-solid bg-background-secondary border-border-primary">
-            <ButtonCheckout session={session} cartWithProducts={filteredCart} />
-          </div>
-        </div>
+      <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-91px)] gap-2 px-4">
+        <h1 className="mb-6 text-4xl font-bold">YOUR CART IS EMPTY</h1>
+        <p className="mb-4 text-lg">
+          When you have added something to your cart, it will appear here. Want
+          to get started?
+        </p>
+        <Link
+          className="flex font-medium items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
+          href="/"
+        >
+          Start
+        </Link>
       </div>
     );
   }
 
+  // Mapear CartItem a EnrichedProduct
+  const enrichedCart: EnrichedProduct[] = cartItems.map((item) => ({
+    productId: item.productId,
+    _id: item.productId, // si no hay otro _id
+    id: BigInt(item.productId), // convertir a bigint
+    name: "", // aquí podrías obtener nombre real desde la DB
+    category: "", // categoría real
+    image: item.image || [],
+    price: item.price,
+    quantity: item.quantity,
+    total: item.price * item.quantity,
+    sizes: item.size ? [item.size] : [],
+    variants: item.color ? [{ color: item.color }] : [],
+  }));
+
+  const totalPrice = enrichedCart
+    .reduce((total, p) => total + p.price * p.quantity, 0)
+    .toFixed(2);
+
   return (
-    <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-91px)] gap-2 px-4">
-      <h1 className="mb-6 text-4xl font-bold">YOUR CART IS EMPTY</h1>
-      <p className="mb-4 text-lg">
-        When you have added something to your cart, it will appear here. Want to
-        get started?
-      </p>
-      <Link
-        className="flex font-medium	 items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
-        href="/"
-      >
-        Start
-      </Link>
+    <div className="pt-12">
+      <h2 className="mb-5 text-xl font-bold sm:text-2xl">YOUR SHOPPING CART</h2>
+      <Products products={enrichedCart} extraClassname={"cart-ord-mobile"} />
+
+      <div className="fixed left-[50%] translate-x-[-50%] bottom-4 w-[90%] z-10 sm:w-[360px] rounded-xl overflow-hidden flex bg-black border border-solid border-border-primary h-min">
+        <div className="flex flex-col p-2.5 justify-center w-1/2 gap-2 text-center">
+          <div className="flex gap-2.5 justify-center text-sm">
+            <span>Total:</span>
+            <span>{totalPrice}€</span>
+          </div>
+          <span className="text-xs">+ TAX INCL.</span>
+        </div>
+        <div className="w-1/2 border-l border-solid bg-background-secondary border-border-primary">
+          <ButtonCheckout session={session} cartWithProducts={enrichedCart} />
+        </div>
+      </div>
     </div>
   );
 };
