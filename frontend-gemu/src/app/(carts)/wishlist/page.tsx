@@ -1,3 +1,5 @@
+"use client";
+
 import { Products } from "@/components/products/Products";
 import Link from "next/link";
 import { getItems } from "./action";
@@ -5,6 +7,7 @@ import { Session, getServerSession } from "next-auth";
 import { authOptions } from "@/libs/auth";
 import { Suspense } from "react";
 import { Loader } from "@/components/common/Loader";
+import { EnrichedProduct } from "@/types/types";
 
 export async function generateMetadata() {
   return {
@@ -13,6 +16,7 @@ export async function generateMetadata() {
   };
 }
 
+// eslint-disable-next-line @next/next/no-async-client-component
 const Wishlists = async () => {
   const session: Session | null = await getServerSession(authOptions);
 
@@ -37,7 +41,7 @@ const Wishlists = async () => {
         Not registered? You must be in order to save your favorite products.
       </p>
       <Link
-        className="flex font-medium	 items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
+        className="flex font-medium items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
         href="/login"
       >
         Login
@@ -47,14 +51,27 @@ const Wishlists = async () => {
 };
 
 const ProductsWishlists = async ({ session }: { session: Session }) => {
-  const filteredWishlist = await getItems(session.user._id);
+  const wishlistItems = await getItems(session.user._id);
 
-  if (filteredWishlist && filteredWishlist?.length > 0) {
+  // Mapear los productos a EnrichedProduct para que coincida con el componente Products
+  const enrichedWishlist: EnrichedProduct[] = wishlistItems.map((p) => ({
+    id: p.id,
+    _id: p.id.toString(),
+    productId: p.id.toString(),
+    name: p.nombre,
+    category: p.categoria,
+    price: p.precio,
+    quantity: 1, // valor predeterminado
+    total: p.precio,
+    image: [], // agrega imágenes si las tienes
+  }));
+
+  if (enrichedWishlist.length > 0) {
     return (
       <div className="pt-12">
         <h2 className="mb-5 text-xl font-bold sm:text-2xl">YOUR WISHLISTS</h2>
         <Products
-          products={filteredWishlist}
+          products={enrichedWishlist}
           extraClassname={"colums-mobile"}
         />
       </div>
@@ -69,7 +86,7 @@ const ProductsWishlists = async ({ session }: { session: Session }) => {
         to get started?
       </p>
       <Link
-        className="flex font-medium	 items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
+        className="flex font-medium items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
         href="/"
       >
         Start

@@ -2,16 +2,14 @@
 
 import { kv } from "@/libs/kvMock";
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/libs/prisma";
+import { prisma } from "@/libs/prisma"; // opcional si quieres mezclar datos
 
 export type Wishlist = {
   userId: string;
   items: Array<{ productId: string }>;
 };
 
-// -----------------------------
-// Agregar item al wishlist
-// -----------------------------
+// Agregar item
 export async function addItem(userId: string, productId: string) {
   if (!userId) return;
 
@@ -28,16 +26,13 @@ export async function addItem(userId: string, productId: string) {
   revalidatePath("/wishlist");
 }
 
-// -----------------------------
-// Obtener items del wishlist
-// -----------------------------
+// Obtener items
 export async function getItems(userId: string) {
   if (!userId) return [];
   const wishlist: Wishlist | null = await kv.get(`wishlist-${userId}`);
   if (!wishlist) return [];
 
   const productIds = wishlist.items.map((item) => item.productId);
-
   if (productIds.length === 0) return [];
 
   try {
@@ -51,18 +46,14 @@ export async function getItems(userId: string) {
   }
 }
 
-// -----------------------------
-// Obtener total de items del wishlist
-// -----------------------------
+// Total items
 export async function getTotalWishlist(userId: string): Promise<number> {
   if (!userId) return 0;
   const wishlist: Wishlist | null = await kv.get(`wishlist-${userId}`);
   return wishlist?.items.length || 0;
 }
 
-// -----------------------------
-// Eliminar item del wishlist
-// -----------------------------
+// Eliminar item
 export async function delItem(userId: string, productId: string) {
   if (!userId) return;
 
