@@ -5,6 +5,9 @@ import { Session } from "next-auth";
 import { EnrichedProduct, EnrichedOrder } from "@/types/types";
 import { emptyCart, getItems } from "@/app/(carts)/cart/action";
 
+// -----------------------------
+// Tipos locales
+// -----------------------------
 export type Cart = {
   userId: string;
   items: Array<{
@@ -20,7 +23,7 @@ export type Cart = {
 // -----------------------------
 // Obtener los productos del carrito
 // -----------------------------
-export async function getCartItems(userId: string) {
+export async function getCartItems(userId: string): Promise<EnrichedProduct[]> {
   if (!userId) return [];
 
   const cart = await getItems(userId);
@@ -109,41 +112,46 @@ export async function getUserOrders(
     where: { usuario_id: userId },
     include: {
       detalle_pedidos: { include: { videojuegos: true } },
-      usuarios: true, // para obtener datos del usuario
+      usuarios: true,
     },
     orderBy: { fecha_pedido: "desc" },
   });
 
-  const enrichedOrders: EnrichedOrder[] = ordersFromDB.map((o) => ({
-    id: o.id,
-    orderNumber: `#${o.id.toString()}`,
-    userId: o.usuario_id,
-    name: o.usuarios?.nombre ?? "N/A",
-    email: o.usuarios?.correo_electronico ?? "N/A",
-    phone: o.usuarios?.telefono ?? null,
-    address: o.usuarios?.direccion ?? null,
-    products: o.detalle_pedidos.map((item) => ({
-      productId: item.producto_id.toString(),
-      id: item.producto_id,
-      _id: item.producto_id.toString(),
-      name: item.videojuegos?.nombre ?? "N/A",
-      category: item.videojuegos?.categoria ?? "N/A",
-      image: [], // si quieres agregar imágenes, adapta aquí
-      price: Number(item.precio_unitario),
-      quantity: item.cantidad,
-      total:
-        item.subtotal !== null && item.subtotal !== undefined
-          ? Number(item.subtotal)
-          : Number(item.precio_unitario) * item.cantidad,
-    })),
-    total_price:
-      o.total_con_iva !== null && o.total_con_iva !== undefined
-        ? Number(o.total_con_iva)
-        : 0,
-    purchaseDate: o.fecha_pedido ?? new Date(),
-    expectedDeliveryDate: null,
-    status: o.estado ?? "Pendiente",
-  }));
+  // Definimos un tipo para cada pedido con detalles y usuario
+  type PedidoConDetalles = (typeof ordersFromDB)[number];
+
+  const enrichedOrders: EnrichedOrder[] = ordersFromDB.map(
+    (o: PedidoConDetalles) => ({
+      id: o.id,
+      orderNumber: `#${o.id.toString()}`,
+      userId: o.usuario_id,
+      name: o.usuarios?.nombre ?? "N/A",
+      email: o.usuarios?.correo_electronico ?? "N/A",
+      phone: o.usuarios?.telefono ?? null,
+      address: o.usuarios?.direccion ?? null,
+      products: o.detalle_pedidos.map((item) => ({
+        productId: item.producto_id.toString(),
+        id: item.producto_id,
+        _id: item.producto_id.toString(),
+        name: item.videojuegos?.nombre ?? "N/A",
+        category: item.videojuegos?.categoria ?? "N/A",
+        image: [],
+        price: Number(item.precio_unitario),
+        quantity: item.cantidad,
+        total:
+          item.subtotal !== null && item.subtotal !== undefined
+            ? Number(item.subtotal)
+            : Number(item.precio_unitario) * item.cantidad,
+      })),
+      total_price:
+        o.total_con_iva !== null && o.total_con_iva !== undefined
+          ? Number(o.total_con_iva)
+          : 0,
+      purchaseDate: o.fecha_pedido ?? new Date(),
+      expectedDeliveryDate: null,
+      status: o.estado ?? "Pendiente",
+    })
+  );
 
   return enrichedOrders;
 }
