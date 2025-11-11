@@ -230,7 +230,7 @@ const Signup = () => {
           href="/login"
           className="text-sm transition-all duration-150 text-[#A1A1A1] ease hover:text-white"
         >
-          ¿Ya tienes una cuenta? - Inicia sesión
+          ¿Ya tienes una cuenta? Inicia sesión
         </Link>
       </form>
     </section>
