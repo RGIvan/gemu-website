@@ -11,14 +11,20 @@ export const getAllProducts = async (): Promise<EnrichedProduct[]> => {
     const products = await prisma.videojuegos.findMany();
 
     return products.map(
-      (p): EnrichedProduct => ({
-        id: p.id, // bigint, consistente con types.ts
-        _id: p.id.toString(), // string para frontend/cart
+      (p: {
+        id: bigint;
+        nombre: string;
+        categoria: string;
+        precio: number;
+        existencias: number;
+      }): EnrichedProduct => ({
+        id: p.id,
+        _id: p.id.toString(),
         name: p.nombre,
         category: p.categoria,
         price: p.precio,
         quantity: p.existencias,
-        total: p.precio * p.existencias, // total real
+        total: p.precio * p.existencias,
         image: [],
         productId: p.id.toString(),
       })
