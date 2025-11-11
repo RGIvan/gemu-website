@@ -6,22 +6,19 @@ import { EnrichedProduct, EnrichedOrder } from "@/types/types";
 import { emptyCart, getItems } from "@/app/(carts)/cart/action";
 
 // -----------------------------
-// Tipos locales
+// Tipos internos
 // -----------------------------
-export type Cart = {
-  userId: string;
-  items: Array<{
-    productId: string;
-    quantity: number;
-    price: number;
-    color?: string;
-    size?: string;
-    image?: string[];
-  }>;
+export type CartItem = {
+  productId: string;
+  quantity: number;
+  price: number;
+  color?: string;
+  size?: string;
+  image?: string[];
 };
 
 // -----------------------------
-// Obtener los productos del carrito
+// Obtener los productos del carrito enriquecidos
 // -----------------------------
 export async function getCartItems(userId: string): Promise<EnrichedProduct[]> {
   if (!userId) return [];
@@ -41,13 +38,13 @@ export async function getCartItems(userId: string): Promise<EnrichedProduct[]> {
     enrichedCart.push({
       productId: product.id.toString(),
       id: product.id,
+      _id: item.productId,
       name: product.nombre,
       category: product.categoria,
       image: item.image || [],
       price: Number(product.precio),
       quantity: item.quantity,
       total: Number(product.precio) * item.quantity,
-      _id: item.productId,
     });
   }
 
@@ -59,8 +56,12 @@ export async function getCartItems(userId: string): Promise<EnrichedProduct[]> {
 // -----------------------------
 export async function saveOrder(
   session: Session | null,
-  cartItems: Cart["items"],
-  paymentInfo: any
+  cartItems: CartItem[],
+  paymentInfo: {
+    method?: string;
+    address?: string;
+    [key: string]: any;
+  }
 ) {
   if (!session?.user._id || !cartItems || cartItems.length === 0) return;
 
@@ -79,8 +80,8 @@ export async function saveOrder(
         (acc, item) => acc + item.price * item.quantity,
         0
       ),
-      metodo_pago: paymentInfo?.method || "unknown",
-      direccion_envio: paymentInfo?.address || "",
+      metodo_pago: paymentInfo.method || "unknown",
+      direccion_envio: paymentInfo.address || "",
       estado: "Pendiente",
       detalle_pedidos: {
         create: cartItems.map((item) => ({
@@ -117,8 +118,9 @@ export async function getUserOrders(
     orderBy: { fecha_pedido: "desc" },
   });
 
-  // Definimos un tipo para cada pedido con detalles y usuario
+  // Tipos auxiliares
   type PedidoConDetalles = (typeof ordersFromDB)[number];
+  type DetallePedido = PedidoConDetalles["detalle_pedidos"][number];
 
   const enrichedOrders: EnrichedOrder[] = ordersFromDB.map(
     (o: PedidoConDetalles) => ({
@@ -129,7 +131,7 @@ export async function getUserOrders(
       email: o.usuarios?.correo_electronico ?? "N/A",
       phone: o.usuarios?.telefono ?? null,
       address: o.usuarios?.direccion ?? null,
-      products: o.detalle_pedidos.map((item) => ({
+      products: o.detalle_pedidos.map((item: DetallePedido) => ({
         productId: item.producto_id.toString(),
         id: item.producto_id,
         _id: item.producto_id.toString(),
