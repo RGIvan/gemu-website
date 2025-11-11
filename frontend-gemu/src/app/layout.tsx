@@ -1,89 +1,53 @@
-"use server";
-
+import type { Metadata } from "next";
+import { GeistSans } from "geist/font/sans";
+import Providers from "./Providers";
+import { Navbar } from "../components/common/Navbar";
+import { Footer } from "../components/common/Footer";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Toaster } from "sonner";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/libs/auth";
-import { Session } from "next-auth";
-import { kv } from "@/libs/kvMock";
-import { revalidatePath } from "next/cache";
-import { prisma } from "@/libs/prisma";
+import { getTotalItems } from "./(carts)/cart/action";
+import { getTotalWishlist } from "./(carts)/wishlist/action";
 
-export type Wishlist = {
-  userId: string;
-  items: Array<{
-    productId: string; // guardamos como string
-  }>;
+import "../styles/globals.css";
+
+export const metadata: Metadata = {
+  title: "Gemu - Tu tienda de videojuegos en línea",
+  description:
+    "Descubre y compra los mejores videojuegos en nuestra tienda en línea. Ofertas exclusivas, lanzamientos y clásicos para todas las plataformas.",
 };
 
-// -----------------------------
-// Agregar item al wishlist
-// -----------------------------
-export async function addItem(productId: string) {
-  const session: Session | null = await getServerSession(authOptions);
-  const userId = session?.user._id;
-  if (!userId) return;
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await getServerSession(authOptions);
+  const userId = session?.user?._id ?? "";
 
-  let wishlist: Wishlist | null = await kv.get(`wishlist-${userId}`);
+  const totalItemsCart = userId ? await getTotalItems(userId) : 0;
+  const totalItemsWishlists = userId ? await getTotalWishlist(userId) : 0;
 
-  if (!wishlist) {
-    wishlist = { userId, items: [{ productId }] };
-  } else {
-    const exists = wishlist.items.some((item) => item.productId === productId);
-    if (!exists) wishlist.items.push({ productId });
-  }
-
-  await kv.set(`wishlist-${userId}`, wishlist);
-  revalidatePath("/wishlist");
-}
-
-// -----------------------------
-// Obtener items del wishlist
-// -----------------------------
-export async function getItems(userId: string) {
-  if (!userId) return [];
-  const wishlist: Wishlist | null = await kv.get(`wishlist-${userId}`);
-  if (!wishlist) return [];
-  const productIds = wishlist.items.map((item) => item.productId);
-
-  if (productIds.length === 0) return [];
-
-  try {
-    const products = await prisma.videojuegos.findMany({
-      where: { id: { in: productIds.map((id) => BigInt(id)) } },
-    });
-    return products;
-  } catch (error) {
-    console.error("Error getting wishlist products:", error);
-    return [];
-  }
-}
-
-// -----------------------------
-// Obtener total de items del wishlist
-// -----------------------------
-export async function getTotalWishlist(
-  session: Session | null
-): Promise<number> {
-  const userId = session?.user._id;
-  if (!userId) return 0;
-
-  const wishlist: Wishlist | null = await kv.get(`wishlist-${userId}`);
-  return wishlist?.items.length || 0;
-}
-
-// -----------------------------
-// Eliminar item del wishlist
-// -----------------------------
-export async function delItem(productId: string) {
-  const session: Session | null = await getServerSession(authOptions);
-  const userId = session?.user._id;
-  if (!userId) return;
-
-  const wishlist: Wishlist | null = await kv.get(`wishlist-${userId}`);
-  if (!wishlist) return;
-
-  wishlist.items = wishlist.items.filter(
-    (item) => item.productId !== productId
+  return (
+    <html lang="en">
+      <Providers>
+        <body className={GeistSans.className}>
+          <Navbar
+            session={session}
+            totalItemsCart={totalItemsCart}
+            totalWishlists={totalItemsWishlists}
+          />
+          <main className="pointer-events-auto">
+            {children}
+            <Toaster position="top-right" />
+            <Analytics />
+            <SpeedInsights />
+          </main>
+          <Footer />
+        </body>
+      </Providers>
+    </html>
   );
-  await kv.set(`wishlist-${userId}`, wishlist);
-  revalidatePath("/wishlist");
 }
