@@ -18,7 +18,7 @@ interface SingleProductProps {
 }
 
 export const SingleProduct = ({ product, session }: SingleProductProps) => {
-  // Si manejas variantes, puedes inicializar selectedVariant aquí
+  // Inicializamos la variante seleccionada con el propio producto
   const [selectedVariant, setSelectedVariant] =
     useState<EnrichedProduct | null>(product || null);
 
@@ -45,6 +45,7 @@ export const SingleProduct = ({ product, session }: SingleProductProps) => {
             product={product}
             selectedVariant={selectedVariant}
             setSelectedVariant={setSelectedVariant}
+            sizes={["S", "M", "L", "XL"]} // ajusta según necesites
           />
         </div>
 

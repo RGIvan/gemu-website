@@ -81,22 +81,25 @@ export interface EnrichedProduct {
   sizes?: string[]; // <-- añadimos tamaños
   variants?: Variant[]; // <-- añadimos variantes
   purchased?: boolean;
+  // 🔹 Para variantes y colores
+  color?: string; // color de la variante
+  images?: string[]; // imágenes de la variante
 }
 
 // types.ts
 export interface EnrichedOrder {
-  id: bigint; // ID del pedido
-  orderNumber?: string; // Número de pedido (ej: "#123")
-  userId: bigint; // ID del usuario
-  name: string; // Nombre del usuario
-  email: string; // Email del usuario
-  phone?: string | null; // Teléfono
-  address?: string | null; // Dirección de envío
-  products: EnrichedProduct[]; // Productos del pedido
-  total_price: number; // Total con IVA
-  purchaseDate: Date; // Fecha del pedido
-  expectedDeliveryDate?: Date | null; // Fecha estimada de entrega
-  status?: string | null; // Estado del pedido
+  id: bigint;
+  orderNumber: string;
+  userId: bigint;
+  name: string;
+  email: string;
+  phone: string | null;
+  address: string | null;
+  products: EnrichedProduct[];
+  total_price: number;
+  purchaseDate: Date;
+  expectedDeliveryDate?: Date | null;
+  status: string;
 }
 
 // -----------------------------

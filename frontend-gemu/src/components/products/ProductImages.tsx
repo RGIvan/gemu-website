@@ -7,18 +7,18 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { Images } from "./Images";
-import { Variant } from "@/types/types"; // <--- Tipo actualizado
+import { EnrichedProduct } from "@/types/types";
 
 interface ProductImagesProps {
   name: string;
-  selectedVariant?: Variant;
+  selectedVariant: EnrichedProduct | null;
 }
 
 export const ProductImages = ({
   name,
   selectedVariant,
 }: ProductImagesProps) => {
-  if (!selectedVariant || !selectedVariant.images) {
+  if (!selectedVariant?.images?.length) {
     return (
       <Skeleton className="w-full rounded-b-none aspect-[2/3] min-w-[250px] lg:aspect-[4/6] lg:min-w-[560px]" />
     );
@@ -26,7 +26,6 @@ export const ProductImages = ({
 
   return (
     <>
-      {/* Carousel para pantallas pequeñas */}
       <div className="flex lg:hidden">
         <Carousel
           className="w-full min-w-[250px] rounded-md overflow-hidden"
@@ -37,14 +36,13 @@ export const ProductImages = ({
               <CarouselItem key={index} className="pl-0">
                 <Images
                   image={[image]}
-                  name={`${name} ${selectedVariant.color} - Image ${index + 1}`}
+                  name={`${name} ${selectedVariant.color || ""} - Image ${
+                    index + 1
+                  }`}
                   width={384}
                   height={576}
                   priority={index === 0}
-                  sizes="(max-width: 994px) 100vw,
-                         (max-width: 1304px) 50vw,
-                         (max-width: 1500px) 25vw,
-                         33vw"
+                  sizes="(max-width: 994px) 100vw, (max-width: 1304px) 50vw, (max-width: 1500px) 25vw, 33vw"
                 />
               </CarouselItem>
             ))}
@@ -52,22 +50,21 @@ export const ProductImages = ({
         </Carousel>
       </div>
 
-      {/* Grid para pantallas grandes */}
       <div className="lg:grid hidden grid-cols-2 gap-0.5 min-w-grid-img">
         {selectedVariant.images.map((image: string, index: number) => (
           <div
-            className="inline-block w-full max-w-2xl mx-auto overflow-hidden rounded"
             key={index}
+            className="inline-block w-full max-w-2xl mx-auto overflow-hidden rounded"
           >
             <Images
               image={[image]}
-              name={`${name} ${selectedVariant.color} - Image ${index + 1}`}
+              name={`${name} ${selectedVariant.color || ""} - Image ${
+                index + 1
+              }`}
               width={850}
               height={1275}
               priority={true}
-              sizes="(max-width: 1024px) 100vw,
-                     (max-width: 1300px) 50vw,
-                     (max-width: 1536px) 33vw"
+              sizes="(max-width: 1024px) 100vw, (max-width: 1300px) 50vw, (max-width: 1536px) 33vw"
             />
           </div>
         ))}

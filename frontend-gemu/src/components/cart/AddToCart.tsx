@@ -1,37 +1,35 @@
 "use client";
 
-import { useState, useTransition, useCallback } from "react";
+import {
+  useState,
+  useTransition,
+  useCallback,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { CartItem } from "@/types/types";
-import { colorMapping } from "@/helpers/colorMapping";
 import { addItem } from "@/app/(carts)/cart/action";
 import { Loader } from "../common/Loader";
 import { Session } from "next-auth";
 import { toast } from "sonner";
-
-interface Variant {
-  color: string;
-  priceId: string; // identificador de precio/variante
-}
+import { EnrichedProduct } from "@/types/types";
 
 interface AddToCartProps {
-  productId: string;
-  price: number;
-  image?: string[];
-  sizes?: string[];
-  variants?: Variant[];
+  product: EnrichedProduct;
   session: Session | null;
+  selectedVariant: EnrichedProduct | null;
+  setSelectedVariant: Dispatch<SetStateAction<EnrichedProduct | null>>;
+  sizes?: string[];
 }
 
 export default function AddToCart({
-  productId,
-  price,
-  image,
-  sizes = [],
-  variants = [],
+  product,
   session,
+  selectedVariant,
+  setSelectedVariant,
+  sizes = [],
 }: AddToCartProps) {
   const [selectedSize, setSelectedSize] = useState<string>("");
-  const [selectedVariant, setSelectedVariant] = useState<Variant | undefined>();
   const [isPending, startTransition] = useTransition();
 
   const handleAddToCart = useCallback(() => {
@@ -39,7 +37,7 @@ export default function AddToCart({
       toast.info("You must be registered to add a product to the cart.");
       return;
     }
-    if (!selectedVariant) {
+    if (!selectedVariant?.color) {
       toast.info("You have to select a color to add the product.");
       return;
     }
@@ -49,16 +47,16 @@ export default function AddToCart({
     }
 
     const newItem: CartItem = {
-      productId,
+      productId: product.productId,
       quantity: 1,
-      price,
+      price: product.price,
       size: selectedSize,
       color: selectedVariant.color,
-      image,
+      image: selectedVariant.images || [],
     };
 
     startTransition(() => addItem(newItem));
-  }, [session, selectedVariant, selectedSize, productId, price, image]);
+  }, [session, selectedVariant, selectedSize, product]);
 
   return (
     <div>
@@ -77,20 +75,7 @@ export default function AddToCart({
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-4 gap-2.5 mt-4">
-        {variants.map((variant) => (
-          <button
-            key={variant.color}
-            className={`w-8 h-8 rounded ${
-              selectedVariant?.color === variant.color
-                ? "border-2 border-white"
-                : ""
-            }`}
-            style={{ backgroundColor: colorMapping[variant.color] }}
-            onClick={() => setSelectedVariant(variant)}
-          />
-        ))}
-      </div>
+
       <button
         onClick={handleAddToCart}
         className="w-full p-2 mt-4 border rounded"
