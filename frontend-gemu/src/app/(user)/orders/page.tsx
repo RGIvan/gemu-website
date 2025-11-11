@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { Loader } from "@/components/common/Loader";
 import { Session, getServerSession } from "next-auth";
 import { authOptions } from "@/libs/auth";
+import { EnrichedOrder } from "@/types/types";
 
 export async function generateMetadata() {
   return {
@@ -39,11 +40,11 @@ const Orders = async ({ session }: { session: Session }) => {
   return (
     <div className="grid items-center justify-between pt-12 grid-cols-auto-fill-350 gap-7">
       {orders.map((order, index) => {
-        const totalItems = order.detalle_pedidos.reduce(
+        const totalItems = order.products.reduce(
           (sum, item) => sum + item.quantity,
           0
         );
-        const totalPrice = order.total_con_iva ?? 0;
+        const totalPrice = order.total_price;
 
         return (
           <div
@@ -56,8 +57,8 @@ const Orders = async ({ session }: { session: Session }) => {
             >
               <h4 className="font-semibold">
                 {`${
-                  order.fecha_pedido
-                    ? format(order.fecha_pedido, "dd LLL yyyy")
+                  order.purchaseDate
+                    ? format(order.purchaseDate, "dd LLL yyyy")
                     : "N/A"
                 } | ${Number(totalPrice).toFixed(2)}€ | Items: ${totalItems}`}
               </h4>
