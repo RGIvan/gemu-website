@@ -25,7 +25,7 @@ const SignOutButton = () => {
           fill="currentColor"
         ></path>
       </svg>
-      <span>Log out</span>
+      <span>Desconectarse</span>
     </button>
   );
 };

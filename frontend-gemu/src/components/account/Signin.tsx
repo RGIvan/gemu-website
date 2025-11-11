@@ -70,7 +70,7 @@ const Signin = () => {
             <div className="text-sm">{error}</div>
           </div>
         )}
-        <h1 className="w-full mb-5 text-2xl font-bold">Signin</h1>
+        <h1 className="w-full mb-5 text-2xl font-bold">Logéate</h1>
 
         <label className={labelStyles}>Email:</label>
         <input
@@ -80,7 +80,7 @@ const Signin = () => {
           name="correoElectronico"
         />
 
-        <label className={labelStyles}>Password:</label>
+        <label className={labelStyles}>Contraseña:</label>
         <div className="flex w-full">
           <input
             type={showPassword ? "text" : "password"}
@@ -178,13 +178,13 @@ const Signin = () => {
               fill="#EA4335"
             ></path>
           </svg>{" "}
-          Sign in with Google
+          Logéate con Google
         </button>
         <Link
           href="/register"
           className="text-sm transition duration-150 text-[#A1A1A1] ease hover:text-white"
         >
-          Don&apos;t have an account?
+          ¿No tienes una cuenta? Regístrate
         </Link>
       </form>
     </section>
