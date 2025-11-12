@@ -7,12 +7,11 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import { CartItem } from "@/types/types";
+import { CartItem, EnrichedProduct } from "@/types/types";
 import { addItem } from "@/app/(carts)/cart/action";
 import { Loader } from "../common/Loader";
 import { Session } from "next-auth";
 import { toast } from "sonner";
-import { EnrichedProduct } from "@/types/types";
 
 interface AddToCartProps {
   product: EnrichedProduct;
@@ -55,7 +54,9 @@ export default function AddToCart({
       image: selectedVariant.images || [],
     };
 
-    startTransition(() => addItem(newItem));
+    startTransition(() =>
+      addItem(newItem.productId, newItem.size, newItem.color, newItem.price)
+    );
   }, [session, selectedVariant, selectedSize, product]);
 
   return (

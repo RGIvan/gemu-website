@@ -12,12 +12,14 @@ const ProductCartInfo = ({ product }: Props) => {
   const { productId, quantity, price, size, color } = product;
 
   const handleAddItem = useCallback(() => {
-    addItem({ ...product, quantity: 1 });
-  }, [product]);
+    if (!size || !color) return;
+    addItem(productId, size, color, price);
+  }, [productId, size, color, price]);
 
   const handleDelItem = useCallback(() => {
-    delOneItem({ ...product, quantity: 1 });
-  }, [product]);
+    if (!size || !color) return;
+    delOneItem(productId, size, color);
+  }, [productId, size, color]);
 
   return (
     <div className="flex items-center justify-between">

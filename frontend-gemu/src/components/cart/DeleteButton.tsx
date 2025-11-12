@@ -10,7 +10,8 @@ interface Props {
 
 const DeleteButton = ({ product }: Props) => {
   const handleDelete = useCallback(() => {
-    delItem(product);
+    if (!product.size || !product.color) return; // seguridad
+    delItem(product.productId, product.size, product.color);
   }, [product]);
 
   return (
