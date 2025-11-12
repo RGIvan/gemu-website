@@ -1,14 +1,11 @@
 "use server";
 
 import { prisma } from "@/libs/prisma";
-import { EnrichedProduct } from "@/types/types";
+import { EnrichedProduct, Usuario } from "@/types/types";
 
 // Crear pedido
 export async function createOrder(
   userId: bigint,
-  name: string,
-  email: string,
-  phone: string | null,
   address: {
     line1: string;
     line2?: string;

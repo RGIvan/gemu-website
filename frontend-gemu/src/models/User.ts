@@ -11,8 +11,9 @@ export async function createUser(data: {
   direccion?: string;
   username: string;
 }): Promise<Usuario> {
-  const user = await prisma.usuario.create({
+  const user = await prisma.usuarios.create({
     data: data,
+    include: { pedidos: true }, // incluir pedidos si quieres retornarlos
   });
 
   return {
@@ -21,18 +22,18 @@ export async function createUser(data: {
     apellidos: user.apellidos,
     correo_electronico: user.correo_electronico,
     password: user.password,
-    telefono: user.telefono,
-    direccion: user.direccion,
+    telefono: user.telefono ?? "",
+    direccion: user.direccion ?? "",
     username: user.username,
-    pedidos: [], // opcional
+    pedidos: user.pedidos ?? [],
   };
 }
 
 // Buscar usuario por correo
 export async function getUserByEmail(email: string): Promise<Usuario | null> {
-  const user = await prisma.usuario.findUnique({
+  const user = await prisma.usuarios.findUnique({
     where: { correo_electronico: email },
-    include: { pedidos: true },
+    include: { pedidos: true }, // incluir pedidos relacionados
   });
 
   if (!user) return null;
@@ -43,9 +44,9 @@ export async function getUserByEmail(email: string): Promise<Usuario | null> {
     apellidos: user.apellidos,
     correo_electronico: user.correo_electronico,
     password: user.password,
-    telefono: user.telefono,
-    direccion: user.direccion,
+    telefono: user.telefono ?? "",
+    direccion: user.direccion ?? "",
     username: user.username,
-    pedidos: user.pedidos,
+    pedidos: user.pedidos ?? [],
   };
 }
