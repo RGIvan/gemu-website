@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/libs/prisma";
-import { EnrichedProduct, Usuario } from "@/types/types";
+import { EnrichedProduct } from "@/types/types";
 
 // Crear pedido
 export async function createOrder(
@@ -70,18 +70,25 @@ export async function getOrdersByUser(userId: bigint) {
     total_price: o.total_con_iva ?? 0,
     purchaseDate: o.fecha_pedido ?? new Date(),
     status: o.estado ?? "pending",
-    products: o.detalle_pedidos.map(
-      (d: (typeof o.detalle_pedidos)[number]) => ({
-        productId: d.producto_id,
+    products: o.detalle_pedidos.map((d: (typeof o.detalle_pedidos)[number]) => {
+      const precioUnitario = Number(d.precio_unitario);
+      const cantidad = Number(d.cantidad);
+      const subtotal =
+        d.subtotal !== null ? Number(d.subtotal) : precioUnitario * cantidad;
+      const videojuegoId =
+        d.videojuegos.id !== null ? Number(d.videojuegos.id) : 0;
+
+      return {
+        productId: d.producto_id.toString(),
         _id: d.id.toString(),
-        id: d.videojuegos.id,
+        id: videojuegoId,
         name: d.videojuegos.nombre,
         category: d.videojuegos.categoria,
-        price: d.precio_unitario,
-        quantity: d.cantidad,
-        total: d.subtotal ?? d.precio_unitario * d.cantidad,
+        price: precioUnitario,
+        quantity: cantidad,
+        total: subtotal,
         image: d.videojuegos.imagenUrl ? [d.videojuegos.imagenUrl] : [],
-      })
-    ),
+      };
+    }),
   }));
 }
