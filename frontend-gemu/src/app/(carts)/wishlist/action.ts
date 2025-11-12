@@ -105,18 +105,11 @@ export async function getItems(userId: string) {
 // ----------------------
 // Obtener wishlist completa (sin productos)
 // ----------------------
-export async function getTotalWishlist() {
-  const session: Session | null = await getServerSession(authOptions);
+export async function getTotalWishlist(userId?: string): Promise<number> {
+  if (!userId) return 0;
 
-  if (!session?.user?.id) {
-    return undefined;
-  }
-
-  const wishlists: Wishlists | null = await kv.get(
-    `wishlist-${session.user.id}`
-  );
-
-  return wishlists ?? undefined;
+  const wishlists: Wishlists | null = await kv.get(`wishlist-${userId}`);
+  return wishlists?.items?.length || 0;
 }
 
 // ----------------------
