@@ -1,37 +1,51 @@
-import { UserDocument } from "@/types/types";
-import { Schema, model, models } from "mongoose";
+import { prisma } from "@/libs/prisma";
+import { Usuario } from "@/types/types";
 
-const UserSchema = new Schema<UserDocument>(
-  {
-    email: {
-      type: String,
-      unique: true,
-      required: [true, "Email is required"],
-      match: [
-        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-        "Email is invalid",
-      ],
-    },
-    password: {
-      type: String,
-      required: [true, "Password is required"],
-      select: false,
-    },
-    name: {
-      type: String,
-      required: [true, "Fullname is required"],
-      minLength: [3, "fullname must be at least 3 characters"],
-      maxLength: [25, "fullname must be at most 25 characters"],
-    },
-    phone: {
-      type: String,
-      default: "",
-    },
-  },
-  {
-    timestamps: true,
-  },
-);
+// Crear un usuario
+export async function createUser(data: {
+  correo_electronico: string;
+  password: string;
+  nombre: string;
+  apellidos: string;
+  telefono?: string;
+  direccion?: string;
+  username: string;
+}): Promise<Usuario> {
+  const user = await prisma.usuario.create({
+    data: data,
+  });
 
-const User = models.User || model<UserDocument>("User", UserSchema);
-export default User;
+  return {
+    id: user.id,
+    nombre: user.nombre,
+    apellidos: user.apellidos,
+    correo_electronico: user.correo_electronico,
+    password: user.password,
+    telefono: user.telefono,
+    direccion: user.direccion,
+    username: user.username,
+    pedidos: [], // opcional
+  };
+}
+
+// Buscar usuario por correo
+export async function getUserByEmail(email: string): Promise<Usuario | null> {
+  const user = await prisma.usuario.findUnique({
+    where: { correo_electronico: email },
+    include: { pedidos: true },
+  });
+
+  if (!user) return null;
+
+  return {
+    id: user.id,
+    nombre: user.nombre,
+    apellidos: user.apellidos,
+    correo_electronico: user.correo_electronico,
+    password: user.password,
+    telefono: user.telefono,
+    direccion: user.direccion,
+    username: user.username,
+    pedidos: user.pedidos,
+  };
+}

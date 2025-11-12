@@ -1,50 +1,57 @@
-import { ProductDocument, VariantsDocument } from "@/types/types";
-import mongoose, { model, Model, Schema } from "mongoose";
+import { prisma } from "@/libs/prisma";
+import { EnrichedProduct } from "@/types/types";
 
-const VariantsSchema = new Schema<VariantsDocument>({
-  priceId: {
-    type: String,
-    required: true,
-  },
-  color: {
-    type: String,
-    required: true,
-  },
-  images: {
-    type: [String],
-    required: true,
-  },
-});
+export async function getAllProducts(): Promise<EnrichedProduct[]> {
+  // Traemos los videojuegos de Prisma
+  const products = await prisma.videojuegos.findMany();
 
-const ProductSchema: Schema = new Schema<ProductDocument>({
-  name: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  category: {
-    type: String,
-    required: true,
-  },
-  sizes: {
-    type: [String],
-    required: true,
-  },
-  image: {
-    type: [String],
-    required: true,
-  },
-  variants: {
-    type: [VariantsSchema],
-    required: true,
-  },
-});
-export const Product = (mongoose.models.Product ||
-  model("Product", ProductSchema)) as Model<any>;
+  // Convertimos a EnrichedProduct
+  const enrichedProducts: EnrichedProduct[] = products.map(
+    (p: {
+      id: bigint;
+      nombre: string;
+      categoria: string;
+      precio: number;
+      imagenUrl?: string | null;
+    }) => ({
+      productId: p.id.toString(),
+      _id: p.id.toString(),
+      id: p.id,
+      name: p.nombre,
+      category: p.categoria,
+      price: p.precio,
+      quantity: 0, // por defecto 0 en carrito
+      total: 0,
+      image: p.imagenUrl ? [p.imagenUrl] : [],
+      sizes: [], // si manejas tamaños, puedes rellenar
+      variants: [], // si manejas variantes, puedes rellenar
+    })
+  );
+
+  return enrichedProducts;
+}
+
+// Si quieres un producto por id
+export async function getProductById(
+  productId: bigint
+): Promise<EnrichedProduct | null> {
+  const p = await prisma.videojuegos.findUnique({
+    where: { id: productId },
+  });
+
+  if (!p) return null;
+
+  return {
+    productId: p.id.toString(),
+    _id: p.id.toString(),
+    id: p.id,
+    name: p.nombre,
+    category: p.categoria,
+    price: p.precio,
+    quantity: 0,
+    total: 0,
+    image: p.imagenUrl ? [p.imagenUrl] : [],
+    sizes: [],
+    variants: [],
+  };
+}

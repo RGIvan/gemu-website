@@ -1,110 +1,87 @@
-import {
-  calculateExpectedDeliveryDate,
-  generateRandomOrderNumber,
-} from "@/helpers/orderModel";
-import {
-  AddressDocument,
-  OrderDocument,
-  OrdersDocument,
-  ProductsDocument,
-} from "@/types/types";
-import { Schema, model, models } from "mongoose";
+"use server";
 
-const ProductsSchema = new Schema<ProductsDocument>({
-  productId: {
-    type: Schema.Types.ObjectId,
-    required: true,
-  },
-  color: {
-    type: String,
-    required: false,
-  },
-  size: {
-    type: String,
-    required: true,
-  },
-  quantity: {
-    type: Number,
-    required: false,
-  },
-});
+import { prisma } from "@/libs/prisma";
+import { EnrichedProduct, Usuario } from "@/types/types";
 
-const AddressSchema = new Schema<AddressDocument>({
-  city: {
-    type: String,
-    required: true,
+// Crear pedido
+export async function createOrder(
+  userId: bigint,
+  name: string,
+  email: string,
+  phone: string | null,
+  address: {
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    postal_code: string;
+    country: string;
   },
-  country: {
-    type: String,
-    required: true,
-  },
-  line1: {
-    type: String,
-    required: true,
-  },
-  line2: {
-    type: String,
-    required: false,
-  },
-  postal_code: {
-    type: String,
-    required: true,
-  },
-  state: {
-    type: String,
-    required: true,
-  },
-});
+  products: EnrichedProduct[],
+  total_price: number
+) {
+  const direccion_envio = `${address.line1}, ${address.line2 ?? ""}, ${
+    address.city
+  }, ${address.state}, ${address.postal_code}, ${address.country}`;
 
-const OrderSchema = new Schema<OrderDocument>({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-  },
-  phone: {
-    type: Number,
-    required: false,
-  },
-  address: AddressSchema,
-  products: {
-    type: [ProductsSchema],
-    required: true,
-  },
-  orderId: {
-    type: String,
-    required: true,
-  },
-  purchaseDate: {
-    type: Date,
-    default: Date.now,
-  },
-  expectedDeliveryDate: {
-    type: Date,
-    default: calculateExpectedDeliveryDate,
-  },
-  total_price: {
-    type: Number,
-    required: true,
-  },
-  orderNumber: {
-    type: String,
-    default: generateRandomOrderNumber,
-  },
-});
+  const pedido = await prisma.pedidos.create({
+    data: {
+      usuario_id: userId,
+      fecha_pedido: new Date(),
+      total_con_iva: total_price,
+      direccion_envio,
+      estado: "pending",
+      detalle_pedidos: {
+        create: products.map((p) => ({
+          producto_id: BigInt(p.id),
+          cantidad: p.quantity,
+          precio_unitario: p.price,
+          subtotal: p.price * p.quantity,
+        })),
+      },
+    },
+    include: {
+      detalle_pedidos: {
+        include: {
+          videojuegos: true,
+        },
+      },
+    },
+  });
 
-const OrdersSchema = new Schema<OrdersDocument>({
-  userId: {
-    type: String,
-    required: true,
-  },
-  orders: {
-    type: [OrderSchema],
-    default: [],
-  },
-});
+  return pedido;
+}
 
-export const Orders = models.Orders || model("Orders", OrdersSchema);
+// Obtener pedidos de un usuario
+export async function getOrdersByUser(userId: bigint) {
+  const orders = await prisma.pedidos.findMany({
+    where: { usuario_id: userId },
+    include: {
+      detalle_pedidos: {
+        include: { videojuegos: true },
+      },
+    },
+    orderBy: { fecha_pedido: "desc" },
+  });
+
+  return orders.map((o: (typeof orders)[number]) => ({
+    id: o.id,
+    userId: o.usuario_id,
+    total_price: o.total_con_iva ?? 0,
+    purchaseDate: o.fecha_pedido ?? new Date(),
+    status: o.estado ?? "pending",
+    products: o.detalle_pedidos.map(
+      (d: (typeof o.detalle_pedidos)[number]) => ({
+        productId: d.producto_id,
+        _id: d.id.toString(),
+        id: d.videojuegos.id,
+        name: d.videojuegos.nombre,
+        category: d.videojuegos.categoria,
+        price: d.precio_unitario,
+        quantity: d.cantidad,
+        total: d.subtotal ?? d.precio_unitario * d.cantidad,
+        image: d.videojuegos.imagenUrl ? [d.videojuegos.imagenUrl] : [],
+      })
+    ),
+  }));
+}

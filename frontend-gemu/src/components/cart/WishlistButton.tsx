@@ -3,51 +3,55 @@
 import React, { useMemo, useCallback } from "react";
 import { Session } from "next-auth";
 import { toast } from "sonner";
-import { addItem, delItem, Wishlists } from "@/app/(carts)/wishlist/action";
+import {
+  addFavorite,
+  removeFavorite,
+  getFavorites,
+} from "@/app/(carts)/wishlist/action";
 
 interface WishlistButtonProps {
   session: Session | null;
-  productId: string; // viene del frontend como string
-  wishlistString: string;
+  productId: string;
 }
 
-const WishlistButton = ({
-  session,
-  productId,
-  wishlistString,
-}: WishlistButtonProps) => {
-  const productIdBigInt = BigInt(productId);
+const WishlistButton = ({ session, productId }: WishlistButtonProps) => {
+  const userId = session?.user._id;
 
-  const isFavorite = useMemo(() => {
-    if (session && wishlistString) {
-      const wishlist: Wishlists = JSON.parse(wishlistString);
-      return wishlist.items.some((item) => item.productId === productIdBigInt);
+  const [isFavorite, setIsFavorite] = React.useState(false);
+
+  // Inicializamos el estado del botón
+  React.useEffect(() => {
+    async function checkFavorite() {
+      if (!userId) return;
+      const favs = await getFavorites(userId);
+      setIsFavorite(favs.favorites.includes(productId));
     }
-    return false;
-  }, [session, wishlistString, productIdBigInt]);
+    checkFavorite();
+  }, [userId, productId]);
 
   const handleFavorites = useCallback(async () => {
-    if (!session?.user) {
-      toast.warning("You must be registered to add a product to the wishlist.");
+    if (!userId) {
+      toast.warning("Debes registrarte para poder usar favoritos.");
       return;
     }
 
     try {
       if (isFavorite) {
-        await delItem(productIdBigInt); // ahora es bigint
+        await removeFavorite(userId, productId);
       } else {
-        await addItem(productIdBigInt); // ahora es bigint
+        await addFavorite(userId, productId);
       }
+      setIsFavorite(!isFavorite);
     } catch (error) {
       console.error(error);
-      toast.error("An error occurred while updating your wishlist.");
+      toast.error("Ha ocurrido un error al actualizar tus favoritos.");
     }
-  }, [isFavorite, productIdBigInt, session?.user]);
+  }, [userId, isFavorite, productId]);
 
   return (
     <button
       onClick={handleFavorites}
-      title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+      title={isFavorite ? "Eliminar de favoritos" : "Añadir a favoritos"}
     >
       {isFavorite ? "❤️" : "🤍"}
     </button>

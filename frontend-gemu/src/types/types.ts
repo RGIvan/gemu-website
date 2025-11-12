@@ -103,6 +103,15 @@ export interface EnrichedOrder {
   status: string;
 }
 
+export interface AddressDocument {
+  line1: string;
+  line2?: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  country: string;
+}
+
 // -----------------------------
 // Tipos para carrito / checkout
 // -----------------------------
@@ -168,7 +177,8 @@ export type OrdersDocument = OrderDocument[];
 // -----------------------------
 // Otros tipos
 // -----------------------------
+// types.ts
 export interface Favorites {
-  userId: bigint;
-  favorites: string[];
+  userId: string; // user._id de NextAuth como string
+  favorites: string[]; // array de productId como string
 }
