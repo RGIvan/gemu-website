@@ -49,6 +49,7 @@ export interface Videojuego {
   num_jugadores?: number | null;
   edad_recomendada?: number | null;
   plataforma: string;
+  imagenUrl?: string | null;
 }
 
 export interface Factura {

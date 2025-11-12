@@ -5,20 +5,19 @@ import { Session, getServerSession } from "next-auth";
 import { authOptions } from "@/libs/auth";
 import { Suspense } from "react";
 import { Loader } from "@/components/common/Loader";
-import { EnrichedProduct } from "@/types/types";
 
 export async function generateMetadata() {
   return {
-    title: "Wishlists | Ecommerce Template",
-    description: `Wishlists at e-commerce template made by Marcos Cámara`,
+    title: "Wishlist | Ecommerce Template",
+    description: `Wishlist at e-commerce template made by Marcos Cámara`,
   };
 }
 
-// eslint-disable-next-line @next/next/no-async-client-component
 const Wishlists = async () => {
   const session: Session | null = await getServerSession(authOptions);
 
-  if (session?.user) {
+  // 🔹 Usuario autenticado
+  if (session?.user?.id) {
     return (
       <Suspense
         fallback={
@@ -27,20 +26,21 @@ const Wishlists = async () => {
           </div>
         }
       >
-        <ProductsWishlists session={session} />
+        <ProductsWishlist session={session} />
       </Suspense>
     );
   }
 
+  // 🔹 Usuario no autenticado
   return (
     <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-91px)] gap-2 px-4">
       <h1 className="mb-6 text-4xl font-bold">YOUR WISHLIST IS EMPTY</h1>
-      <p className="mb-4 text-lg">
+      <p className="mb-4 text-lg text-center">
         Not registered? You must be in order to save your favorite products.
       </p>
       <Link
-        className="flex font-medium items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
         href="/login"
+        className="flex font-medium items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
       >
         Login
       </Link>
@@ -48,44 +48,33 @@ const Wishlists = async () => {
   );
 };
 
-const ProductsWishlists = async ({ session }: { session: Session }) => {
-  const wishlistItems = await getItems(session.user._id);
+const ProductsWishlist = async ({ session }: { session: Session }) => {
+  const userId = String(session.user.id);
+  const filteredWishlist = await getItems(userId);
 
-  // Mapear los productos a EnrichedProduct para que coincida con el componente Products
-  const enrichedWishlist: EnrichedProduct[] = wishlistItems.map((p) => ({
-    id: p.id,
-    _id: p.id.toString(),
-    productId: p.id.toString(),
-    name: p.nombre,
-    category: p.categoria,
-    price: p.precio,
-    quantity: 1, // valor predeterminado
-    total: p.precio,
-    image: [], // agrega imágenes si las tienes
-  }));
-
-  if (enrichedWishlist.length > 0) {
+  if (filteredWishlist && filteredWishlist.length > 0) {
     return (
       <div className="pt-12">
-        <h2 className="mb-5 text-xl font-bold sm:text-2xl">YOUR WISHLISTS</h2>
+        <h2 className="mb-5 text-xl font-bold sm:text-2xl">YOUR WISHLIST</h2>
         <Products
-          products={enrichedWishlist}
+          products={filteredWishlist}
           extraClassname={"colums-mobile"}
         />
       </div>
     );
   }
 
+  // 🔹 Wishlist vacía
   return (
     <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-91px)] gap-2 px-4">
       <h1 className="mb-6 text-4xl font-bold">YOUR WISHLIST IS EMPTY</h1>
-      <p className="mb-4 text-lg">
-        When you have added something to the wishlist, it will appear here. Want
-        to get started?
+      <p className="mb-4 text-lg text-center">
+        When you have added something to your wishlist, it will appear here.
+        Want to get started?
       </p>
       <Link
-        className="flex font-medium items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
         href="/"
+        className="flex font-medium items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
       >
         Start
       </Link>

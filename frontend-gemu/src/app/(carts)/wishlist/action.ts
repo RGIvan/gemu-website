@@ -1,68 +1,145 @@
 "use server";
 
-import { kv } from "@/libs/kvMock";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/libs/auth";
+import { Session } from "next-auth";
+import { kv } from "@vercel/kv";
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/libs/prisma"; // opcional si quieres mezclar datos
+import { prisma } from "@/libs/prisma";
 
-export type Wishlist = {
-  userId: string;
-  items: Array<{ productId: string }>;
+// ----------------------
+// Tipado de la Wishlist
+// ----------------------
+export type WishlistItem = {
+  productId: bigint;
 };
 
-// Agregar item
-export async function addItem(userId: string, productId: string) {
-  if (!userId) return;
+export type Wishlists = {
+  userId: string;
+  items: WishlistItem[];
+};
 
-  let wishlist: Wishlist | null = await kv.get(`wishlist-${userId}`);
+// ----------------------
+// Añadir un producto
+// ----------------------
+export async function addItem(productId: bigint) {
+  const session: Session | null = await getServerSession(authOptions);
 
-  if (!wishlist) {
-    wishlist = { userId, items: [{ productId }] };
-  } else {
-    const exists = wishlist.items.some((item) => item.productId === productId);
-    if (!exists) wishlist.items.push({ productId });
+  if (!session?.user?.id) {
+    console.error("User Id not found.");
+    return;
   }
 
-  await kv.set(`wishlist-${userId}`, wishlist);
+  const userId = String(session.user.id);
+  let wishlists: Wishlists | null = await kv.get(`wishlist-${userId}`);
+
+  let myWishlists: Wishlists;
+
+  if (!wishlists || !wishlists.items) {
+    myWishlists = {
+      userId,
+      items: [{ productId }],
+    };
+  } else {
+    const itemExists = wishlists.items.some(
+      (item) => item.productId === productId
+    );
+
+    myWishlists = itemExists
+      ? wishlists
+      : {
+          ...wishlists,
+          items: [...wishlists.items, { productId }],
+        };
+  }
+
+  await kv.set(`wishlist-${userId}`, myWishlists);
   revalidatePath("/wishlist");
 }
 
-// Obtener items
+// ----------------------
+// Obtener productos de wishlist
+// ----------------------
 export async function getItems(userId: string) {
-  if (!userId) return [];
-  const wishlist: Wishlist | null = await kv.get(`wishlist-${userId}`);
-  if (!wishlist) return [];
+  if (!userId) {
+    console.error("User Id not found.");
+    return null;
+  }
 
-  const productIds = wishlist.items.map((item) => item.productId);
-  if (productIds.length === 0) return [];
+  const wishlist: Wishlists | null = await kv.get(`wishlist-${userId}`);
 
-  try {
-    const products = await prisma.videojuegos.findMany({
-      where: { id: { in: productIds.map((id) => BigInt(id)) } },
-    });
-    return products;
-  } catch (error) {
-    console.error("Error getting wishlist products:", error);
+  if (!wishlist || !wishlist.items || wishlist.items.length === 0) {
+    console.warn("Wishlist not found or empty.");
     return [];
   }
+
+  const products = [];
+
+  for (const wishlistItem of wishlist.items) {
+    try {
+      const product = await prisma.videojuegos.findUnique({
+        where: { id: wishlistItem.productId },
+      });
+
+      if (product) {
+        products.push({
+          id: product.id,
+          productId: String(product.id),
+          _id: String(product.id),
+          name: product.nombre,
+          category: product.categoria,
+          price: product.precio,
+          image: product.imagenUrl ? [product.imagenUrl] : ["/placeholder.png"],
+          quantity: 0,
+          total: product.precio,
+        });
+      }
+    } catch (error) {
+      console.error("Error getting product details:", error);
+    }
+  }
+
+  return products;
 }
 
-// Total items
-export async function getTotalWishlist(userId: string): Promise<number> {
-  if (!userId) return 0;
-  const wishlist: Wishlist | null = await kv.get(`wishlist-${userId}`);
-  return wishlist?.items.length || 0;
-}
+// ----------------------
+// Obtener wishlist completa (sin productos)
+// ----------------------
+export async function getTotalWishlist() {
+  const session: Session | null = await getServerSession(authOptions);
 
-// Eliminar item
-export async function delItem(userId: string, productId: string) {
-  if (!userId) return;
+  if (!session?.user?.id) {
+    return undefined;
+  }
 
-  const wishlist: Wishlist | null = await kv.get(`wishlist-${userId}`);
-  if (!wishlist) return;
-
-  wishlist.items = wishlist.items.filter(
-    (item) => item.productId !== productId
+  const wishlists: Wishlists | null = await kv.get(
+    `wishlist-${session.user.id}`
   );
-  await kv.set(`wishlist-${userId}`, wishlist);
-  revalidatePath("/wishlist");
+
+  return wishlists ?? undefined;
+}
+
+// ----------------------
+// Eliminar producto de wishlist
+// ----------------------
+export async function delItem(productId: bigint) {
+  const session: Session | null = await getServerSession(authOptions);
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    console.error("User not found.");
+    return;
+  }
+
+  let wishlists: Wishlists | null = await kv.get(`wishlist-${userId}`);
+
+  if (wishlists && wishlists.items) {
+    const updatedWishlist = {
+      userId: String(userId),
+      items: wishlists.items.filter((item) => item.productId !== productId),
+    };
+
+    await kv.set(`wishlist-${userId}`, updatedWishlist);
+    revalidatePath("/wishlist");
+  }
 }

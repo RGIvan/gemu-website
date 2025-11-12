@@ -65,5 +65,6 @@ model videojuegos {
   num_jugadores    Int?
   edad_recomendada Int?
   plataforma       String            @db.VarChar(50)
+  imagenUrl        String?           @db.VarChar(255)
   detalle_pedidos  detalle_pedidos[]
 }

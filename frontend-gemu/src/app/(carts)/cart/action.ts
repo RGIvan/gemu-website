@@ -2,101 +2,172 @@
 
 import { kv } from "@/libs/kvMock";
 import { revalidatePath } from "next/cache";
-import { Cart, CartItem } from "@/types/types";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/libs/auth";
+import { Session } from "next-auth";
+import { prisma } from "@/libs/prisma";
+import { Cart, CartItem, EnrichedProduct, Videojuego } from "@/types/types";
 
 // -----------------------------
-// Obtener total de items del carrito
+// Obtener los items del carrito con info del producto
 // -----------------------------
-export async function getTotalItems(userId: string): Promise<number> {
-  if (!userId) return 0;
+export async function getItems(userId: string): Promise<EnrichedProduct[]> {
+  if (!userId) {
+    console.error("User ID not found");
+    return [];
+  }
 
   const cart: Cart | null = await kv.get(`cart-${userId}`);
-  return cart?.items.length || 0;
+  if (!cart || !cart.items?.length) return [];
+
+  const productIds = cart.items.map((item) => Number(item.productId));
+
+  // Traemos los productos desde Prisma
+  const productos = await prisma.videojuegos.findMany({
+    where: { id: { in: productIds } },
+  });
+
+  // Mapeamos el carrito con la info completa
+  const enriched: EnrichedProduct[] = cart.items.map((item) => {
+    const producto = productos.find(
+      (p: Videojuego) => p.id === BigInt(item.productId)
+    );
+    return {
+      ...item,
+      productId: item.productId.toString(),
+      id: producto?.id || BigInt(0),
+      name: producto?.nombre || "Desconocido",
+      category: producto?.categoria || "N/A",
+      image: producto?.imagenUrl ? [producto.imagenUrl] : [],
+      price: producto?.precio || 0,
+      total: (producto?.precio || 0) * item.quantity,
+      purchased: false,
+      _id: item.productId.toString(),
+      quantity: item.quantity,
+    };
+  });
+
+  return enriched;
 }
 
 // -----------------------------
-// Obtener items del carrito
+// Obtener el total de items del carrito
 // -----------------------------
-export async function getItems(
-  userId: string
-): Promise<CartItem[] | undefined> {
-  if (!userId) return undefined;
-  const cart: Cart | null = await kv.get(`cart-${userId}`);
-  return cart?.items || [];
+export async function getTotalItems(session: Session | null) {
+  if (!session?.user?.id) return 0;
+
+  const cart: Cart | null = await kv.get(`cart-${session.user.id}`);
+  const total = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+
+  return total;
 }
 
 // -----------------------------
 // Agregar item al carrito
 // -----------------------------
-export async function addItem(item: CartItem) {
-  const userId = item.productId; // <-- aquí usarías tu userId real en el frontend/llamado
+export async function addItem(
+  productId: string,
+  size: string | undefined,
+  color: string | undefined,
+  price: number
+) {
+  const session: Session | null = await getServerSession(authOptions);
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    console.error("User ID not found.");
+    return;
+  }
+
   let cart: Cart | null = await kv.get(`cart-${userId}`);
-
   if (!cart) {
-    cart = { userId, items: [item] };
-  } else {
-    const existingItem = cart.items.find(
-      (i) =>
-        i.productId === item.productId &&
-        i.size === item.size &&
-        i.color === item.color
-    );
+    cart = { userId, items: [] };
+  }
 
-    if (existingItem) {
-      existingItem.quantity += item.quantity;
-    } else {
-      cart.items.push(item);
-    }
+  const existingItem = cart.items.find(
+    (i) => i.productId === productId && i.size === size && i.color === color
+  );
+
+  if (existingItem) {
+    existingItem.quantity += 1;
+  } else {
+    cart.items.push({
+      productId,
+      size,
+      color,
+      quantity: 1,
+      price,
+    });
   }
 
   await kv.set(`cart-${userId}`, cart);
-  revalidatePath("/cart");
+  revalidatePath(`/product/${productId}`);
 }
 
 // -----------------------------
 // Eliminar un item completo
 // -----------------------------
-export async function delItem(item: CartItem) {
-  const userId = item.productId;
-  let cart: Cart | null = await kv.get(`cart-${userId}`);
+export async function delItem(
+  productId: string,
+  size?: string,
+  color?: string
+) {
+  const session: Session | null = await getServerSession(authOptions);
+  const userId = session?.user?.id;
+  if (!userId) return;
+
+  const cart: Cart | null = await kv.get(`cart-${userId}`);
   if (!cart) return;
 
-  cart.items = cart.items.filter(
-    (i) =>
-      !(
-        i.productId === item.productId &&
-        i.size === item.size &&
-        i.color === item.color
-      )
-  );
+  const updatedCart = {
+    userId,
+    items: cart.items.filter(
+      (item) =>
+        !(
+          item.productId === productId &&
+          item.size === size &&
+          item.color === color
+        )
+    ),
+  };
 
-  await kv.set(`cart-${userId}`, cart);
+  await kv.set(`cart-${userId}`, updatedCart);
   revalidatePath("/cart");
 }
 
 // -----------------------------
 // Eliminar una unidad de un item
 // -----------------------------
-export async function delOneItem(item: CartItem) {
-  const userId = item.productId;
-  let cart: Cart | null = await kv.get(`cart-${userId}`);
+export async function delOneItem(
+  productId: string,
+  size?: string,
+  color?: string
+) {
+  const session: Session | null = await getServerSession(authOptions);
+  const userId = session?.user?.id;
+  if (!userId) return;
+
+  const cart: Cart | null = await kv.get(`cart-${userId}`);
   if (!cart) return;
 
-  cart.items = cart.items
-    .map((i) => {
-      if (
-        i.productId === item.productId &&
-        i.size === item.size &&
-        i.color === item.color
-      ) {
-        if (i.quantity > 1) return { ...i, quantity: i.quantity - 1 };
-        return null;
-      }
-      return i;
-    })
-    .filter(Boolean) as CartItem[];
+  const updatedCart = {
+    userId,
+    items: cart.items
+      .map((item) => {
+        if (
+          item.productId === productId &&
+          item.size === size &&
+          item.color === color
+        ) {
+          if (item.quantity > 1) item.quantity -= 1;
+          else return null;
+        }
+        return item;
+      })
+      .filter(Boolean) as CartItem[],
+  };
 
-  await kv.set(`cart-${userId}`, cart);
+  await kv.set(`cart-${userId}`, updatedCart);
   revalidatePath("/cart");
 }
 
@@ -104,10 +175,7 @@ export async function delOneItem(item: CartItem) {
 // Vaciar carrito completo
 // -----------------------------
 export async function emptyCart(userId: string) {
-  let cart: Cart | null = await kv.get(`cart-${userId}`);
-  if (cart) {
-    cart.items = [];
-    await kv.set(`cart-${userId}`, cart);
-    revalidatePath("/cart");
-  }
+  if (!userId) return;
+  await kv.set(`cart-${userId}`, { userId, items: [] });
+  revalidatePath("/cart");
 }
