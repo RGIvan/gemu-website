@@ -60,6 +60,7 @@ const WishlistPage = async () => {
 
   // Mapear los productos de Prisma a EnrichedProduct
   const products: EnrichedProduct[] = productsFromDb.map((p: Videojuego) => ({
+    id: p.id, // <--- este era el que faltaba
     _id: p.id.toString(),
     productId: p.id.toString(),
     name: p.nombre,
