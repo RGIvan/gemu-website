@@ -68,7 +68,6 @@ const ProductsCart = async ({ session }: { session: Session }) => {
 
   const calculateTotalPrice = (cart: EnrichedProduct[] | undefined) => {
     if (!cart || cart.length === 0) return 0;
-
     return cart
       .reduce((total, item) => total + (item.price ?? 0) * item.quantity, 0)
       .toFixed(2);
@@ -86,17 +85,17 @@ const ProductsCart = async ({ session }: { session: Session }) => {
         {/* ✅ Renderizado del componente de productos */}
         <Products
           products={enrichedCart.map((item) => ({
-            productId: String(item.id), // ✅ requerido por EnrichedProduct
-            _id: String(item.id), // ✅ requerido por EnrichedProduct
             id: item.id,
+            productId: item.id.toString(), // BigInt a string
+            _id: item.id.toString(),
             name: item.name,
             category: item.category,
             price: item.price,
             quantity: item.quantity,
             total: item.total,
-            image: item.image.length ? item.image : ["/placeholder.png"],
-            purchased: item.purchased ?? false, // opcional, evita undefined
+            image: item.image || "/placeholder.png",
           }))}
+          session={session}
           extraClassname="cart-ord-mobile"
         />
 

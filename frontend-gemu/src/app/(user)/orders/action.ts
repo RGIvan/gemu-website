@@ -12,9 +12,6 @@ export type CartItem = {
   productId: string;
   quantity: number;
   price: number;
-  color?: string;
-  size?: string;
-  image?: string[];
 };
 
 // -----------------------------
@@ -36,13 +33,12 @@ export async function getCartItems(userId: string): Promise<EnrichedProduct[]> {
     if (!product) continue;
 
     enrichedCart.push({
-      productId: product.id.toString(),
       id: product.id,
-      _id: item.productId,
+      productId: product.id.toString(),
       name: product.nombre,
       category: product.categoria,
-      image: item.image || [],
       price: Number(product.precio),
+      image: product.imagenUrl || "",
       quantity: item.quantity,
       total: Number(product.precio) * item.quantity,
     });
@@ -57,15 +53,11 @@ export async function getCartItems(userId: string): Promise<EnrichedProduct[]> {
 export async function saveOrder(
   session: Session | null,
   cartItems: CartItem[],
-  paymentInfo: {
-    method?: string;
-    address?: string;
-    [key: string]: any;
-  }
+  paymentInfo: { method?: string; address?: string; [key: string]: any }
 ) {
-  if (!session?.user._id || !cartItems || cartItems.length === 0) return;
+  if (!session?.user.id || !cartItems || cartItems.length === 0) return;
 
-  const userId = BigInt(session.user._id);
+  const userId = BigInt(session.user.id);
 
   const newPedido = await prisma.pedidos.create({
     data: {
@@ -94,7 +86,7 @@ export async function saveOrder(
     },
   });
 
-  await emptyCart(session.user._id);
+  await emptyCart(session.user.id);
 
   return newPedido;
 }
@@ -105,55 +97,53 @@ export async function saveOrder(
 export async function getUserOrders(
   session: Session | null
 ): Promise<EnrichedOrder[]> {
-  if (!session?.user._id) return [];
+  if (!session?.user.id) return [];
 
-  const userId = BigInt(session.user._id);
+  const userId = BigInt(session.user.id);
 
   const ordersFromDB = await prisma.pedidos.findMany({
     where: { usuario_id: userId },
     include: {
       detalle_pedidos: { include: { videojuegos: true } },
       usuarios: true,
+      facturas: true,
     },
     orderBy: { fecha_pedido: "desc" },
   });
 
-  // Tipos auxiliares
-  type PedidoConDetalles = (typeof ordersFromDB)[number];
-  type DetallePedido = PedidoConDetalles["detalle_pedidos"][number];
-
-  const enrichedOrders: EnrichedOrder[] = ordersFromDB.map(
-    (o: PedidoConDetalles) => ({
-      id: o.id,
-      orderNumber: `#${o.id.toString()}`,
-      userId: o.usuario_id,
-      name: o.usuarios?.nombre ?? "N/A",
-      email: o.usuarios?.correo_electronico ?? "N/A",
-      phone: o.usuarios?.telefono ?? null,
-      address: o.usuarios?.direccion ?? null,
-      products: o.detalle_pedidos.map((item: DetallePedido) => ({
-        productId: item.producto_id.toString(),
-        id: item.producto_id,
-        _id: item.producto_id.toString(),
-        name: item.videojuegos?.nombre ?? "N/A",
-        category: item.videojuegos?.categoria ?? "N/A",
-        image: [],
-        price: Number(item.precio_unitario),
-        quantity: item.cantidad,
-        total:
-          item.subtotal !== null && item.subtotal !== undefined
-            ? Number(item.subtotal)
-            : Number(item.precio_unitario) * item.cantidad,
-      })),
-      total_price:
-        o.total_con_iva !== null && o.total_con_iva !== undefined
-          ? Number(o.total_con_iva)
-          : 0,
-      purchaseDate: o.fecha_pedido ?? new Date(),
-      expectedDeliveryDate: null,
-      status: o.estado ?? "Pendiente",
-    })
-  );
+  const enrichedOrders: EnrichedOrder[] = ordersFromDB.map((o) => ({
+    id: o.id,
+    orderNumber: o.facturas?.[0]?.numero_factura ?? `#${o.id.toString()}`,
+    userId: o.usuario_id,
+    userName: o.usuarios?.nombre ?? "N/A",
+    userEmail: o.usuarios?.correo_electronico ?? "N/A",
+    products: o.detalle_pedidos.map((item) => ({
+      id: item.videojuegos?.id || BigInt(0),
+      productId: item.videojuegos?.id.toString() || "0",
+      name: item.videojuegos?.nombre || "Desconocido",
+      category: item.videojuegos?.categoria || "N/A",
+      price: Number(item.precio_unitario),
+      image: item.videojuegos?.imagenUrl || "",
+      quantity: item.cantidad,
+      total: item.subtotal
+        ? Number(item.subtotal)
+        : Number(item.precio_unitario) * item.cantidad,
+    })),
+    totalSinIVA: Number(o.total_sin_iva ?? 0),
+    ivaTotal: Number(o.iva_total ?? 0),
+    totalConIVA: Number(o.total_con_iva ?? 0),
+    metodoPago: o.metodo_pago ?? "N/A",
+    direccionEnvio: o.direccion_envio ?? "N/A",
+    estado: o.estado ?? "Pendiente",
+    fechaPedido: o.fecha_pedido ?? new Date(),
+    fechaEntregaEstimada: undefined,
+    facturas: o.facturas.map((f) => ({
+      id: f.id,
+      numeroFactura: f.numero_factura ?? undefined,
+      fechaEmision: f.fecha_emision ?? undefined,
+      estado: f.estado ?? undefined,
+    })),
+  }));
 
   return enrichedOrders;
 }

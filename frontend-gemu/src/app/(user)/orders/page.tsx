@@ -44,7 +44,7 @@ const Orders = async ({ session }: { session: Session }) => {
           (sum, item) => sum + item.quantity,
           0
         );
-        const totalPrice = order.total_price;
+        const totalPrice = order.totalConIVA;
 
         return (
           <div
@@ -57,8 +57,8 @@ const Orders = async ({ session }: { session: Session }) => {
             >
               <h4 className="font-semibold">
                 {`${
-                  order.purchaseDate
-                    ? format(order.purchaseDate, "dd LLL yyyy")
+                  order.fechaPedido
+                    ? format(order.fechaPedido, "dd LLL yyyy")
                     : "N/A"
                 } | ${Number(totalPrice).toFixed(2)}€ | Items: ${totalItems}`}
               </h4>

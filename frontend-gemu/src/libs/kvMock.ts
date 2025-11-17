@@ -1,17 +1,25 @@
 import { VercelKV } from "@vercel/kv";
 
-export const kv =
-  process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
-    ? new VercelKV({
-        url: process.env.KV_REST_API_URL,
-        token: process.env.KV_REST_API_TOKEN,
-      })
-    : {
-        store: new Map<string, any>(),
-        async get(key: string) {
-          return this.store.get(key);
-        },
-        async set(key: string, value: any) {
-          this.store.set(key, value);
-        },
-      };
+const isLocal = !process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN;
+
+export const kv = isLocal
+  ? {
+      store: new Map<string, string>(),
+      async get(key: string) {
+        const data = this.store.get(key);
+        if (!data) return null;
+        try {
+          return JSON.parse(data);
+        } catch {
+          console.warn(`KV mock corrupto para key ${key}, devolviendo null`);
+          return null;
+        }
+      },
+      async set(key: string, value: any) {
+        this.store.set(key, JSON.stringify(value));
+      },
+    }
+  : new VercelKV({
+      url: process.env.KV_REST_API_URL!,
+      token: process.env.KV_REST_API_TOKEN!,
+    });

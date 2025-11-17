@@ -3,11 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "npx prisma generate && next build",
-    "start": "next start",
-    "postinstall": "npx prisma generate --schema=./prisma/schema.prisma",
-    "lint": "next lint"
+    "dev": "next dev", 
+	"build": "next build", 
+	"start": "next start",
+	"lint": "next lint"
   },
   "dependencies": {
     "@prisma/client": "^6.18.0",

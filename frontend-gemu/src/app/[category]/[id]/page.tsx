@@ -48,7 +48,11 @@ const AllProducts = async ({ id }: { id: string }) => {
         YOU MIGHT ALSO LIKE...
       </h2>
 
-      <Products products={randomProducts} extraClassname={"colums-mobile"} />
+      <Products
+        products={randomProducts}
+        session={session}
+        extraClassname={"colums-mobile"}
+      />
     </>
   );
 };

@@ -10,7 +10,22 @@ type VideojuegoDB = {
   categoria: string;
   precio: number;
   existencias: number;
+  imagenUrl?: string | null;
 };
+
+/**
+ * 🔹 Función helper para mapear VideojuegoDB → EnrichedProduct
+ */
+const mapToEnrichedProduct = (p: VideojuegoDB): EnrichedProduct => ({
+  id: p.id,
+  productId: p.id.toString(),
+  name: p.nombre,
+  category: p.categoria,
+  price: Number(p.precio),
+  quantity: p.existencias,
+  total: Number(p.precio) * p.existencias,
+  image: p.imagenUrl || "", // una sola imagen
+});
 
 /**
  * 🔹 Obtener todos los productos (videojuegos)
@@ -18,20 +33,7 @@ type VideojuegoDB = {
 export const getAllProducts = async (): Promise<EnrichedProduct[]> => {
   try {
     const products: VideojuegoDB[] = await prisma.videojuegos.findMany();
-
-    return products.map(
-      (p: VideojuegoDB): EnrichedProduct => ({
-        id: p.id,
-        _id: p.id.toString(),
-        name: p.nombre,
-        category: p.categoria,
-        price: p.precio,
-        quantity: p.existencias,
-        total: p.precio * p.existencias,
-        image: [],
-        productId: p.id.toString(),
-      })
-    );
+    return products.map(mapToEnrichedProduct);
   } catch (error) {
     console.error("Error getting products:", error);
     throw new Error("Failed to fetch products");
@@ -48,20 +50,7 @@ export const getCategoryProducts = async (
     const products: VideojuegoDB[] = await prisma.videojuegos.findMany({
       where: { categoria: category },
     });
-
-    return products.map(
-      (p: VideojuegoDB): EnrichedProduct => ({
-        id: p.id,
-        _id: p.id.toString(),
-        name: p.nombre,
-        category: p.categoria,
-        price: p.precio,
-        quantity: p.existencias,
-        total: p.precio * p.existencias,
-        image: [],
-        productId: p.id.toString(),
-      })
-    );
+    return products.map(mapToEnrichedProduct);
   } catch (error) {
     console.error("Error getting category products:", error);
     throw new Error("Failed to fetch category products");
@@ -77,25 +66,13 @@ export const getRandomProducts = async (
   try {
     const products: VideojuegoDB[] = await prisma.videojuegos.findMany();
 
-    // Barajar aleatoriamente
-    const shuffled = products.sort(() => 0.5 - Math.random());
-    const randomProducts = shuffled
-      .filter((p: VideojuegoDB) => p.id !== excludeProductId)
+    // Filtrar y barajar aleatoriamente
+    const shuffled = products
+      .filter((p) => p.id !== excludeProductId)
+      .sort(() => 0.5 - Math.random())
       .slice(0, 6);
 
-    return randomProducts.map(
-      (p: VideojuegoDB): EnrichedProduct => ({
-        id: p.id,
-        _id: p.id.toString(),
-        name: p.nombre,
-        category: p.categoria,
-        price: p.precio,
-        quantity: p.existencias,
-        total: p.precio * p.existencias,
-        image: [],
-        productId: p.id.toString(),
-      })
-    );
+    return shuffled.map(mapToEnrichedProduct);
   } catch (error) {
     console.error("Error getting random products:", error);
     throw new Error("Failed to fetch random products");
@@ -117,17 +94,7 @@ export const getProduct = async (
 
     if (!product) throw new Error(`Product with ID ${id} not found`);
 
-    return {
-      id: product.id,
-      _id: product.id.toString(),
-      name: product.nombre,
-      category: product.categoria,
-      price: product.precio,
-      quantity: product.existencias,
-      total: product.precio * product.existencias,
-      image: [],
-      productId: product.id.toString(),
-    };
+    return mapToEnrichedProduct(product);
   } catch (error) {
     console.error("Error getting product:", error);
     throw new Error("Failed to fetch product");

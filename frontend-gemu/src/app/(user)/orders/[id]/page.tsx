@@ -5,6 +5,8 @@ import { Suspense } from "react";
 import ProductSkeleton from "@/components/skeletons/ProductSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EnrichedOrder } from "@/types/types";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/libs/auth";
 
 export async function generateMetadata() {
   return {
@@ -28,12 +30,13 @@ const OrderDetails = async ({
   );
 };
 
-// -----------------------------
-// Transformación de datos y render
-// -----------------------------
 const OrderProducts = async ({ id }: { id: string }) => {
+  const session = await getServerSession(authOptions);
+
   // Traer todas las órdenes del usuario
-  const orders: EnrichedOrder[] = await getUserOrders(null);
+  const orders: EnrichedOrder[] = await getUserOrders(
+    session?.user?.id || null
+  );
 
   // Buscar la orden por id
   const order = orders.find((o) => o.id.toString() === id);
@@ -48,57 +51,69 @@ const OrderProducts = async ({ id }: { id: string }) => {
 
   return (
     <div className="flex flex-col-reverse flex-wrap justify-between pt-12 sm:flex-row gap-11 sm:gap-8">
+      {/* Lista de productos */}
       <div className="grow-999 basis-0">
         <Products
-          products={order.products}
+          products={order.products} // EnrichedProduct[] ya es compatible
           extraClassname={"cart-ord-mobile"}
+          session={session}
         />
       </div>
 
+      {/* Detalles del pedido */}
       <div className="h-full grow sm:basis-800 sm:sticky top-8">
         <div className="mb-10">
           <h3 className="mb-5 text-lg font-bold">Order Details</h3>
           <div className="w-full flex justify-between mt-3.5 text-sm text-999">
-            <span>Order Number</span> <span>{order.orderNumber}</span>
+            <span>Order Number</span>
+            <span>{order.orderNumber || "N/A"}</span>
           </div>
           <div className="w-full flex justify-between mt-3.5 text-sm text-999">
-            <span>Order Date</span>{" "}
+            <span>Order Date</span>
             <span>
-              {order.purchaseDate
-                ? format(order.purchaseDate, "dd LLL yyyy")
+              {order.fechaPedido
+                ? format(order.fechaPedido, "dd LLL yyyy")
                 : "N/A"}
             </span>
           </div>
         </div>
 
+        {/* Dirección de envío */}
         <div className="pt-10 mb-10 border-t border-solid border-border-primary">
           <h3 className="mb-5 text-lg font-bold">Delivery Address</h3>
           <ul>
-            <li className="mt-2.5 text-sm text-999">{order.name}</li>
-            <li className="mt-2.5 text-sm text-999">{order.address}</li>
-            {order.phone && (
-              <li className="mt-2.5 text-sm text-999">+{order.phone}</li>
+            <li className="mt-2.5 text-sm text-999">
+              {order.userName || "N/A"}
+            </li>
+            <li className="mt-2.5 text-sm text-999">
+              {order.direccionEnvio || "N/A"}
+            </li>
+            {order.userEmail && (
+              <li className="mt-2.5 text-sm text-999">{order.userEmail}</li>
             )}
-            <li className="mt-2.5 text-sm text-999">{order.email}</li>
           </ul>
         </div>
 
+        {/* Totales */}
         <div className="pt-10 border-t border-solid border-border-primary">
           <h3 className="mb-5 text-lg font-bold">Totals</h3>
           <div className="w-full flex justify-between mt-3.5 text-sm text-999">
             <span>
               {totalProducts} {productsText}
-            </span>{" "}
-            <span>{order.total_price.toFixed(2)} €</span>
+            </span>
+            <span>{order.totalConIVA?.toFixed(2) || "0.00"} €</span>
           </div>
           <div className="w-full flex justify-between mt-3.5 text-sm text-999">
-            <span>Delivery</span> <span>FREE</span>
+            <span>Delivery</span>
+            <span>FREE</span>
           </div>
           <div className="w-full flex justify-between mt-3.5 text-sm text-999">
-            <span>Total Discount</span> <span>0 €</span>
+            <span>Total Discount</span>
+            <span>0 €</span>
           </div>
           <div className="w-full flex justify-between mt-3.5 text-sm text-999">
-            <span>Total</span> <span>{order.total_price.toFixed(2)} €</span>
+            <span>Total</span>
+            <span>{order.totalConIVA?.toFixed(2) || "0.00"} €</span>
           </div>
         </div>
       </div>
@@ -106,9 +121,7 @@ const OrderProducts = async ({ id }: { id: string }) => {
   );
 };
 
-// -----------------------------
 // Skeleton mientras carga
-// -----------------------------
 const AllOrderSkeleton = ({ items }: { items: number }) => (
   <div className="flex flex-col-reverse flex-wrap justify-between pt-12 sm:flex-row gap-11 sm:gap-8">
     <div className="grow-999 basis-0">

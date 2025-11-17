@@ -18,56 +18,51 @@ export const ProductImages = ({
   name,
   selectedVariant,
 }: ProductImagesProps) => {
-  if (!selectedVariant?.images?.length) {
+  // Si no hay imagen disponible
+  if (!selectedVariant?.image) {
     return (
       <Skeleton className="w-full rounded-b-none aspect-[2/3] min-w-[250px] lg:aspect-[4/6] lg:min-w-[560px]" />
     );
   }
 
+  // Como solo hay una imagen ahora
+  const image = selectedVariant.image;
+
   return (
     <>
+      {/* Carousel para móvil */}
       <div className="flex lg:hidden">
         <Carousel
           className="w-full min-w-[250px] rounded-md overflow-hidden"
           opts={{ align: "start", loop: true }}
         >
           <CarouselContent>
-            {selectedVariant.images.map((image: string, index: number) => (
-              <CarouselItem key={index} className="pl-0">
-                <Images
-                  image={[image]}
-                  name={`${name} ${selectedVariant.color || ""} - Image ${
-                    index + 1
-                  }`}
-                  width={384}
-                  height={576}
-                  priority={index === 0}
-                  sizes="(max-width: 994px) 100vw, (max-width: 1304px) 50vw, (max-width: 1500px) 25vw, 33vw"
-                />
-              </CarouselItem>
-            ))}
+            <CarouselItem className="pl-0">
+              <Images
+                image={[image]}
+                name={`${name} - Image 1`}
+                width={384}
+                height={576}
+                priority={true}
+                sizes="(max-width: 994px) 100vw, (max-width: 1304px) 50vw, (max-width: 1500px) 25vw, 33vw"
+              />
+            </CarouselItem>
           </CarouselContent>
         </Carousel>
       </div>
 
+      {/* Grid para escritorio */}
       <div className="lg:grid hidden grid-cols-2 gap-0.5 min-w-grid-img">
-        {selectedVariant.images.map((image: string, index: number) => (
-          <div
-            key={index}
-            className="inline-block w-full max-w-2xl mx-auto overflow-hidden rounded"
-          >
-            <Images
-              image={[image]}
-              name={`${name} ${selectedVariant.color || ""} - Image ${
-                index + 1
-              }`}
-              width={850}
-              height={1275}
-              priority={true}
-              sizes="(max-width: 1024px) 100vw, (max-width: 1300px) 50vw, (max-width: 1536px) 33vw"
-            />
-          </div>
-        ))}
+        <div className="inline-block w-full max-w-2xl mx-auto overflow-hidden rounded">
+          <Images
+            image={[image]}
+            name={`${name} - Image 1`}
+            width={850}
+            height={1275}
+            priority={true}
+            sizes="(max-width: 1024px) 100vw, (max-width: 1300px) 50vw, (max-width: 1536px) 33vw"
+          />
+        </div>
       </div>
     </>
   );

@@ -9,165 +9,155 @@ import { prisma } from "@/libs/prisma";
 import { Cart, CartItem, EnrichedProduct, Videojuego } from "@/types/types";
 
 // -----------------------------
-// Obtener los items del carrito con info del producto
+// Helper: obtener carrito seguro
+// -----------------------------
+async function getCart(userId: string): Promise<Cart> {
+  if (!userId) return { userId: "unknown", items: [] };
+
+  try {
+    // Obtenemos el valor del KV de forma segura
+    const data = await kv.get(`cart-${userId}`);
+
+    // Si no hay valor, devolvemos carrito vacío
+    if (!data) return { userId, items: [] };
+
+    // Si ya es un objeto (mock), lo retornamos
+    if (typeof data === "object") {
+      return (data as Cart).items ? (data as Cart) : { userId, items: [] };
+    }
+
+    // Si es string, parseamos seguro
+    if (typeof data === "string") {
+      try {
+        const parsed = JSON.parse(data);
+        if (!parsed || !parsed.items) return { userId, items: [] };
+        return parsed as Cart;
+      } catch {
+        console.warn(
+          `KV data corrupto para cart-${userId}, creando carrito vacío.`
+        );
+        return { userId, items: [] };
+      }
+    }
+
+    // Valor inesperado
+    return { userId, items: [] };
+  } catch (err) {
+    console.error("Error leyendo el carrito desde KV:", err);
+    return { userId, items: [] };
+  }
+}
+
+// -----------------------------
+// Guardar carrito seguro
+// -----------------------------
+async function saveCart(cart: Cart) {
+  try {
+    await kv.set(`cart-${cart.userId}`, cart);
+  } catch (err) {
+    console.error("Error guardando el carrito en KV:", err);
+  }
+}
+
+// -----------------------------
+// Obtener items del carrito con info de producto
 // -----------------------------
 export async function getItems(userId: string): Promise<EnrichedProduct[]> {
-  if (!userId) {
-    console.error("User ID not found");
-    return [];
-  }
+  if (!userId) return [];
 
-  const cart: Cart | null = await kv.get(`cart-${userId}`);
-  if (!cart || !cart.items?.length) return [];
+  const cart = await getCart(userId);
+  if (!cart.items || cart.items.length === 0) return [];
 
   const productIds = cart.items.map((item) => Number(item.productId));
-
-  // Traemos los productos desde Prisma
   const productos = await prisma.videojuegos.findMany({
     where: { id: { in: productIds } },
   });
 
-  // Mapeamos el carrito con la info completa
-  const enriched: EnrichedProduct[] = cart.items.map((item) => {
+  return cart.items.map((item) => {
     const producto = productos.find(
       (p: Videojuego) => p.id === BigInt(item.productId)
     );
     return {
-      ...item,
-      productId: item.productId.toString(),
       id: producto?.id || BigInt(0),
+      productId: item.productId,
       name: producto?.nombre || "Desconocido",
       category: producto?.categoria || "N/A",
-      image: producto?.imagenUrl ? [producto.imagenUrl] : [],
       price: producto?.precio || 0,
-      total: (producto?.precio || 0) * item.quantity,
-      purchased: false,
-      _id: item.productId.toString(),
+      image: producto?.imagenUrl || "",
       quantity: item.quantity,
+      total: (producto?.precio || 0) * item.quantity,
     };
   });
-
-  return enriched;
 }
 
 // -----------------------------
-// Obtener el total de items del carrito
+// Obtener total de items
 // -----------------------------
 export async function getTotalItems(session: Session | null) {
   if (!session?.user?.id) return 0;
-
-  const cart: Cart | null = await kv.get(`cart-${session.user.id}`);
-  const total = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
-
-  return total;
+  const cart = await getCart(session.user.id);
+  return cart.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 }
 
 // -----------------------------
 // Agregar item al carrito
 // -----------------------------
-export async function addItem(
-  productId: string,
-  size: string | undefined,
-  color: string | undefined,
-  price: number
-) {
-  const session: Session | null = await getServerSession(authOptions);
+export async function addItem(productId: string, price?: number) {
+  const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
+  if (!userId) return;
 
-  if (!userId) {
-    console.error("User ID not found.");
-    return;
-  }
+  const cart = await getCart(userId);
 
-  let cart: Cart | null = await kv.get(`cart-${userId}`);
-  if (!cart) {
-    cart = { userId, items: [] };
-  }
+  const existingItem = cart.items.find((i) => i.productId === productId);
 
-  const existingItem = cart.items.find(
-    (i) => i.productId === productId && i.size === size && i.color === color
-  );
+  if (existingItem) existingItem.quantity += 1;
+  else cart.items.push({ productId, quantity: 1, price: price || 0 });
 
-  if (existingItem) {
-    existingItem.quantity += 1;
-  } else {
-    cart.items.push({
-      productId,
-      size,
-      color,
-      quantity: 1,
-      price,
-    });
-  }
-
-  await kv.set(`cart-${userId}`, cart);
+  await saveCart(cart);
   revalidatePath(`/product/${productId}`);
 }
 
 // -----------------------------
-// Eliminar un item completo
+// Eliminar item completo
 // -----------------------------
-export async function delItem(
-  productId: string,
-  size?: string,
-  color?: string
-) {
-  const session: Session | null = await getServerSession(authOptions);
+export async function delItem(productId: string) {
+  const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
   if (!userId) return;
 
-  const cart: Cart | null = await kv.get(`cart-${userId}`);
-  if (!cart) return;
+  const cart = await getCart(userId);
+  cart.items = cart.items.filter((item) => !(item.productId === productId));
 
-  const updatedCart = {
-    userId,
-    items: cart.items.filter(
-      (item) =>
-        !(
-          item.productId === productId &&
-          item.size === size &&
-          item.color === color
-        )
-    ),
-  };
-
-  await kv.set(`cart-${userId}`, updatedCart);
+  await saveCart(cart);
   revalidatePath("/cart");
 }
 
 // -----------------------------
-// Eliminar una unidad de un item
+// Eliminar una unidad
 // -----------------------------
 export async function delOneItem(
   productId: string,
   size?: string,
   color?: string
 ) {
-  const session: Session | null = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
   if (!userId) return;
 
-  const cart: Cart | null = await kv.get(`cart-${userId}`);
-  if (!cart) return;
+  const cart = await getCart(userId);
 
-  const updatedCart = {
-    userId,
-    items: cart.items
-      .map((item) => {
-        if (
-          item.productId === productId &&
-          item.size === size &&
-          item.color === color
-        ) {
-          if (item.quantity > 1) item.quantity -= 1;
-          else return null;
-        }
-        return item;
-      })
-      .filter(Boolean) as CartItem[],
-  };
+  cart.items = cart.items
+    .map((item) => {
+      if (item.productId === productId) {
+        if (item.quantity > 1) item.quantity -= 1;
+        else return null;
+      }
+      return item;
+    })
+    .filter(Boolean) as CartItem[];
 
-  await kv.set(`cart-${userId}`, updatedCart);
+  await saveCart(cart);
   revalidatePath("/cart");
 }
 
@@ -176,6 +166,8 @@ export async function delOneItem(
 // -----------------------------
 export async function emptyCart(userId: string) {
   if (!userId) return;
-  await kv.set(`cart-${userId}`, { userId, items: [] });
+
+  const cart: Cart = { userId, items: [] };
+  await saveCart(cart);
   revalidatePath("/cart");
 }

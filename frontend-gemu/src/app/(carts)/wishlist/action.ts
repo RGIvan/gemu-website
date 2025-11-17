@@ -1,6 +1,6 @@
 "use server";
 
-import { kv } from "@vercel/kv";
+import { prisma } from "@/libs/prisma";
 
 // Tipo de favoritos
 export type Favorites = {
@@ -12,8 +12,22 @@ export type Favorites = {
 // Obtener favoritos de un usuario
 // -----------------------------
 export async function getFavorites(userId: string): Promise<Favorites> {
-  const data = await kv.get<Favorites>(`favorites-${userId}`);
-  return data ?? { userId, favorites: [] };
+  if (!userId) return { userId: "unknown", favorites: [] };
+
+  try {
+    const favs = await prisma.favoritos.findMany({
+      where: { usuario_id: BigInt(userId) },
+      select: { videojuego_id: true },
+    });
+
+    return {
+      userId,
+      favorites: favs.map((f) => f.videojuego_id.toString()),
+    };
+  } catch (err) {
+    console.error("Error fetching favorites:", err);
+    return { userId, favorites: [] };
+  }
 }
 
 // -----------------------------
@@ -27,21 +41,53 @@ export async function getTotalWishlist(userId: string): Promise<number> {
 // -----------------------------
 // Añadir producto a favoritos
 // -----------------------------
-export async function addFavorite(userId: string, productId: string) {
-  const favs = await getFavorites(userId);
-  if (!favs.favorites.includes(productId)) {
-    favs.favorites.push(productId);
-    await kv.set(`favorites-${userId}`, favs);
+export async function addFavorite(
+  userId: string,
+  productId: string
+): Promise<Favorites> {
+  if (!userId || !productId) return { userId, favorites: [] };
+
+  try {
+    // Evitar duplicados usando upsert
+    await prisma.favoritos.upsert({
+      where: {
+        usuario_id_videojuego_id: {
+          usuario_id: BigInt(userId),
+          videojuego_id: BigInt(productId),
+        },
+      },
+      update: {}, // no hacemos nada si ya existe
+      create: {
+        usuario_id: BigInt(userId),
+        videojuego_id: BigInt(productId),
+      },
+    });
+  } catch (err) {
+    console.error("Error adding favorite:", err);
   }
-  return favs;
+
+  return getFavorites(userId);
 }
 
 // -----------------------------
 // Eliminar producto de favoritos
 // -----------------------------
-export async function removeFavorite(userId: string, productId: string) {
-  const favs = await getFavorites(userId);
-  favs.favorites = favs.favorites.filter((id) => id !== productId);
-  await kv.set(`favorites-${userId}`, favs);
-  return favs;
+export async function removeFavorite(
+  userId: string,
+  productId: string
+): Promise<Favorites> {
+  if (!userId || !productId) return { userId, favorites: [] };
+
+  try {
+    await prisma.favoritos.deleteMany({
+      where: {
+        usuario_id: BigInt(userId),
+        videojuego_id: BigInt(productId),
+      },
+    });
+  } catch (err) {
+    console.error("Error removing favorite:", err);
+  }
+
+  return getFavorites(userId);
 }

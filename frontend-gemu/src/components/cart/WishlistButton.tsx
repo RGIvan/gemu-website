@@ -3,11 +3,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Session } from "next-auth";
 import { toast } from "sonner";
-import {
-  getFavorites,
-  addFavorite,
-  removeFavorite,
-} from "@/app/(carts)/wishlist/action";
 
 interface WishlistButtonProps {
   session: Session | null;
@@ -17,18 +12,24 @@ interface WishlistButtonProps {
 const WishlistButton = ({ session, productId }: WishlistButtonProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Leer favoritos desde kv cuando el componente se monta
+  // Leer favoritos desde API cuando el componente se monta
   useEffect(() => {
     const fetchFavorites = async () => {
-      if (!session?.user?.id) return;
-      const favs = await getFavorites(session.user.id);
-      setIsFavorite(favs.favorites.includes(productId));
+      if (!session?.user?._id) return;
+      try {
+        const res = await fetch(`/api/favorites?userId=${session.user._id}`);
+        if (!res.ok) throw new Error("Failed to fetch favorites");
+        const data: { favorites: string[] } = await res.json();
+        setIsFavorite(data.favorites.includes(productId));
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+      }
     };
     fetchFavorites();
   }, [session, productId]);
 
   const handleFavorites = useCallback(async () => {
-    if (!session?.user?.id) {
+    if (!session?.user?._id) {
       toast.warning(
         "Debes registrarte para poder añadir productos a favoritos."
       );
@@ -36,13 +37,23 @@ const WishlistButton = ({ session, productId }: WishlistButtonProps) => {
     }
 
     try {
-      if (isFavorite) {
-        await removeFavorite(session.user.id, productId);
-        setIsFavorite(false);
-      } else {
-        await addFavorite(session.user.id, productId);
-        setIsFavorite(true);
-      }
+      const method = isFavorite ? "DELETE" : "POST";
+      const res = await fetch("/api/favorites", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: session.user._id,
+          productId,
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to update favorites");
+
+      setIsFavorite(!isFavorite);
+      toast.success(
+        isFavorite
+          ? "Producto eliminado de favoritos"
+          : "Producto añadido a favoritos"
+      );
     } catch (error) {
       console.error(error);
       toast.error("Ocurrió un error al actualizar tus favoritos.");

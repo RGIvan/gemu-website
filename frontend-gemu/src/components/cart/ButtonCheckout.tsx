@@ -20,9 +20,6 @@ const ButtonCheckout = ({ cartWithProducts, session }: ButtonCheckoutProps) => {
       cartWithProducts.map((cartItem: CartItemDocument) => ({
         productId: cartItem.productId,
         quantity: cartItem.quantity,
-        variantId: cartItem.variantId,
-        size: cartItem.size,
-        color: cartItem.color,
       })),
     [cartWithProducts]
   );

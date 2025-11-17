@@ -1,7 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
-
 
 datasource db {
   provider = "postgresql"
@@ -44,14 +44,15 @@ model pedidos {
 }
 
 model usuarios {
-  id                 BigInt    @id @default(autoincrement())
-  nombre             String    @db.VarChar(255)
-  apellidos          String    @db.VarChar(255)
-  direccion          String?   @db.VarChar(255)
-  telefono           String?   @db.VarChar(255)
-  correo_electronico String    @unique @db.VarChar(255)
-  password           String    @db.VarChar(255)
-  username           String    @db.VarChar(255)
+  id                 BigInt      @id @default(autoincrement())
+  nombre             String      @db.VarChar(255)
+  apellidos          String      @db.VarChar(255)
+  direccion          String?     @db.VarChar(255)
+  telefono           String?     @db.VarChar(255)
+  correo_electronico String      @unique @db.VarChar(255)
+  password           String      @db.VarChar(255)
+  username           String      @db.VarChar(255)
+  favoritos          favoritos[]
   pedidos            pedidos[]
 }
 
@@ -67,4 +68,16 @@ model videojuegos {
   plataforma       String            @db.VarChar(50)
   imagenUrl        String?           @db.VarChar(255)
   detalle_pedidos  detalle_pedidos[]
+  favoritos        favoritos[]
+}
+
+model favoritos {
+  id            BigInt      @id @default(autoincrement())
+  usuario_id    BigInt
+  videojuego_id BigInt
+  created_at    DateTime?   @default(now()) @db.Timestamp(6)
+  usuarios      usuarios    @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  videojuegos   videojuegos @relation(fields: [videojuego_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([usuario_id, videojuego_id])
 }

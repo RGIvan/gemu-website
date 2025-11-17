@@ -18,39 +18,43 @@ const cloudinaryLoader: ImageLoader = ({ src, width, quality }) => {
   }/image/upload/${params.join(",")}/${normalizeSrc(src)}`;
 };
 
+interface ImagesProps {
+  image: string[]; // array de URLs
+  name: string;
+  width: number;
+  height: number;
+  priority?: boolean;
+  sizes: string;
+}
+
 export const Images = ({
   image,
   name,
   width,
   height,
-  priority,
+  priority = false,
   sizes,
-}: {
-  image: string[]; // <-- cambio aquí
-  name: string;
-  width: number;
-  height: number;
-  priority: boolean;
-  sizes: string;
-}) => {
+}: ImagesProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  const handleImageLoadComplete = () => {
-    setImageLoaded(true);
-  };
+  const handleImageLoadComplete = () => setImageLoaded(true);
+
+  // Tomamos la primera URL válida o fallback
+  const imageUrl =
+    image[0] && image[0].trim() !== "" ? image[0] : "/placeholder.png";
 
   return (
     <div className={!imageLoaded ? "relative" : ""}>
       <Image
         loader={cloudinaryLoader}
+        src={imageUrl}
+        alt={name}
         width={width}
         height={height}
-        src={image[0] || ""} // <-- fallback seguro
-        alt={name}
         priority={priority}
+        sizes={sizes}
         className="w-full max-w-img aspect-[2/3] brightness-90"
         onLoad={handleImageLoadComplete}
-        sizes={sizes}
       />
       {!imageLoaded && (
         <div className="absolute top-0 right-0 w-full aspect-[2/3] bg-black">

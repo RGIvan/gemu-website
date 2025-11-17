@@ -1,12 +1,12 @@
+// src/app/(carts)/wishlist/page.tsx
 import { Products } from "@/components/products/Products";
 import Link from "next/link";
-import { getFavorites } from "./action";
 import { prisma } from "@/libs/prisma";
 import { Session, getServerSession } from "next-auth";
 import { authOptions } from "@/libs/auth";
 import { Suspense } from "react";
 import { Loader } from "@/components/common/Loader";
-import type { EnrichedProduct, Videojuego } from "@/types/types";
+import type { EnrichedProduct } from "@/types/types";
 
 export async function generateMetadata() {
   return {
@@ -18,7 +18,8 @@ export async function generateMetadata() {
 const WishlistPage = async () => {
   const session: Session | null = await getServerSession(authOptions);
 
-  if (!session?.user) {
+  // ✅ Si el usuario no está logueado
+  if (!session?.user?.id) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-91px)] gap-2 px-4">
         <h1 className="mb-6 text-4xl font-bold">YOUR WISHLIST IS EMPTY</h1>
@@ -35,15 +36,17 @@ const WishlistPage = async () => {
     );
   }
 
-  const userId = session.user._id;
-  const favorites = await getFavorites(userId);
+  // ✅ Convertimos ID del usuario a BigInt
+  const userId = BigInt(session.user.id);
 
-  // Traemos los productos favoritos desde Prisma
-  const productsFromDb = await prisma.videojuegos.findMany({
-    where: { id: { in: favorites.favorites.map(BigInt) } },
+  // ✅ Traer los favoritos con join a videojuegos
+  const favoritesWithProducts = await prisma.favoritos.findMany({
+    where: { usuario_id: userId },
+    include: { videojuegos: true },
   });
 
-  if (productsFromDb.length === 0) {
+  // ✅ Si no hay favoritos
+  if (favoritesWithProducts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-91px)] gap-2 px-4">
         <h1 className="mb-6 text-4xl font-bold">YOUR WISHLIST IS EMPTY</h1>
@@ -58,21 +61,19 @@ const WishlistPage = async () => {
     );
   }
 
-  // Mapear los productos de Prisma a EnrichedProduct
-  const products: EnrichedProduct[] = productsFromDb.map((p: Videojuego) => ({
-    id: p.id, // <--- este era el que faltaba
-    _id: p.id.toString(),
-    productId: p.id.toString(),
-    name: p.nombre,
-    category: p.categoria,
-    price: p.precio,
-    quantity: 1,
-    total: p.precio,
-    purchased: false,
-    image: p.imagenUrl ? [p.imagenUrl] : [],
-    size: undefined,
-    color: undefined,
-  }));
+  // ✅ Mapear los productos a EnrichedProduct
+  const products: EnrichedProduct[] = favoritesWithProducts.map(
+    ({ videojuegos }) => ({
+      id: videojuegos.id,
+      productId: videojuegos.id.toString(),
+      name: videojuegos.nombre,
+      category: videojuegos.categoria,
+      price: videojuegos.precio,
+      image: videojuegos.imagenUrl || "", // solo 1 imagen
+      quantity: 1, // por defecto 1
+      total: videojuegos.precio, // quantity * price
+    })
+  );
 
   return (
     <Suspense
@@ -84,7 +85,11 @@ const WishlistPage = async () => {
     >
       <div className="pt-12">
         <h2 className="mb-5 text-xl font-bold sm:text-2xl">YOUR WISHLIST</h2>
-        <Products products={products} extraClassname="colums-mobile" />
+        <Products
+          products={products}
+          session={session}
+          extraClassname="colums-mobile"
+        />
       </div>
     </Suspense>
   );

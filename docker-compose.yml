@@ -93,6 +93,8 @@ services:
     environment:
       NODE_ENV: development
       DATABASE_URL: ${DATABASE_URL} # Prisma
+      NEXT_PUBLIC_API_GATEWAY_URL: "http://gateway:8080/api"
+      NEXT_PUBLIC_USERS_SERVICE_URL: "http://gateway:8080/api/usuarios"
     command: npm run dev -- --port 3000 --hostname 0.0.0.0
     depends_on:
       - db
