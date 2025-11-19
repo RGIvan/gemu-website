@@ -1,9 +1,21 @@
 FROM eclipse-temurin:21-jdk
 
 WORKDIR /workspace
+
+# Copiar todo
 COPY . .
+
+# Dar permisos
 RUN chmod +x mvnw
+
+# Compilar microservicio-gateway
+RUN ./mvnw clean install -DskipTests -pl microservicios/microservicio-gateway
+
+# Compilar microservicio-gateway
 RUN ./mvnw clean package -DskipTests -pl microservicios/microservicio-gateway -am
 
-WORKDIR /workspace/microservicios/microservicio-gateway
-CMD ["java", "-jar", "target/microservicio-gateway-1.0.0.jar"]
+# Verificar que el JAR existe (para debugging)
+RUN ls -la microservicios/microservicio-gateway/target/
+
+# Ejecutar desde la ruta absoluta
+CMD ["java", "-jar", "/workspace/microservicios/microservicio-gateway/target/microservicio-gateway-1.0.0.jar"]
