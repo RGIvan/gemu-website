@@ -1,0 +1,10 @@
+FROM eclipse-temurin:21-jdk
+
+WORKDIR /workspace
+COPY . .
+RUN chmod +x mvnw
+RUN ./mvnw clean install -DskipTests -pl microservicios/microservicio-comun
+RUN ./mvnw clean package -DskipTests -pl microservicios/microservicio-facturas -am
+RUN ls -la microservicios/microservicio-facturas/target/
+
+CMD ["java", "-jar", "/workspace/microservicios/microservicio-facturas/target/microservicio-facturas-1.0.0.jar"]

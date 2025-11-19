@@ -1,0 +1,10 @@
+FROM eclipse-temurin:21-jdk
+
+WORKDIR /workspace
+COPY . .
+RUN chmod +x mvnw
+RUN ./mvnw clean install -DskipTests -pl microservicios/microservicio-comun
+RUN ./mvnw clean package -DskipTests -pl microservicios/microservicio-pedidos -am
+RUN ls -la microservicios/microservicio-pedidos/target/
+
+CMD ["java", "-jar", "/workspace/microservicios/microservicio-pedidos/target/microservicio-pedidos-1.0.0.jar"]
