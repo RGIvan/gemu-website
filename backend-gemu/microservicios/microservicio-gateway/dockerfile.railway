@@ -1,0 +1,9 @@
+FROM eclipse-temurin:21-jdk
+
+WORKDIR /workspace
+COPY . .
+RUN chmod +x mvnw
+RUN ./mvnw clean package -DskipTests -pl microservicios/microservicio-gateway -am
+
+WORKDIR /workspace/microservicios/microservicio-gateway
+CMD ["java", "-jar", "target/microservicio-gateway-1.0.0.jar"]
