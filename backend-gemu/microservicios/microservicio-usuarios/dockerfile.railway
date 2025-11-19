@@ -8,10 +8,14 @@ COPY . .
 # Dar permisos
 RUN chmod +x mvnw
 
-# Compilar
+# Compilar microservicio-comun
 RUN ./mvnw clean install -DskipTests -pl microservicios/microservicio-comun
+
+# Compilar microservicio-usuarios
 RUN ./mvnw clean package -DskipTests -pl microservicios/microservicio-usuarios -am
 
-# Ejecutar
-WORKDIR /workspace/microservicios/microservicio-usuarios
-CMD ["java", "-jar", "target/microservicio-usuarios-1.0.0.jar"]
+# Verificar que el JAR existe (para debugging)
+RUN ls -la microservicios/microservicio-usuarios/target/
+
+# Ejecutar desde la ruta absoluta
+CMD ["java", "-jar", "/workspace/microservicios/microservicio-usuarios/target/microservicio-usuarios-1.0.0.jar"]
