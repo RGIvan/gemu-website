@@ -1,0 +1,17 @@
+FROM eclipse-temurin:21-jdk
+
+WORKDIR /workspace
+
+# Copiar todo
+COPY . .
+
+# Dar permisos
+RUN chmod +x mvnw
+
+# Compilar
+RUN ./mvnw clean install -DskipTests -pl microservicios/microservicio-comun
+RUN ./mvnw clean package -DskipTests -pl microservicios/microservicio-usuarios -am
+
+# Ejecutar
+WORKDIR /workspace/microservicios/microservicio-usuarios
+CMD ["java", "-jar", "target/microservicio-usuarios-1.0.0.jar"]
