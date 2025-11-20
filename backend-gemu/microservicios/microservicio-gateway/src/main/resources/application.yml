@@ -1,0 +1,33 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: usuarios
+          uri: ${USUARIOS_SERVICE_URL}
+          predicates:
+            - Path=/usuarios/**
+
+        - id: videojuegos
+          uri: ${VIDEOJUEGOS_SERVICE_URL}
+          predicates:
+            - Path=/videojuegos/**
+
+        - id: pedidos
+          uri: ${PEDIDOS_SERVICE_URL}
+          predicates:
+            - Path=/pedidos/**
+
+        - id: detalles
+          uri: ${PEDIDOS_SERVICE_URL}
+          predicates:
+            - Path=/detalles/**
+
+        - id: facturas
+          uri: ${FACTURAS_SERVICE_URL}
+          predicates:
+            - Path=/facturas/**
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG
