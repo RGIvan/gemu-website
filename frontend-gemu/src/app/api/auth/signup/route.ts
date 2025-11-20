@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
-const GATEWAY_BASE_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL!;
+const GATEWAY_BASE_URL = process.env.NEXT_PUBLIC_API_URL!;
 if (!GATEWAY_BASE_URL) {
-  throw new Error("La variable NEXT_PUBLIC_API_GATEWAY_URL no está definida");
+  throw new Error("La variable NEXT_PUBLIC_API_URL no está definida");
 }
 
 export async function POST(request: Request) {
