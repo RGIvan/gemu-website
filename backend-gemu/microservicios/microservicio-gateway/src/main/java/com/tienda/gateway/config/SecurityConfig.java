@@ -15,10 +15,24 @@ public class SecurityConfig {
         http.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(
-                                "/api/usuarios/login",
+                                // Autenticación
+                                "/usuarios/crear",
+                                "/usuarios/login",
                                 "/api/usuarios/crear",
-                                "/api/auth/**"
+                                "/api/usuarios/login",
+
+                                // Catálogo público
+                                "/videojuegos/**",
+                                "/api/videojuegos/**",
+
+                                // Si tienes búsqueda o categorías
+                                "/buscar/**",
+                                "/categorias/**",
+                                "/api/buscar/**",
+                                "/api/categorias/**"
                         ).permitAll()
+
+                        // Todo lo demás requiere JWT
                         .anyExchange().authenticated()
                 )
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
