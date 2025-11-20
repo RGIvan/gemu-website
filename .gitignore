@@ -60,3 +60,5 @@ Thumbs.db
 *.env
 application-*.yml
 application-*.properties
+frontend-gemu/prisma/migrations/migration_lock.toml
+frontend-gemu/prisma/migrations/20251119162340_init/migration.sql
