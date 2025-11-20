@@ -20,6 +20,7 @@ public class SecurityConfig {
                                 "/usuarios/login",
                                 "/api/usuarios/crear",
                                 "/api/usuarios/login",
+                                "/api/auth/**",
 
                                 // Catálogo público
                                 "/videojuegos/**",
