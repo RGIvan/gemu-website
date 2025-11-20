@@ -19,11 +19,22 @@ public class JwtAuthenticationFilter implements GlobalFilter {
     }
 
     private static final List<String> PUBLIC_PATHS = List.of(
-            "/usuarios/login",
+            // Autenticación
             "/usuarios/crear",
-            "/api/auth/",
+            "/usuarios/login",
+            "/api/usuarios/crear",
             "/api/usuarios/login",
-            "/api/usuarios/crear"
+            "/api/auth/**",
+
+            // Catálogo público
+            "/videojuegos/**",
+            "/api/videojuegos/**",
+
+            // Si tienes búsqueda o categorías
+            "/buscar/**",
+            "/categorias/**",
+            "/api/buscar/**",
+            "/api/categorias/**"
     );
 
     @Override
