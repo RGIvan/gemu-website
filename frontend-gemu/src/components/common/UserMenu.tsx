@@ -27,7 +27,7 @@ export function UserMenu({ fastSession }: { fastSession: Session }) {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-40">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel>Mi cuenta</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem>
@@ -49,7 +49,7 @@ export function UserMenu({ fastSession }: { fastSession: Session }) {
                       fill="currentColor"
                     ></path>
                   </svg>
-                  <span>Edit profile</span>
+                  <span>Editar perfil</span>
                 </button>
               </DialogTrigger>
             </DropdownMenuItem>
@@ -71,7 +71,7 @@ export function UserMenu({ fastSession }: { fastSession: Session }) {
                     fill="currentColor"
                   ></path>
                 </svg>
-                <span>View orders</span>
+                <span>Ver pedidos</span>
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>

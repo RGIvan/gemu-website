@@ -14,7 +14,7 @@ const ButtonCheckout = dynamic(
     ssr: false,
     loading: () => (
       <p className="flex items-center justify-center w-full h-full text-sm">
-        Continue
+        Continuar
       </p>
     ),
   }
@@ -46,9 +46,9 @@ const CartPage = async () => {
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-91px)] gap-2 px-4">
-      <h1 className="mb-6 text-4xl font-bold">YOUR CART IS EMPTY</h1>
+      <h1 className="mb-6 text-4xl font-bold">TU CARRITO ESTÁ VACÍO</h1>
       <p className="mb-4 text-lg">
-        Not registered? You must be logged in to save your products in the cart.
+        Debes iniciar sesión para ver los productos en tu carrito.
       </p>
       <Link
         className="flex font-medium items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
@@ -78,9 +78,7 @@ const ProductsCart = async ({ session }: { session: Session }) => {
   if (enrichedCart && enrichedCart.length > 0) {
     return (
       <div className="pt-12">
-        <h2 className="mb-5 text-xl font-bold sm:text-2xl">
-          YOUR SHOPPING CART
-        </h2>
+        <h2 className="mb-5 text-xl font-bold sm:text-2xl">TU CARRITO</h2>
 
         {/* ✅ Renderizado del componente de productos */}
         <Products
@@ -119,15 +117,15 @@ const ProductsCart = async ({ session }: { session: Session }) => {
   // ✅ Si el carrito está vacío
   return (
     <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-91px)] gap-2 px-4">
-      <h1 className="mb-6 text-4xl font-bold">YOUR CART IS EMPTY</h1>
+      <h1 className="mb-6 text-4xl font-bold">TU CARRITO ESTÁ VACÍO</h1>
       <p className="mb-4 text-lg">
-        When you have added something to your cart, it will appear here.
+        Parece que no has añadido ningún producto a tu carrito aún.
       </p>
       <Link
         className="flex font-medium items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
         href="/"
       >
-        Start Shopping
+        Ir a la tienda
       </Link>
     </div>
   );

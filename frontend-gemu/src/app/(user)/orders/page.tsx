@@ -5,7 +5,6 @@ import { Suspense } from "react";
 import { Loader } from "@/components/common/Loader";
 import { Session, getServerSession } from "next-auth";
 import { authOptions } from "@/libs/auth";
-import { EnrichedOrder } from "@/types/types";
 
 export async function generateMetadata() {
   return {
@@ -22,16 +21,16 @@ const Orders = async ({ session }: { session: Session }) => {
   if (!orders || orders.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-[80vh] gap-2 px-4">
-        <h2 className="mb-6 text-4xl font-bold">NO ORDERS YET</h2>
+        <h2 className="mb-6 text-4xl font-bold">AÚN NO HAY PEDIDOS</h2>
         <p className="mb-4 text-lg">
-          To create an order, add a product to the cart and complete the
-          purchase!
+          Para crear un pedido, añade productos a tu carrito y finaliza la
+          compra.
         </p>
         <Link
           href="/"
           className="flex font-medium items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"
         >
-          Start
+          Comenzar
         </Link>
       </div>
     );
@@ -62,7 +61,7 @@ const Orders = async ({ session }: { session: Session }) => {
                     : "N/A"
                 } | ${Number(totalPrice).toFixed(2)}€ | Items: ${totalItems}`}
               </h4>
-              <p className="text-sm">Order ID: {order.id.toString()}</p>
+              <p className="text-sm">ID Pedido: {order.id.toString()}</p>
             </Link>
           </div>
         );
@@ -93,8 +92,10 @@ const UserOrders = async () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-91px)] gap-2 px-4">
-      <h2 className="mb-6 text-4xl font-bold">NO ORDERS YET</h2>
-      <p className="mb-4 text-lg">To view your orders you must be logged in.</p>
+      <h2 className="mb-6 text-4xl font-bold">AÚN NO HAY PEDIDOS</h2>
+      <p className="mb-4 text-lg">
+        Debes iniciar sesión para ver los pedidos de tu cuenta.
+      </p>
       <Link
         href="/login"
         className="flex font-medium items-center bg-[#0C0C0C] justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-[10px] rounded-md border border-solid border-[#2E2E2E] transition-all hover:bg-[#1F1F1F] hover:border-[#454545]"

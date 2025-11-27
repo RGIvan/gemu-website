@@ -12,36 +12,15 @@ export const Footer = () => {
       <nav className="flex flex-wrap justify-around gap-5 mx-auto max-w-screen-2xl">
         <div className="flex flex-col items-center justify-center w-full max-w-xs gap-5">
           <div className="flex gap-3.5">
-            <Link
-              href="https://portfoliomarcos.com/"
-              target="_blank"
-              title="Portfolio of Marcos"
-            >
-              <svg
-                data-testid="geist-icon"
-                height="24"
-                strokeLinejoin="round"
-                viewBox="0 0 16 16"
-                width="24"
-                style={{ color: "currentColor" }}
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M8 1L16 15H0L8 1Z"
-                  fill="currentColor"
-                ></path>
-              </svg>
-            </Link>
             <span className="flex items-center text-sm text-[#A1A1A1]">
-              © 2023
+              © 2025
             </span>
           </div>
           <div className="flex gap-3.5">
             <Link
-              href="https://www.linkedin.com/in/marcospenelascamara/"
+              href="https://www.linkedin.com/in/iv%C3%A1n-roales-garc%C3%ADa-293280189/"
               target="_blank"
-              title="LindedIn of Marcos"
+              title="LinkedIn"
             >
               <svg
                 data-testid="geist-icon"
@@ -61,9 +40,9 @@ export const Footer = () => {
               </svg>
             </Link>
             <Link
-              href="https://github.com/MarcosCamara01"
+              href="https://github.com/RGIvan"
               target="_blank"
-              title="GitHub of Marcos"
+              title="GitHub"
             >
               <svg
                 data-testid="geist-icon"
@@ -88,80 +67,14 @@ export const Footer = () => {
                 </defs>
               </svg>
             </Link>
-            <Link
-              href="https://medium.com/@marcoscamara"
-              target="_blank"
-              title="Medium of Marcos"
-            >
-              <svg
-                stroke="currentColor"
-                fill="currentColor"
-                strokeWidth="0"
-                viewBox="0 0 640 512"
-                height="24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M180.5,74.262C80.813,74.262,0,155.633,0,256S80.819,437.738,180.5,437.738,361,356.373,361,256,280.191,74.262,180.5,74.262Zm288.25,10.646c-49.845,0-90.245,76.619-90.245,171.095s40.406,171.1,90.251,171.1,90.251-76.619,90.251-171.1H559C559,161.5,518.6,84.908,468.752,84.908Zm139.506,17.821c-17.526,0-31.735,68.628-31.735,153.274s14.2,153.274,31.735,153.274S640,340.631,640,256C640,171.351,625.785,102.729,608.258,102.729Z"></path>
-              </svg>
-            </Link>
           </div>
         </div>
         <div className="w-full max-w-xs">
-          <h2 className="my-3 text-sm font-medium">Products</h2>
+          <h2 className="my-3 text-sm font-medium">Sobre mí</h2>
           <ul className="grid grid-cols-2">
             <li className={liStyles}>
               <Link
-                href={`${process.env.NEXT_PUBLIC_APP_URL}/t-shirts`}
-                className={linkStyles}
-              >
-                T-shirts
-              </Link>
-            </li>
-            <li className={liStyles}>
-              <Link
-                href={`${process.env.NEXT_PUBLIC_APP_URL}/pants`}
-                className={linkStyles}
-              >
-                Pants
-              </Link>
-            </li>
-            <li className={liStyles}>
-              <Link
-                href={`${process.env.NEXT_PUBLIC_APP_URL}/sweatshirts`}
-                className={linkStyles}
-              >
-                Sweatshirts
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div className="w-full max-w-xs">
-          <h2 className="my-3 text-sm font-medium">Assistance</h2>
-          <ul className="grid grid-cols-2">
-            <li className={liStyles}>
-              <Link href="#" className={linkStyles}>
-                Size guide
-              </Link>
-            </li>
-            <li className={liStyles}>
-              <Link href="#" className={linkStyles}>
-                Delivery
-              </Link>
-            </li>
-            <li className={liStyles}>
-              <Link href="#" className={linkStyles}>
-                Returns and refunds
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div className="w-full max-w-xs">
-          <h2 className="my-3 text-sm font-medium">About Marcos</h2>
-          <ul className="grid grid-cols-2">
-            <li className={liStyles}>
-              <Link
-                href="https://portfoliomarcos.com/"
+                href="https://ivanrgdev.com"
                 target="_blank"
                 className={linkStyles}
               >
@@ -170,7 +83,7 @@ export const Footer = () => {
             </li>
             <li className={liStyles}>
               <Link
-                href="https://www.linkedin.com/in/marcospenelascamara/"
+                href="https://www.linkedin.com/in/iv%C3%A1n-roales-garc%C3%ADa-293280189/"
                 target="_blank"
                 className={linkStyles}
               >
@@ -179,20 +92,11 @@ export const Footer = () => {
             </li>
             <li className={liStyles}>
               <Link
-                href="https://github.com/MarcosCamara01"
+                href="https://github.com/RGIvan"
                 target="_blank"
                 className={linkStyles}
               >
                 GitHub
-              </Link>
-            </li>
-            <li className={liStyles}>
-              <Link
-                href="https://medium.com/@marcoscamara"
-                target="_blank"
-                className={linkStyles}
-              >
-                Medium
               </Link>
             </li>
           </ul>

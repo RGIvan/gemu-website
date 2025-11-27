@@ -41,7 +41,7 @@ const OrderProducts = async ({ id }: { id: string }) => {
   // Buscar la orden por id
   const order = orders.find((o) => o.id.toString() === id);
 
-  if (!order) return <p>Order not found.</p>;
+  if (!order) return <p>Pedido no encontrado.</p>;
 
   const totalProducts = order.products.reduce(
     (total, item) => total + item.quantity,
@@ -63,13 +63,13 @@ const OrderProducts = async ({ id }: { id: string }) => {
       {/* Detalles del pedido */}
       <div className="h-full grow sm:basis-800 sm:sticky top-8">
         <div className="mb-10">
-          <h3 className="mb-5 text-lg font-bold">Order Details</h3>
+          <h3 className="mb-5 text-lg font-bold">Detalles del pedido</h3>
           <div className="w-full flex justify-between mt-3.5 text-sm text-999">
-            <span>Order Number</span>
+            <span>Número de pedido</span>
             <span>{order.orderNumber || "N/A"}</span>
           </div>
           <div className="w-full flex justify-between mt-3.5 text-sm text-999">
-            <span>Order Date</span>
+            <span>Fecha del pedido</span>
             <span>
               {order.fechaPedido
                 ? format(order.fechaPedido, "dd LLL yyyy")
@@ -80,7 +80,7 @@ const OrderProducts = async ({ id }: { id: string }) => {
 
         {/* Dirección de envío */}
         <div className="pt-10 mb-10 border-t border-solid border-border-primary">
-          <h3 className="mb-5 text-lg font-bold">Delivery Address</h3>
+          <h3 className="mb-5 text-lg font-bold">Dirección de entrega</h3>
           <ul>
             <li className="mt-2.5 text-sm text-999">
               {order.userName || "N/A"}
@@ -96,7 +96,7 @@ const OrderProducts = async ({ id }: { id: string }) => {
 
         {/* Totales */}
         <div className="pt-10 border-t border-solid border-border-primary">
-          <h3 className="mb-5 text-lg font-bold">Totals</h3>
+          <h3 className="mb-5 text-lg font-bold">Totales</h3>
           <div className="w-full flex justify-between mt-3.5 text-sm text-999">
             <span>
               {totalProducts} {productsText}
@@ -104,11 +104,11 @@ const OrderProducts = async ({ id }: { id: string }) => {
             <span>{order.totalConIVA?.toFixed(2) || "0.00"} €</span>
           </div>
           <div className="w-full flex justify-between mt-3.5 text-sm text-999">
-            <span>Delivery</span>
-            <span>FREE</span>
+            <span>Entrega</span>
+            <span>GRATIS</span>
           </div>
           <div className="w-full flex justify-between mt-3.5 text-sm text-999">
-            <span>Total Discount</span>
+            <span>Descuento Total</span>
             <span>0 €</span>
           </div>
           <div className="w-full flex justify-between mt-3.5 text-sm text-999">
@@ -132,12 +132,12 @@ const AllOrderSkeleton = ({ items }: { items: number }) => (
     </div>
     <div className="h-full grow sm:basis-800 sm:sticky top-8">
       <div className="mb-10">
-        <h3 className="mb-5 text-lg font-bold">Order Details</h3>
+        <h3 className="mb-5 text-lg font-bold">Detalles del pedido</h3>
         <div className="w-full flex justify-between mt-3.5 text-sm text-999">
-          <span>Order Number</span> <Skeleton className="h-5 w-[120px]" />
+          <span>Número de pedido</span> <Skeleton className="h-5 w-[120px]" />
         </div>
         <div className="w-full flex justify-between mt-3.5 text-sm text-999">
-          <span>Order Date</span> <Skeleton className="h-5 w-[100px]" />
+          <span>Fecha del pedido</span> <Skeleton className="h-5 w-[100px]" />
         </div>
       </div>
     </div>

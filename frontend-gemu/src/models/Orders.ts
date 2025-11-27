@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/libs/prisma";
-import { EnrichedProduct, Usuario } from "@/types/types";
+import { EnrichedProduct } from "@/types/types";
 
 // Crear pedido
 export async function createOrder(
@@ -21,11 +21,17 @@ export async function createOrder(
     address.city
   }, ${address.state}, ${address.postal_code}, ${address.country}`;
 
+  const total_sin_iva = total_price / 1.21;
+  const iva_total = total_price - total_sin_iva;
+
   const pedido = await prisma.pedidos.create({
     data: {
       usuario_id: userId,
       fecha_pedido: new Date(),
+      total_sin_iva: total_sin_iva,
+      iva_total: iva_total,
       total_con_iva: total_price,
+      metodo_pago: "pending",
       direccion_envio,
       estado: "pending",
       detalle_pedidos: {
@@ -61,24 +67,22 @@ export async function getOrdersByUser(userId: bigint) {
     orderBy: { fecha_pedido: "desc" },
   });
 
-  return orders.map((o: (typeof orders)[number]) => ({
+  return orders.map((o) => ({
     id: o.id,
     userId: o.usuario_id,
-    total_price: o.total_con_iva ?? 0,
+    total_price: o.total_con_iva ? Number(o.total_con_iva) : 0,
     purchaseDate: o.fecha_pedido ?? new Date(),
     status: o.estado ?? "pending",
-    products: o.detalle_pedidos.map((d: (typeof o.detalle_pedidos)[number]) => {
+    products: o.detalle_pedidos.map((d) => {
       const precioUnitario = Number(d.precio_unitario);
       const cantidad = Number(d.cantidad);
       const subtotal =
         d.subtotal !== null ? Number(d.subtotal) : precioUnitario * cantidad;
-      const videojuegoId =
-        d.videojuegos.id !== null ? Number(d.videojuegos.id) : 0;
 
       return {
         productId: d.producto_id.toString(),
         _id: d.id.toString(),
-        id: videojuegoId,
+        id: Number(d.videojuegos.id),
         name: d.videojuegos.nombre,
         category: d.videojuegos.categoria,
         price: precioUnitario,

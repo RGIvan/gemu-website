@@ -18,7 +18,7 @@ export function LinksDesktop() {
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Collections</NavigationMenuTrigger>
+          <NavigationMenuTrigger>Videojuegos</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
               <li className="row-span-3">
@@ -27,29 +27,14 @@ export function LinksDesktop() {
                     className="flex flex-col justify-end w-full h-full p-6 no-underline rounded-md outline-none select-none from-muted/50 to-muted focus:shadow-md bg-center bg-[url('/main-image.webp')]"
                     href="/"
                   >
-                    <div className="mt-4 mb-1 text-sm font-medium">
-                      VIEW ALL
-                    </div>
-                    <p className="text-sm leading-tight text-muted-foreground">
-                      Discover wardrobe staples for every occasion.
-                    </p>
+                    <div className="mt-4 mb-1 text-sm font-medium"></div>
+                    <p className="text-sm leading-tight text-muted-foreground"></p>
                   </Link>
                 </NavigationMenuLink>
               </li>
-              <ListItem href="/t-shirts" title="T-SHIRTS">
-                Our men&apos;s T-shirts offer timeless style in a range of
-                designs, colors, and textures. From classic to contemporary,
-                find the perfect tee for any occasion.
-              </ListItem>
-              <ListItem href="/pants" title="PANTS">
-                Explore essential men&apos;s pants for all occasions. From
-                classic chinos to modern joggers, find your perfect fit in a
-                variety of styles and colors.
-              </ListItem>
-              <ListItem href="/sweatshirts" title="SWEATSHIRTS">
-                Much like the T-shirt, men&apos;s sweatshirts are far more than
-                a basic.
-              </ListItem>
+              <ListItem href="/t-shirts" title="T-SHIRTS"></ListItem>
+              <ListItem href="/pants" title="PANTS"></ListItem>
+              <ListItem href="/sweatshirts" title="SWEATSHIRTS"></ListItem>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>

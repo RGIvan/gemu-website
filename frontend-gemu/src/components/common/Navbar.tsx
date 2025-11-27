@@ -61,7 +61,7 @@ export const Navbar = ({ session, totalItemsCart, totalWishlists }: Navbar) => {
                       fill="currentColor"
                     ></path>
                   </svg>
-                  <span>Edit profile</span>
+                  <span>Editar perfil</span>
                 </button>
               </DialogTrigger>
               <EditProfile />

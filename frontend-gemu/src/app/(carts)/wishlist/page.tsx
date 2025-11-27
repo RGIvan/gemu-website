@@ -22,9 +22,11 @@ const WishlistPage = async () => {
   if (!session?.user?.id) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-91px)] gap-2 px-4">
-        <h1 className="mb-6 text-4xl font-bold">YOUR WISHLIST IS EMPTY</h1>
+        <h1 className="mb-6 text-4xl font-bold">
+          TU LISTA DE DESEOS ESTÁ VACÍA
+        </h1>
         <p className="mb-4 text-lg">
-          You must be registered to save your favorite products.
+          Debes iniciar sesión para ver tu lista de deseos.
         </p>
         <Link
           className="flex font-medium items-center bg-black justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-2 rounded-md border border-solid border-gray-600 hover:bg-gray-900"
@@ -49,13 +51,17 @@ const WishlistPage = async () => {
   if (favoritesWithProducts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-91px)] gap-2 px-4">
-        <h1 className="mb-6 text-4xl font-bold">YOUR WISHLIST IS EMPTY</h1>
-        <p className="mb-4 text-lg">Start adding products to your wishlist!</p>
+        <h1 className="mb-6 text-4xl font-bold">
+          TU LISTA DE DESEOS ESTÁ VACÍA
+        </h1>
+        <p className="mb-4 text-lg">
+          ¡Empieza a añadir productos a tu lista de deseos!
+        </p>
         <Link
           className="flex font-medium items-center bg-black justify-center text-sm min-w-[160px] max-w-[160px] h-[40px] px-2 rounded-md border border-solid border-gray-600 hover:bg-gray-900"
           href="/"
         >
-          Start
+          Comenzar
         </Link>
       </div>
     );
@@ -84,7 +90,9 @@ const WishlistPage = async () => {
       }
     >
       <div className="pt-12">
-        <h2 className="mb-5 text-xl font-bold sm:text-2xl">YOUR WISHLIST</h2>
+        <h2 className="mb-5 text-xl font-bold sm:text-2xl">
+          TU LISTA DE DESEOS
+        </h2>
         <Products
           products={products}
           session={session}
