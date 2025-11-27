@@ -18,7 +18,7 @@ export function LinksDesktop() {
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Videojuegos</NavigationMenuTrigger>
+          <NavigationMenuTrigger>Ver todo</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
               <li className="row-span-3">
@@ -32,9 +32,9 @@ export function LinksDesktop() {
                   </Link>
                 </NavigationMenuLink>
               </li>
-              <ListItem href="/t-shirts" title="T-SHIRTS"></ListItem>
-              <ListItem href="/pants" title="PANTS"></ListItem>
-              <ListItem href="/sweatshirts" title="SWEATSHIRTS"></ListItem>
+              <ListItem href="/t-shirts" title="CONSOLAS"></ListItem>
+              <ListItem href="/pants" title="ACCESORIOS"></ListItem>
+              <ListItem href="/sweatshirts" title="JUEGOS"></ListItem>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>

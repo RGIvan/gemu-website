@@ -180,7 +180,7 @@ export const Navbar = ({ session, totalItemsCart, totalWishlists }: Navbar) => {
                         fill="currentColor"
                       ></path>
                     </svg>
-                    <span>View orders</span>
+                    <span>Ver pedidos</span>
                   </Link>
                 </li>
                 <li className="px-4 py-2 w-[110px] mx-auto">

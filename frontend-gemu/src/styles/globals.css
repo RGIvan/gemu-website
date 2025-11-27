@@ -46,12 +46,12 @@ body {
 
 body {
   color: #ededed;
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: #0a0a0a; /* Color de respaldo */
+  background-image: url("/tu-imagen.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 a {
