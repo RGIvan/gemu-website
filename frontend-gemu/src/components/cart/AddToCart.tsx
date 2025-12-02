@@ -15,6 +15,9 @@ interface AddToCartProps {
 export default function AddToCart({ product, session }: AddToCartProps) {
   const [isPending, startTransition] = useTransition();
 
+  console.log("🛒 CLICK - Session:", session);
+  console.log("🛒 CLICK - Product:", product);
+
   const handleAddToCart = useCallback(() => {
     if (!session) {
       toast.info("Debes estar registrado para añadir un producto al carrito.");

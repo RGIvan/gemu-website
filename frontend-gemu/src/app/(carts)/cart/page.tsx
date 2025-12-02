@@ -63,7 +63,7 @@ const CartPage = async () => {
 const ProductsCart = async ({ session }: { session: Session }) => {
   // ✅ Llamamos al action que obtiene el carrito con los videojuegos desde Prisma
   const enrichedCart: EnrichedProduct[] | undefined = await getItems(
-    String(session.user.id) // Prisma usa BigInt, session usa string
+    String(session.user._id)
   );
 
   const calculateTotalPrice = (cart: EnrichedProduct[] | undefined) => {
@@ -104,7 +104,7 @@ const ProductsCart = async ({ session }: { session: Session }) => {
               <span>Total:</span>
               <span>{totalPrice}€</span>
             </div>
-            <span className="text-xs">+ TAX INCL.</span>
+            <span className="text-xs">+ IVA INCL.</span>
           </div>
           <div className="w-1/2 border-l border-solid bg-background-secondary border-border-primary">
             <ButtonCheckout session={session} cartWithProducts={enrichedCart} />

@@ -63,20 +63,30 @@ async function saveCart(cart: Cart) {
 // Obtener items del carrito con info de producto
 // -----------------------------
 export async function getItems(userId: string): Promise<EnrichedProduct[]> {
+  console.log("=== getItems ===");
+  console.log("1. userId:", userId);
+
   if (!userId) return [];
 
   const cart = await getCart(userId);
+  console.log("2. cart:", JSON.stringify(cart, null, 2));
+
   if (!cart.items || cart.items.length === 0) return [];
 
   const productIds = cart.items.map((item) => Number(item.productId));
+  console.log("3. productIds:", productIds);
+
   const productos = await prisma.videojuegos.findMany({
     where: { id: { in: productIds } },
   });
+  console.log("4. productos encontrados:", productos.length);
 
   return cart.items.map((item) => {
     const producto = productos.find(
       (p: Videojuego) => p.id === BigInt(item.productId)
     );
+    console.log("5. producto para item", item.productId, ":", producto?.nombre);
+
     return {
       id: producto?.id || BigInt(0),
       productId: item.productId,
@@ -94,8 +104,8 @@ export async function getItems(userId: string): Promise<EnrichedProduct[]> {
 // Obtener total de items
 // -----------------------------
 export async function getTotalItems(session: Session | null) {
-  if (!session?.user?.id) return 0;
-  const cart = await getCart(session.user.id);
+  if (!session?.user?._id) return 0;
+  const cart = await getCart(session.user._id);
   return cart.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 }
 
@@ -103,19 +113,44 @@ export async function getTotalItems(session: Session | null) {
 // Agregar item al carrito
 // -----------------------------
 export async function addItem(productId: string, price?: number) {
+  console.log("=== SERVER: addItem ===");
+  console.log("SERVER 1. productId:", productId);
+  console.log("SERVER 2. price:", price);
+
   const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
-  if (!userId) return;
+  console.log("SERVER 3. session:", JSON.stringify(session, null, 2));
+
+  const userId = session?.user?._id || session?.user?.id;
+  console.log("SERVER 4. userId:", userId);
+
+  if (!userId) {
+    console.log("SERVER ❌ No hay userId!");
+    return;
+  }
 
   const cart = await getCart(userId);
+  console.log("SERVER 5. cart antes:", JSON.stringify(cart, null, 2));
 
   const existingItem = cart.items.find((i) => i.productId === productId);
 
-  if (existingItem) existingItem.quantity += 1;
-  else cart.items.push({ productId, quantity: 1, price: price || 0 });
+  if (existingItem) {
+    existingItem.quantity += 1;
+    console.log(
+      "SERVER 6. Item existente, nueva cantidad:",
+      existingItem.quantity
+    );
+  } else {
+    cart.items.push({ productId, quantity: 1, price: price || 0 });
+    console.log("SERVER 6. Nuevo item añadido");
+  }
+
+  console.log("SERVER 7. cart después:", JSON.stringify(cart, null, 2));
 
   await saveCart(cart);
+  console.log("SERVER 8. Cart guardado!");
+
   revalidatePath(`/product/${productId}`);
+  console.log("SERVER 9. Path revalidado");
 }
 
 // -----------------------------
@@ -123,7 +158,7 @@ export async function addItem(productId: string, price?: number) {
 // -----------------------------
 export async function delItem(productId: string) {
   const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  const userId = session?.user?._id;
   if (!userId) return;
 
   const cart = await getCart(userId);
@@ -142,7 +177,7 @@ export async function delOneItem(
   color?: string
 ) {
   const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  const userId = session?.user?._id;
   if (!userId) return;
 
   const cart = await getCart(userId);

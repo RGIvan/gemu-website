@@ -27,8 +27,8 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
   const userId = session?.user?._id ?? "";
 
-  const totalItemsCart = userId ? await getTotalItems(userId) : 0;
-  const totalItemsWishlists = userId ? await getTotalWishlist(userId) : 0; // ✅ ahora sí devuelve un número
+  const totalItemsCart = session ? await getTotalItems(session) : 0;
+  const totalItemsWishlists = userId ? await getTotalWishlist(userId) : 0;
 
   return (
     <html lang="en">

@@ -11,7 +11,6 @@ export const kv = isLocal
         try {
           return JSON.parse(data);
         } catch {
-          console.warn(`KV mock corrupto para key ${key}, devolviendo null`);
           return null;
         }
       },
