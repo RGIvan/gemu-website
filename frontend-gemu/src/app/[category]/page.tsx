@@ -20,8 +20,8 @@ export async function generateMetadata({ params }: Props) {
   const capitalizedCategory = capitalizeFirstLetter(params.category);
 
   return {
-    title: `${capitalizedCategory} | Ecommerce Template`,
-    description: `${capitalizedCategory} category at e-commerce template made by Marcos Cámara`,
+    title: `${capitalizedCategory} | Gemu`,
+    description: `${capitalizedCategory} Categoría`,
   };
 }
 

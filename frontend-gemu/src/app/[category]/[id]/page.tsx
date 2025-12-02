@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props) {
   const capitalizedName = capitalizeFirstLetter(product.name);
 
   return {
-    title: `${capitalizedName} | Ecommerce Template`,
+    title: `${capitalizedName} | Gemu`,
     description: product.category || "",
   };
 }
@@ -45,7 +45,7 @@ const AllProducts = async ({ id }: { id: string }) => {
       <SingleProduct product={product} session={session} />
 
       <h2 className="mt-24 mb-5 text-xl font-bold sm:text-2xl">
-        YOU MIGHT ALSO LIKE...
+        TAMBIÉN TE PUEDE GUSTAR...
       </h2>
 
       <Products
@@ -67,7 +67,7 @@ const ProductPage = async ({ params }: Props) => (
         <div>
           <SingleProductSkeleton />
           <h2 className="mt-24 mb-5 text-xl font-bold sm:text-2xl">
-            YOU MIGHT ALSO LIKE...
+            TAMBIÉN TE PUEDE GUSTAR...
           </h2>
           <ProductSkeleton
             extraClassname={"colums-mobile"}

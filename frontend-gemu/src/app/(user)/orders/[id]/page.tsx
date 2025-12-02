@@ -10,7 +10,7 @@ import { authOptions } from "@/libs/auth";
 
 export async function generateMetadata() {
   return {
-    title: `Order Details | Ecommerce Template`,
+    title: `Gemu - Detalles del Pedido`,
   };
 }
 
@@ -34,10 +34,7 @@ const OrderProducts = async ({ id }: { id: string }) => {
   const session = await getServerSession(authOptions);
 
   // Traer todas las órdenes del usuario
-  const orders: EnrichedOrder[] = await getUserOrders(
-    session?.user?.id || null
-  );
-
+  const orders: EnrichedOrder[] = await getUserOrders(session);
   // Buscar la orden por id
   const order = orders.find((o) => o.id.toString() === id);
 

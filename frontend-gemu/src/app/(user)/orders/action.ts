@@ -57,7 +57,7 @@ export async function saveOrder(
 ) {
   if (!session?.user.id || !cartItems || cartItems.length === 0) return;
 
-  const userId = BigInt(session.user.id);
+  const userId = BigInt(session.user._id);
 
   const newPedido = await prisma.pedidos.create({
     data: {
@@ -72,7 +72,7 @@ export async function saveOrder(
         (acc, item) => acc + item.price * item.quantity,
         0
       ),
-      metodo_pago: paymentInfo.method || "unknown",
+      metodo_pago: paymentInfo.method || "Desconocido",
       direccion_envio: paymentInfo.address || "",
       estado: "Pendiente",
       detalle_pedidos: {
@@ -86,7 +86,7 @@ export async function saveOrder(
     },
   });
 
-  await emptyCart(session.user.id);
+  await emptyCart(session.user._id);
 
   return newPedido;
 }
@@ -97,9 +97,9 @@ export async function saveOrder(
 export async function getUserOrders(
   session: Session | null
 ): Promise<EnrichedOrder[]> {
-  if (!session?.user.id) return [];
+  if (!session?.user?._id) return [];
 
-  const userId = BigInt(session.user.id);
+  const userId = BigInt(session.user._id);
 
   const ordersFromDB = await prisma.pedidos.findMany({
     where: { usuario_id: userId },
