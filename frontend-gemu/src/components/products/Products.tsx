@@ -22,14 +22,16 @@ const ProductCartInfo = dynamic(() => import("../cart/ProductCartInfo"), {
 interface ProductsProps {
   products: EnrichedProduct[];
   session: Session | null;
-  wishlist?: string[]; // ya resuelto en server
+  wishlist?: string[];
   extraClassname?: string;
+  isCartPage?: boolean;
 }
 
 export const Products = ({
   products,
   session,
   extraClassname = "",
+  isCartPage = false,
 }: ProductsProps) => {
   const gridClassname = [
     "grid gap-x-3.5 gap-y-6 sm:gap-y-9",
@@ -86,7 +88,7 @@ export const Products = ({
                   <h2 className="text-sm font-semibold truncate">{name}</h2>
                 </Link>
 
-                {quantity ? (
+                {isCartPage ? (
                   <DeleteButton product={product} />
                 ) : (
                   <WishlistButton session={session} productId={productId} />
@@ -94,10 +96,10 @@ export const Products = ({
               </div>
 
               <div className="text-sm">
-                {quantity ? (price * quantity).toFixed(2) : price} €
+                {isCartPage ? (price * quantity).toFixed(2) : price} €
               </div>
 
-              {quantity !== undefined && <ProductCartInfo product={product} />}
+              {isCartPage && <ProductCartInfo product={product} />}
             </div>
           </div>
         );

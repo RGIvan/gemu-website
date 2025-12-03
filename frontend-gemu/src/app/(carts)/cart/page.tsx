@@ -95,6 +95,7 @@ const ProductsCart = async ({ session }: { session: Session }) => {
           }))}
           session={session}
           extraClassname="cart-ord-mobile"
+          isCartPage={true}
         />
 
         {/* ✅ Barra inferior fija */}

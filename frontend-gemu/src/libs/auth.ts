@@ -72,12 +72,14 @@ export const authOptions: NextAuthOptions = {
         token.phone = (user as any).phone ?? "";
       }
 
-      if (account?.provider === "google" && !token.id) {
+      if (account?.provider === "google") {
         const dbUser = await prisma.usuarios.findUnique({
           where: { correo_electronico: token.email as string },
         });
         if (dbUser) {
           token.id = dbUser.id.toString();
+          token.name = `${dbUser.nombre} ${dbUser.apellidos}`;
+          token.phone = dbUser.telefono ?? "";
         }
       }
       return token;
