@@ -113,44 +113,43 @@ export async function getTotalItems(session: Session | null) {
 // Agregar item al carrito
 // -----------------------------
 export async function addItem(productId: string, price?: number) {
-  console.log("=== SERVER: addItem ===");
-  console.log("SERVER 1. productId:", productId);
-  console.log("SERVER 2. price:", price);
-
   const session = await getServerSession(authOptions);
-  console.log("SERVER 3. session:", JSON.stringify(session, null, 2));
+  const userId = session?.user?._id;
+  if (!userId) return;
 
-  const userId = session?.user?._id || session?.user?.id;
-  console.log("SERVER 4. userId:", userId);
+  // Verificar stock disponible
+  const producto = await prisma.videojuegos.findUnique({
+    where: { id: BigInt(productId) },
+    select: { existencias: true, nombre: true },
+  });
 
-  if (!userId) {
-    console.log("SERVER ❌ No hay userId!");
-    return;
+  if (!producto) {
+    console.log("Producto no encontrado");
+    return { error: "Producto no encontrado" };
   }
 
   const cart = await getCart(userId);
-  console.log("SERVER 5. cart antes:", JSON.stringify(cart, null, 2));
-
   const existingItem = cart.items.find((i) => i.productId === productId);
+  const cantidadEnCarrito = existingItem?.quantity || 0;
+
+  // Verificar si hay stock suficiente
+  if (cantidadEnCarrito >= producto.existencias) {
+    console.log(
+      `Sin stock suficiente. Stock: ${producto.existencias}, En carrito: ${cantidadEnCarrito}`
+    );
+    return { error: `Solo hay ${producto.existencias} unidades disponibles` };
+  }
 
   if (existingItem) {
     existingItem.quantity += 1;
-    console.log(
-      "SERVER 6. Item existente, nueva cantidad:",
-      existingItem.quantity
-    );
   } else {
     cart.items.push({ productId, quantity: 1, price: price || 0 });
-    console.log("SERVER 6. Nuevo item añadido");
   }
 
-  console.log("SERVER 7. cart después:", JSON.stringify(cart, null, 2));
-
   await saveCart(cart);
-  console.log("SERVER 8. Cart guardado!");
-
   revalidatePath(`/product/${productId}`);
-  console.log("SERVER 9. Path revalidado");
+
+  return { success: true };
 }
 
 // -----------------------------

@@ -29,7 +29,13 @@ export default function AddToCart({ product, session }: AddToCartProps) {
 
     startTransition(async () => {
       try {
-        await addItem(productId, price);
+        const result = await addItem(productId, price);
+
+        if (result?.error) {
+          toast.error(result.error);
+          return;
+        }
+
         toast.success("¡Producto añadido al carrito!");
       } catch (err) {
         console.error(err);
