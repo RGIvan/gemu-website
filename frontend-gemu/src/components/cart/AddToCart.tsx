@@ -44,7 +44,13 @@ export default function AddToCart({ product, session }: AddToCartProps) {
       className="w-full p-2 mt-4 transition-colors border rounded hover:bg-gray-800"
       disabled={isPending}
     >
-      {isPending ? <Loader height={20} width={20} /> : "Añadir al carrito"}
+      {isPending ? (
+        <Loader height={20} width={20} />
+      ) : session?.user ? (
+        "Añadir al carrito"
+      ) : (
+        "Inicia sesión para comprar"
+      )}
     </button>
   );
 }

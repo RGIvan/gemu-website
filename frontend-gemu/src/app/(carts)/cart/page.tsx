@@ -22,7 +22,7 @@ const ButtonCheckout = dynamic(
 
 export async function generateMetadata() {
   return {
-    title: "Cart | Prisma E-commerce",
+    title: "Gemu - Tu carrito",
     description: `Cart page using Prisma + Next.js`,
   };
 }

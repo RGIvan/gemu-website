@@ -64,42 +64,55 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
         token.name = user.name ?? "";
         token.email = user.email ?? "";
         token.phone = (user as any).phone ?? "";
       }
+
+      if (account?.provider === "google" && !token.id) {
+        const dbUser = await prisma.usuarios.findUnique({
+          where: { correo_electronico: token.email as string },
+        });
+        if (dbUser) {
+          token.id = dbUser.id.toString();
+        }
+      }
       return token;
     },
 
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id;
-        session.user.name = token.name ?? "";
-        session.user.email = token.email ?? "";
-        session.user.image = token.picture ?? "";
+      if (token) {
+        session.user = {
+          _id: token.id as string,
+          name: token.name ?? "",
+          email: token.email ?? "",
+          phone: token.phone as string,
+        };
       }
       return session;
     },
-
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       if (account?.provider === "google") {
         const existingUser = await prisma.usuarios.findUnique({
           where: { correo_electronico: user.email as string },
         });
 
         if (!existingUser) {
-          await prisma.usuarios.create({
+          const newUser = await prisma.usuarios.create({
             data: {
               nombre: user.name?.split(" ")[0] ?? "",
               apellidos: user.name?.split(" ").slice(1).join(" ") ?? "",
               correo_electronico: user.email as string,
               password: await bcrypt.hash(Math.random().toString(36), 10),
-              username: user.name ?? "usuario",
+              username: user.email?.split("@")[0] ?? "usuario",
             },
           });
+          user.id = newUser.id.toString();
+        } else {
+          user.id = existingUser.id.toString();
         }
       }
       return true;
