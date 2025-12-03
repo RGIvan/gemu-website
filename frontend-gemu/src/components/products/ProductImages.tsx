@@ -21,7 +21,7 @@ export const ProductImages = ({
   // Si no hay imagen disponible
   if (!selectedVariant?.image) {
     return (
-      <Skeleton className="w-full rounded-b-none aspect-[2/3] min-w-[250px] lg:aspect-[4/6] lg:min-w-[560px]" />
+      <Skeleton className="w-full rounded-b-none aspect-square min-w-[250px] lg:min-w-[400px]" />
     );
   }
 
@@ -52,7 +52,7 @@ export const ProductImages = ({
       </div>
 
       {/* Grid para escritorio */}
-      <div className="lg:grid hidden grid-cols-2 gap-0.5 min-w-grid-img">
+      <div className="lg:grid hidden grid-cols-1 gap-0.5 min-w-[400px] max-w-[500px]">
         <div className="inline-block w-full max-w-2xl mx-auto overflow-hidden rounded">
           <Images
             image={[image]}

@@ -53,12 +53,12 @@ export const Images = ({
         height={height}
         priority={priority}
         sizes={sizes}
-        className="w-full max-w-img aspect-[2/3] brightness-90"
+        className="object-cover w-full max-w-img aspect-square brightness-90"
         onLoad={handleImageLoadComplete}
       />
       {!imageLoaded && (
         <div className="absolute top-0 right-0 w-full aspect-[2/3] bg-black">
-          <Skeleton className="w-full aspect-[2/3] rounded-b-none" />
+          <Skeleton className="w-full rounded-b-none aspect-square" />
         </div>
       )}
     </div>
