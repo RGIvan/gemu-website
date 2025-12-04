@@ -89,7 +89,7 @@ export const Navbar = ({ session, totalItemsCart, totalWishlists }: Navbar) => {
   };
 
   return (
-    <header className="pointer-events-auto w-full px-3.5 gap-4 xs:px-6 sm:px-12 py-6 flex items-center justify-between bg-black/30 backdrop-blur-md border-b border-solid border-border-primary">
+    <header className="sticky top-0 z-50 pointer-events-auto w-full px-3.5 gap-4 xs:px-6 sm:px-12 py-6 flex items-center justify-between bg-black/30 backdrop-blur-md border-b border-solid border-border-primary">
       <button
         onClick={() => {
           toggleHeader();
