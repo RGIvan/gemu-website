@@ -17,7 +17,7 @@ const ProductCartInfo = ({ product }: Props) => {
       addItem(productId, price); // size/color opcionales
       toast.success("Producto añadido al carrito");
     } catch (error) {
-      console.error("Error adding item:", error);
+      console.error("Error al añadir el producto:", error);
       toast.error("No se pudo añadir el producto al carrito");
     }
   }, [productId, price]);
@@ -27,7 +27,7 @@ const ProductCartInfo = ({ product }: Props) => {
       delOneItem(productId, undefined, undefined); // size/color opcionales
       toast.success("Producto eliminado del carrito");
     } catch (error) {
-      console.error("Error removing item:", error);
+      console.error("Error en eliminar el producto:", error);
       toast.error("No se pudo eliminar el producto del carrito");
     }
   }, [productId]);

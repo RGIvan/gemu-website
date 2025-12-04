@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/libs/prisma";
+import { revalidatePath } from "next/cache";
 
 // Tipo de favoritos
 export type Favorites = {
@@ -48,7 +49,6 @@ export async function addFavorite(
   if (!userId || !productId) return { userId, favorites: [] };
 
   try {
-    // Evitar duplicados usando upsert
     await prisma.favoritos.upsert({
       where: {
         usuario_id_videojuego_id: {
@@ -56,7 +56,7 @@ export async function addFavorite(
           videojuego_id: BigInt(productId),
         },
       },
-      update: {}, // no hacemos nada si ya existe
+      update: {},
       create: {
         usuario_id: BigInt(userId),
         videojuego_id: BigInt(productId),
@@ -65,6 +65,9 @@ export async function addFavorite(
   } catch (err) {
     console.error("Error adding favorite:", err);
   }
+
+  revalidatePath("/");
+  revalidatePath("/wishlist");
 
   return getFavorites(userId);
 }
@@ -88,6 +91,9 @@ export async function removeFavorite(
   } catch (err) {
     console.error("Error removing favorite:", err);
   }
+
+  revalidatePath("/");
+  revalidatePath("/wishlist");
 
   return getFavorites(userId);
 }

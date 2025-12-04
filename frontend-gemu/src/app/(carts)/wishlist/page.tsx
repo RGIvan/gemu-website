@@ -10,7 +10,7 @@ import type { EnrichedProduct } from "@/types/types";
 
 export async function generateMetadata() {
   return {
-    title: "Wishlists | Ecommerce Template",
+    title: "Gemu - Tu lista de deseos",
     description: `Wishlist at e-commerce template`,
   };
 }
@@ -19,7 +19,7 @@ const WishlistPage = async () => {
   const session: Session | null = await getServerSession(authOptions);
 
   // ✅ Si el usuario no está logueado
-  if (!session?.user?.id) {
+  if (!session?.user?._id) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-91px)] gap-2 px-4">
         <h1 className="mb-6 text-4xl font-bold">
@@ -39,7 +39,7 @@ const WishlistPage = async () => {
   }
 
   // ✅ Convertimos ID del usuario a BigInt
-  const userId = BigInt(session.user.id);
+  const userId = BigInt(session.user._id);
 
   // ✅ Traer los favoritos con join a videojuegos
   const favoritesWithProducts = await prisma.favoritos.findMany({

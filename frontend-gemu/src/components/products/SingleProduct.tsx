@@ -16,23 +16,24 @@ export const SingleProduct = ({ product, session }: SingleProductProps) => {
   }
 
   return (
-    <div className="flex flex-wrap justify-between gap-8">
+    <div className="flex flex-col items-center justify-center gap-8 lg:flex-row">
       {/* Imagen del producto */}
-      <div className="grow-999 basis-0">
+      <div className="w-full max-w-[400px]">
         <ProductImages name={product.name} selectedVariant={product} />
       </div>
 
-      {/* Información del producto y carrito */}
-      <div className="sticky flex flex-col items-center justify-center w-full h-full gap-5 grow basis-600 top-8">
+      <div className="w-full max-w-[400px] flex flex-col items-center gap-5">
         <div className="w-full border border-solid rounded border-border-primary bg-background-secondary">
-          <div className="flex flex-col justify-between gap-3 p-5 border-b border-solid border-border-primary">
+          <div className="flex flex-col items-center gap-3 p-5 text-center border-b border-solid border-border-primary">
             <h1 className="text-base font-semibold">{product.name}</h1>
             <span className="text-sm">{product.price}€</span>
             {product.category && <p className="text-sm">{product.category}</p>}
           </div>
 
           {/* Añadir al carrito */}
-          <AddToCart session={session} product={product} />
+          <div className="p-5">
+            <AddToCart session={session} product={product} />
+          </div>
         </div>
       </div>
     </div>

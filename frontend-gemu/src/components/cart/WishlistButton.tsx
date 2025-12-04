@@ -1,8 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useTransition } from "react";
 import { Session } from "next-auth";
 import { toast } from "sonner";
+import {
+  getFavorites,
+  addFavorite,
+  removeFavorite,
+} from "@/app/(carts)/wishlist/action";
 
 interface WishlistButtonProps {
   session: Session | null;
@@ -11,15 +16,13 @@ interface WishlistButtonProps {
 
 const WishlistButton = ({ session, productId }: WishlistButtonProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  // Leer favoritos desde API cuando el componente se monta
   useEffect(() => {
     const fetchFavorites = async () => {
       if (!session?.user?._id) return;
       try {
-        const res = await fetch(`/api/favorites?userId=${session.user._id}`);
-        if (!res.ok) throw new Error("Failed to fetch favorites");
-        const data: { favorites: string[] } = await res.json();
+        const data = await getFavorites(session.user._id);
         setIsFavorite(data.favorites.includes(productId));
       } catch (error) {
         console.error("Error fetching favorites:", error);
@@ -30,40 +33,34 @@ const WishlistButton = ({ session, productId }: WishlistButtonProps) => {
 
   const handleFavorites = useCallback(async () => {
     if (!session?.user?._id) {
-      toast.warning(
-        "Debes registrarte para poder añadir productos a favoritos."
-      );
+      toast.info("Debes registrarte para añadir productos a favoritos.");
       return;
     }
 
-    try {
-      const method = isFavorite ? "DELETE" : "POST";
-      const res = await fetch("/api/favorites", {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: session.user._id,
-          productId,
-        }),
-      });
-      if (!res.ok) throw new Error("Failed to update favorites");
-
-      setIsFavorite(!isFavorite);
-      toast.success(
-        isFavorite
-          ? "Producto eliminado de favoritos"
-          : "Producto añadido a favoritos"
-      );
-    } catch (error) {
-      console.error(error);
-      toast.error("Ocurrió un error al actualizar tus favoritos.");
-    }
+    startTransition(async () => {
+      try {
+        if (isFavorite) {
+          await removeFavorite(session.user._id, productId);
+          setIsFavorite(false);
+          toast.success("Producto eliminado de favoritos");
+        } else {
+          await addFavorite(session.user._id, productId);
+          setIsFavorite(true);
+          toast.success("Producto añadido a favoritos");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Error al actualizar favoritos");
+      }
+    });
   }, [session, isFavorite, productId]);
 
   return (
     <button
       onClick={handleFavorites}
+      disabled={isPending}
       title={isFavorite ? "Eliminar de favoritos" : "Añadir a favoritos"}
+      className="text-xl"
     >
       {isFavorite ? "❤️" : "🤍"}
     </button>
