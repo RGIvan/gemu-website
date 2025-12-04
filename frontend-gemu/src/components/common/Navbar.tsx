@@ -114,7 +114,7 @@ export const Navbar = ({ session, totalItemsCart, totalWishlists }: Navbar) => {
       </button>
 
       <div
-        className={`fixed top-0 left-0 h-screen w-full bg-background-secondary py-6 px-3.5 xs:px-6 transition ease duration-200 z-20 translate-x-0 ${
+        className={`fixed top-0 left-0 h-screen w-full bg-black/90 backdrop-blur-md py-6 px-3.5 xs:px-6 transition ease duration-200 z-20 translate-x-0 ${
           isHeaderOpen ? "translate-x-0" : "translate-x-hide"
         }`}
       >
