@@ -32,9 +32,9 @@ export const Navbar = ({ session, totalItemsCart, totalWishlists }: Navbar) => {
   };
 
   const linksData = [
-    { path: "/t-shirts", name: "T-SHIRTS" },
-    { path: "/pants", name: "PANTS" },
-    { path: "/sweatshirts", name: "SWEATSHIRTS" },
+    { path: "/consolas", name: "CONSOLAS" },
+    { path: "/accesorios", name: "ACCESORIOS" },
+    { path: "/videojuegos", name: "VIDEOJUEGOS" },
   ];
 
   const authLinks = () => {
@@ -89,7 +89,7 @@ export const Navbar = ({ session, totalItemsCart, totalWishlists }: Navbar) => {
   };
 
   return (
-    <header className="pointer-events-auto w-full px-3.5 gap-4 xs:px-6 sm:px-12 py-6 flex items-center justify-between bg-background-secondary border-b border-solid border-border-primary">
+    <header className="pointer-events-auto w-full px-3.5 gap-4 xs:px-6 sm:px-12 py-6 flex items-center justify-between bg-black/30 backdrop-blur-md border-b border-solid border-border-primary">
       <button
         onClick={() => {
           toggleHeader();
@@ -114,7 +114,7 @@ export const Navbar = ({ session, totalItemsCart, totalWishlists }: Navbar) => {
       </button>
 
       <div
-        className={`fixed top-0 left-0 h-screen w-full bg-background-secondary py-6 px-3.5 xs:px-6 transition ease duration-200 z-20 translate-x-0 ${
+        className={`fixed top-0 left-0 h-screen w-full bg-black/90 backdrop-blur-md py-6 px-3.5 xs:px-6 transition ease duration-200 z-20 translate-x-0 ${
           isHeaderOpen ? "translate-x-0" : "translate-x-hide"
         }`}
       >

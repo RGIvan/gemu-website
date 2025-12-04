@@ -32,9 +32,9 @@ export function LinksDesktop() {
                   </Link>
                 </NavigationMenuLink>
               </li>
-              <ListItem href="/t-shirts" title="CONSOLAS"></ListItem>
-              <ListItem href="/pants" title="ACCESORIOS"></ListItem>
-              <ListItem href="/sweatshirts" title="JUEGOS"></ListItem>
+              <ListItem href="/consolas" title="CONSOLAS"></ListItem>
+              <ListItem href="/accesorios" title="ACCESORIOS"></ListItem>
+              <ListItem href="/videojuegos" title="VIDEOJUEGOS"></ListItem>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>

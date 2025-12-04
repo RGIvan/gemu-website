@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   title: "Gemu - Tu tienda de videojuegos en línea",
   description:
     "Descubre y compra los mejores videojuegos en nuestra tienda en línea. Ofertas exclusivas, lanzamientos y clásicos para todas las plataformas.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default async function RootLayout({

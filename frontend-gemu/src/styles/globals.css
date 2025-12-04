@@ -47,7 +47,7 @@ body {
 body {
   color: #ededed;
   background-color: #0a0a0a; /* Color de respaldo */
-  background-image: url("/tu-imagen.jpg");
+  background-image: url("/main.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;

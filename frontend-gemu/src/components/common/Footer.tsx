@@ -8,7 +8,7 @@ export const Footer = () => {
   const liStyles = "text-[#A1A1A1] my-1.5";
 
   return (
-    <footer className="px-6 py-24 border-t border-solid pointer-events-auto bg-[#0A0A0A] border-[#242424]">
+    <footer className="px-6 py-24 border-t border-solid pointer-events-auto bg-black/50 backdrop-blur-sm border-[#242424]">
       <nav className="flex flex-wrap justify-around gap-5 mx-auto max-w-screen-2xl">
         <div className="flex flex-col items-center justify-center w-full max-w-xs gap-5">
           <div className="flex gap-3.5">
