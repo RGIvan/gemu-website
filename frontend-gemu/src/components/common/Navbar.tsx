@@ -111,14 +111,6 @@ export const Navbar = ({ session, totalItemsCart, totalWishlists }: Navbar) => {
 
         <div className="flex items-center justify-center h-full max-h-[90%]">
           <ul className="flex flex-col justify-between text-sm gap-9">
-            <li className="flex items-center justify-center">
-              <Link href="/" onClick={toggleHeader}>
-                VER TODO
-              </Link>
-            </li>
-            <li className="font-semibold text-center">
-              FILTRAR POR PLATAFORMA
-            </li>
             {platforms.map((platform, index) => (
               <li key={index} className="flex items-center justify-center">
                 <Link
