@@ -18,13 +18,13 @@ export function LinksDesktop() {
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Ver todo</NavigationMenuTrigger>
+          <NavigationMenuTrigger>Filtrar</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
               <li className="row-span-3">
                 <NavigationMenuLink asChild>
                   <Link
-                    className="flex flex-col justify-end w-full h-full p-6 no-underline rounded-md outline-none select-none from-muted/50 to-muted focus:shadow-md bg-center bg-[url('/main-image.webp')]"
+                    className="flex flex-col justify-end w-full h-full p-6 no-underline rounded-md outline-none select-none from-muted/50 to-muted focus:shadow-md]"
                     href="/"
                   >
                     <div className="mt-4 mb-1 text-sm font-medium"></div>
@@ -32,9 +32,7 @@ export function LinksDesktop() {
                   </Link>
                 </NavigationMenuLink>
               </li>
-              <ListItem href="/consolas" title="CONSOLAS"></ListItem>
-              <ListItem href="/accesorios" title="ACCESORIOS"></ListItem>
-              <ListItem href="/videojuegos" title="VIDEOJUEGOS"></ListItem>
+              <ListItem href="/plataformas" title="PLATAFORMAS"></ListItem>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>

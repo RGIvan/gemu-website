@@ -100,3 +100,20 @@ export const getProduct = async (
     throw new Error("Failed to fetch product");
   }
 };
+
+/**
+ * 🔹 Obtener productos por plataforma
+ */
+export const getProductsByPlatform = async (
+  platform: string
+): Promise<EnrichedProduct[]> => {
+  try {
+    const products: VideojuegoDB[] = await prisma.videojuegos.findMany({
+      where: { plataforma: platform },
+    });
+    return products.map(mapToEnrichedProduct);
+  } catch (error) {
+    console.error("Error getting products by platform:", error);
+    throw new Error("Failed to fetch products by platform");
+  }
+};
