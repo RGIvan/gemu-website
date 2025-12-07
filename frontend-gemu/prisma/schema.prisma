@@ -18,7 +18,7 @@ model detalle_pedidos {
   pedidos         pedidos     @relation(fields: [pedido_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_detalle_pedidos_pedido")
   videojuegos     videojuegos @relation(fields: [producto_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkktd3s1nepts92lj6covdnv7nl")
 }
-
+  
 model facturas {
   id             BigInt    @id @default(autoincrement())
   pedido_id      BigInt
