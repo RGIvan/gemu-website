@@ -6,7 +6,6 @@ import { Session } from "next-auth";
 import { UserMenu } from "./UserMenu";
 import SearchInput from "./SearchInput";
 import FilterPlatform from "./FilterPlatform";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 
@@ -34,9 +33,9 @@ export const Navbar = ({ session, totalItemsCart, totalWishlists }: Navbar) => {
 
   const platforms = [
     { value: "PlayStation", label: "PlayStation" },
-    { value: "Xbox", label: "Xbox" },
-    { value: "Nintendo", label: "Nintendo" },
-    { value: "PC", label: "PC" },
+    { value: "PlayStation", label: "PlayStation 2" },
+    { value: "Xbox", label: "Xbox 360" },
+    { value: "Nintendo", label: "Nintendo Switch" },
   ];
 
   return (

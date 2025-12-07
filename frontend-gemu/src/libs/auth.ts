@@ -67,9 +67,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
-        token.name = user.name ?? "";
-        token.email = user.email ?? "";
-        token.phone = (user as any).phone ?? "";
+        token.username = user.username; // Añadir username
       }
 
       if (account?.provider === "google") {
@@ -78,21 +76,16 @@ export const authOptions: NextAuthOptions = {
         });
         if (dbUser) {
           token.id = dbUser.id.toString();
-          token.name = `${dbUser.nombre} ${dbUser.apellidos}`;
-          token.phone = dbUser.telefono ?? "";
+          token.username = dbUser.username; // Añadir username
         }
       }
       return token;
     },
 
     async session({ session, token }) {
-      if (token) {
-        session.user = {
-          _id: token.id as string,
-          name: token.name ?? "",
-          email: token.email ?? "",
-          phone: token.phone as string,
-        };
+      if (session.user) {
+        session.user._id = token.id as string;
+        session.user.username = token.username as string; // Añadir username
       }
       return session;
     },
