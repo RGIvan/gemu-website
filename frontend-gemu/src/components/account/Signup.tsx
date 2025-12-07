@@ -34,6 +34,7 @@ const Signup = () => {
           nombre: formData.get("nombre")?.toString() || "",
           apellidos: formData.get("apellidos")?.toString() || "",
           telefono: formData.get("telefono")?.toString() || "",
+          direccion: formData.get("direccion")?.toString() || "",
         });
 
         setSuccess("✅ Usuario registrado correctamente. Redirigiendo...");
@@ -178,6 +179,14 @@ const Signup = () => {
           placeholder="Teléfono (no obligatorio)"
           className="w-full h-8 text-[#A1A1A1] border border-solid border-[#2E2E2E] py-1 px-2.5 rounded bg-black text-13"
           name="telefono"
+        />
+
+        <label className={labelStyles}>Dirección:</label>
+        <input
+          type="text"
+          placeholder="Dirección"
+          className="w-full h-8 text-[#A1A1A1] border border-solid border-[#2E2E2E] py-1 px-2.5 rounded bg-black text-13"
+          name="direccion"
         />
 
         <button
