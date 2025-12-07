@@ -29,6 +29,9 @@ public class JwtAuthenticationFilter implements GlobalFilter {
             // Catálogo público
             "/videojuegos/**",
             "/api/videojuegos/**",
+            "/api/pedidos/**",
+            "/api/facturas/**",
+            "/api/detalles/**",
 
             // Si tienes búsqueda o categorías
             "/buscar/**",
