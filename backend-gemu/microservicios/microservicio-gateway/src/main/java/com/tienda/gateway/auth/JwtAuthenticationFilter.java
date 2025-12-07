@@ -19,18 +19,22 @@ public class JwtAuthenticationFilter implements GlobalFilter {
     }
 
     private static final List<String> PUBLIC_PATHS = List.of(
+            // Sin /api (como llegan al Gateway en Railway)
             "/usuarios/crear",
             "/usuarios/login",
+            "/videojuegos",
+            "/pedidos",
+            "/facturas",
+            "/detalles",
+            "/buscar",
+            "/categorias",
+            // Con /api (local)
             "/api/usuarios/crear",
             "/api/usuarios/login",
-            "/api/auth",
-            "/videojuegos",
             "/api/videojuegos",
             "/api/pedidos",
             "/api/facturas",
             "/api/detalles",
-            "/buscar",
-            "/categorias",
             "/api/buscar",
             "/api/categorias"
     );

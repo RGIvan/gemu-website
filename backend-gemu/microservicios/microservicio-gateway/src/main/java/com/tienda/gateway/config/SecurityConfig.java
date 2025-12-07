@@ -15,23 +15,21 @@ public class SecurityConfig {
         http.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(
-                                // Autenticación
                                 "/usuarios/crear",
                                 "/usuarios/login",
+                                "/videojuegos/**",
+                                "/pedidos/**",
+                                "/facturas/**",
+                                "/detalles/**",
+                                "/buscar/**",
+                                "/categorias/**",
+                                // Con /api
                                 "/api/usuarios/crear",
                                 "/api/usuarios/login",
-                                "/api/auth/**",
-
-                                // Catálogo público
-                                "/videojuegos/**",
                                 "/api/videojuegos/**",
                                 "/api/pedidos/**",
                                 "/api/facturas/**",
                                 "/api/detalles/**",
-
-                                // Si tienes búsqueda o categorías
-                                "/buscar/**",
-                                "/categorias/**",
                                 "/api/buscar/**",
                                 "/api/categorias/**"
                         ).permitAll()
