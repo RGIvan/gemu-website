@@ -5,6 +5,10 @@ if (!GATEWAY_BASE_URL) {
   throw new Error("La variable NEXT_PUBLIC_API_URL no está definida");
 }
 
+// Helper para ajustar la URL correctamente
+const gatewayUrl = (path: string) =>
+  `${GATEWAY_BASE_URL.replace(/\/api$/, "")}${path}`;
+
 export async function POST(request: Request) {
   try {
     const {
@@ -16,12 +20,6 @@ export async function POST(request: Request) {
       telefono,
       direccion,
     } = await request.json();
-
-    console.log("🔵 [SIGNUP] Gateway URL:", GATEWAY_BASE_URL);
-    console.log(
-      "🔵 [SIGNUP] Llamando a:",
-      `${GATEWAY_BASE_URL}/usuarios/crear`
-    );
 
     if (!correoElectronico || !password) {
       return NextResponse.json(
@@ -37,7 +35,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const response = await fetch(`${GATEWAY_BASE_URL}/usuarios/crear`, {
+    console.log("🔵 [SIGNUP] Llamando a:", gatewayUrl("/usuarios/crear"));
+
+    const response = await fetch(gatewayUrl("/usuarios/crear"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -59,7 +59,6 @@ export async function POST(request: Request) {
     if (!response.ok) {
       const error = await response.text();
       console.error("🔴 [SIGNUP] Error del Gateway:", error);
-      console.error("🔴 [SIGNUP] Status:", response.status);
       return NextResponse.json(
         { message: "Error al registrar el usuario", error },
         { status: response.status }
@@ -89,12 +88,9 @@ export async function PUT(request: Request) {
       );
     }
 
-    console.log(
-      "🔵 [UPDATE] Llamando a:",
-      `${GATEWAY_BASE_URL}/usuarios/actualizar`
-    );
+    console.log("🔵 [UPDATE] Llamando a:", gatewayUrl("/usuarios/actualizar"));
 
-    const response = await fetch(`${GATEWAY_BASE_URL}/usuarios/actualizar`, {
+    const response = await fetch(gatewayUrl("/usuarios/actualizar"), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -133,12 +129,9 @@ export async function DELETE(request: Request) {
       );
     }
 
-    console.log(
-      "🔵 [DELETE] Llamando a:",
-      `${GATEWAY_BASE_URL}/usuarios/${id}`
-    );
+    console.log("🔵 [DELETE] Llamando a:", gatewayUrl(`/usuarios/${id}`));
 
-    const response = await fetch(`${GATEWAY_BASE_URL}/usuarios/${id}`, {
+    const response = await fetch(gatewayUrl(`/usuarios/${id}`), {
       method: "DELETE",
     });
 
