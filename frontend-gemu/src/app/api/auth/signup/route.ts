@@ -5,6 +5,26 @@ if (!GATEWAY_BASE_URL) {
   throw new Error("La variable NEXT_PUBLIC_API_URL no está definida");
 }
 
+// Helper centralizado para llamar al gateway
+async function apiFetch(path: string, options: RequestInit) {
+  const url = `${GATEWAY_BASE_URL}${path}`;
+  console.log("🔵 [API FETCH] Llamando a:", url);
+
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    const error = await response.text();
+    console.error(
+      "🔴 [API FETCH] Error del Gateway:",
+      error,
+      "Status:",
+      response.status
+    );
+    throw { status: response.status, message: error };
+  }
+  return response.json();
+}
+
+// === SIGNUP ===
 export async function POST(request: Request) {
   try {
     const {
@@ -16,12 +36,6 @@ export async function POST(request: Request) {
       telefono,
       direccion,
     } = await request.json();
-
-    console.log("🔵 [SIGNUP] Gateway URL:", GATEWAY_BASE_URL);
-    console.log(
-      "🔵 [SIGNUP] Llamando a:",
-      `${GATEWAY_BASE_URL}/usuarios/crear`
-    );
 
     if (!correoElectronico || !password) {
       return NextResponse.json(
@@ -37,7 +51,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const response = await fetch(`${GATEWAY_BASE_URL}/usuarios/crear`, {
+    const data = await apiFetch("/api/usuarios/crear", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -51,33 +65,17 @@ export async function POST(request: Request) {
       }),
     });
 
-    console.log(
-      "🟢 [SIGNUP] Status de respuesta del Gateway:",
-      response.status
-    );
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("🔴 [SIGNUP] Error del Gateway:", error);
-      console.error("🔴 [SIGNUP] Status:", response.status);
-      return NextResponse.json(
-        { message: "Error al registrar el usuario", error },
-        { status: response.status }
-      );
-    }
-
-    const data = await response.json();
     console.log("✅ [SIGNUP] Usuario creado exitosamente");
     return NextResponse.json(data, { status: 201 });
-  } catch (error) {
-    console.error("🔴 [SIGNUP] Error durante el registro:", error);
+  } catch (err: any) {
     return NextResponse.json(
-      { message: "Error interno del servidor" },
-      { status: 500 }
+      { message: "Error al registrar el usuario", error: err.message || err },
+      { status: err.status || 500 }
     );
   }
 }
 
+// === UPDATE ===
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
@@ -89,39 +87,22 @@ export async function PUT(request: Request) {
       );
     }
 
-    console.log(
-      "🔵 [UPDATE] Llamando a:",
-      `${GATEWAY_BASE_URL}/usuarios/actualizar`
-    );
-
-    const response = await fetch(`${GATEWAY_BASE_URL}/usuarios/actualizar`, {
+    const data = await apiFetch("/api/usuarios/actualizar", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
 
-    console.log("🟢 [UPDATE] Status:", response.status);
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("🔴 [UPDATE] Error:", error);
-      return NextResponse.json(
-        { message: "Error al actualizar el usuario", error },
-        { status: response.status }
-      );
-    }
-
-    const data = await response.json();
     return NextResponse.json(data, { status: 200 });
-  } catch (error) {
-    console.error("🔴 [UPDATE] Error actualizando usuario:", error);
+  } catch (err: any) {
     return NextResponse.json(
-      { message: "Error interno del servidor" },
-      { status: 500 }
+      { message: "Error al actualizar el usuario", error: err.message || err },
+      { status: err.status || 500 }
     );
   }
 }
 
+// === DELETE ===
 export async function DELETE(request: Request) {
   try {
     const { id } = await request.json();
@@ -133,35 +114,18 @@ export async function DELETE(request: Request) {
       );
     }
 
-    console.log(
-      "🔵 [DELETE] Llamando a:",
-      `${GATEWAY_BASE_URL}/usuarios/${id}`
-    );
-
-    const response = await fetch(`${GATEWAY_BASE_URL}/usuarios/${id}`, {
+    const data = await apiFetch(`/api/usuarios/${id}`, {
       method: "DELETE",
     });
 
-    console.log("🟢 [DELETE] Status:", response.status);
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("🔴 [DELETE] Error:", error);
-      return NextResponse.json(
-        { message: "Error al eliminar el usuario", error },
-        { status: response.status }
-      );
-    }
-
     return NextResponse.json(
-      { message: "Usuario eliminado correctamente" },
+      { message: "Usuario eliminado correctamente", data },
       { status: 200 }
     );
-  } catch (error) {
-    console.error("🔴 [DELETE] Error eliminando usuario:", error);
+  } catch (err: any) {
     return NextResponse.json(
-      { message: "Error interno del servidor" },
-      { status: 500 }
+      { message: "Error al eliminar el usuario", error: err.message || err },
+      { status: err.status || 500 }
     );
   }
 }
