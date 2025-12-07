@@ -5,9 +5,18 @@ if (!GATEWAY_BASE_URL) {
   throw new Error("La variable NEXT_PUBLIC_API_URL no está definida");
 }
 
-// Helper centralizado para llamar al gateway
+// En Railway: NEXT_PUBLIC_API_URL = https://...railway.app (sin /api)
+// En Docker: NEXT_PUBLIC_API_URL = http://gateway:8080/api (con /api)
+const needsApiPrefix = !GATEWAY_BASE_URL.endsWith("/api");
+
 async function apiFetch(path: string, options: RequestInit) {
-  const url = `${GATEWAY_BASE_URL}${path}`;
+  // Si la URL no termina en /api, el path no debe empezar con /api
+  let finalPath = path;
+  if (!needsApiPrefix && path.startsWith("/api")) {
+    finalPath = path.replace("/api", "");
+  }
+
+  const url = `${GATEWAY_BASE_URL}${finalPath}`;
   console.log("🔵 [API FETCH] Llamando a:", url);
 
   const response = await fetch(url, options);
@@ -23,7 +32,6 @@ async function apiFetch(path: string, options: RequestInit) {
   }
   return response.json();
 }
-
 // === SIGNUP ===
 export async function POST(request: Request) {
   try {
