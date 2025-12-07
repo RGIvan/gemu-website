@@ -18,14 +18,21 @@ model detalle_pedidos {
   pedidos         pedidos     @relation(fields: [pedido_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_detalle_pedidos_pedido")
   videojuegos     videojuegos @relation(fields: [producto_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkktd3s1nepts92lj6covdnv7nl")
 }
-  
+
 model facturas {
-  id             BigInt    @id @default(autoincrement())
-  pedido_id      BigInt
-  fecha_emision  DateTime? @default(now()) @db.Timestamp(6)
-  numero_factura String?   @db.VarChar(255)
-  estado         String?   @db.VarChar(255)
-  pedidos        pedidos   @relation(fields: [pedido_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_facturas_pedido")
+  id                BigInt    @id @default(autoincrement())
+  pedido_id         BigInt
+  fecha_emision     DateTime? @default(now()) @db.Timestamp(6)
+  numero_factura    String?   @db.VarChar(255)
+  estado            String?   @db.VarChar(255)
+  cliente_nombre    String?   @db.VarChar(255)
+  cliente_email     String?   @db.VarChar(255)
+  cliente_direccion String?   @db.VarChar(500)
+  cliente_telefono  String?   @db.VarChar(50)
+  total_sin_iva     Decimal?  @db.Decimal(10, 2)
+  iva_total         Decimal?  @db.Decimal(10, 2)
+  total_con_iva     Decimal?  @db.Decimal(10, 2)
+  pedidos           pedidos   @relation(fields: [pedido_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_facturas_pedido")
 }
 
 model pedidos {
@@ -45,7 +52,7 @@ model pedidos {
 
 model usuarios {
   id                 BigInt      @id @default(autoincrement())
-  nombre             String      @db.VarChar(255)
+  nombre             String      @db.VarChar(50)
   apellidos          String      @db.VarChar(255)
   direccion          String?     @db.VarChar(255)
   telefono           String?     @db.VarChar(255)

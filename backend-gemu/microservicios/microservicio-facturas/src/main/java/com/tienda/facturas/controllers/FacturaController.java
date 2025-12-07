@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/facturas")
+@RequestMapping("/api/facturas")
 public class FacturaController {
 
     private final FacturaServicio facturaServicio;
