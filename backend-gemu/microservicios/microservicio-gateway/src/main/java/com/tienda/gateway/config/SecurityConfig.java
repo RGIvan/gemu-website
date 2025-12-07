@@ -31,7 +31,8 @@ public class SecurityConfig {
                                 "/api/facturas/**",
                                 "/api/detalles/**",
                                 "/api/buscar/**",
-                                "/api/categorias/**"
+                                "/api/categorias/**",
+                                "/api/auth/**"
                         ).permitAll()
 
                         // Todo lo demás requiere JWT

@@ -36,7 +36,8 @@ public class JwtAuthenticationFilter implements GlobalFilter {
             "/api/facturas",
             "/api/detalles",
             "/api/buscar",
-            "/api/categorias"
+            "/api/categorias",
+            "/api/auth"
     );
 
     @Override
