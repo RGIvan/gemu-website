@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,6 +30,27 @@ public class Factura {
     @Column(name = "estado")
     @NotNull
     private String estado = "GENERADA";
+
+    @Column(name = "cliente_nombre")
+    private String clienteNombre;
+
+    @Column(name = "cliente_email")
+    private String clienteEmail;
+
+    @Column(name = "cliente_direccion")
+    private String clienteDireccion;
+
+    @Column(name = "cliente_telefono")
+    private String clienteTelefono;
+
+    @Column(name = "total_sin_iva")
+    private BigDecimal totalSinIva;
+
+    @Column(name = "iva_total")
+    private BigDecimal ivaTotal;
+
+    @Column(name = "total_con_iva")
+    private BigDecimal totalConIva;
 
     @OneToOne
     @JoinColumn(name = "pedido_id", nullable = false, unique = true)

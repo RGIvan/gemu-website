@@ -1,11 +1,11 @@
 package com.tienda.usuarios.controllers;
 
+import com.tienda.comun.models.Usuario;
 import com.tienda.usuarios.dto.LoginRequest;
 import com.tienda.usuarios.dto.LoginResponse;
 import com.tienda.usuarios.dto.NombreUsuarioDTO;
 import com.tienda.usuarios.dto.UsuarioDTO;
 import com.tienda.usuarios.mappers.UsuarioMapper;
-import com.tienda.usuarios.models.Usuario;
 import com.tienda.usuarios.services.UsuarioServicio;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -2,6 +2,7 @@ package com.tienda.facturas.services;
 
 import com.tienda.comun.models.Pedido;
 import com.tienda.comun.repositories.PedidoRepositorio;
+import com.tienda.comun.repositories.UsuarioRepositorio;
 import com.tienda.facturas.models.Factura;
 import com.tienda.facturas.repositories.FacturaRepositorio;
 import com.tienda.facturas.dto.FacturaDTO;
@@ -18,6 +19,9 @@ public class FacturaServicio {
 
     @Autowired
     private FacturaRepositorio facturaRepositorio;
+
+    @Autowired
+    private UsuarioRepositorio usuarioRepositorio;
 
     @Autowired
     private PedidoRepositorio pedidoRepositorio;
@@ -38,6 +42,17 @@ public class FacturaServicio {
         factura.setNumeroFactura(generarNumeroFactura());
         factura.setFechaEmision(LocalDateTime.now());
         factura.setEstado("EMITIDA");
+
+        // Datos del cliente (enviados desde frontend)
+        factura.setClienteNombre(facturaDTO.getClienteNombre());
+        factura.setClienteEmail(facturaDTO.getClienteEmail());
+        factura.setClienteTelefono(facturaDTO.getClienteTelefono());
+
+        // Datos del pedido
+        factura.setClienteDireccion(pedido.getDireccionEnvio());
+        factura.setTotalSinIva(pedido.getTotalSinIva());
+        factura.setIvaTotal(pedido.getIvaTotal());
+        factura.setTotalConIva(pedido.getTotalConIva());
 
         Factura facturaGuardada = facturaRepositorio.save(factura);
         return FacturaMapper.toDTO(facturaGuardada);

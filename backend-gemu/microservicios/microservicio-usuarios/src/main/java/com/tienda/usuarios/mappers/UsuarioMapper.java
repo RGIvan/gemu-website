@@ -1,6 +1,6 @@
 package com.tienda.usuarios.mappers;
 
-import com.tienda.usuarios.models.Usuario;
+import com.tienda.comun.models.Usuario;
 import com.tienda.usuarios.dto.UsuarioDTO;
 
 public class UsuarioMapper {

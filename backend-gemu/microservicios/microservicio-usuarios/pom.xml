@@ -73,8 +73,12 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.tienda</groupId>
+            <artifactId>microservicio-comun</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>

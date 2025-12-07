@@ -1,7 +1,7 @@
 package com.tienda.usuarios.services;
 
-import com.tienda.usuarios.models.Usuario;
-import com.tienda.usuarios.repositories.UsuarioRepositorio;
+import com.tienda.comun.models.Usuario;
+import com.tienda.comun.repositories.UsuarioRepositorio;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

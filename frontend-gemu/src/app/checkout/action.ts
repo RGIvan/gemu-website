@@ -93,6 +93,9 @@ export async function createOrder({
       },
       body: JSON.stringify({
         pedidoId: pedido.id,
+        clienteNombre: shippingData.nombre,
+        clienteEmail: shippingData.email,
+        clienteTelefono: shippingData.telefono,
       }),
     });
 

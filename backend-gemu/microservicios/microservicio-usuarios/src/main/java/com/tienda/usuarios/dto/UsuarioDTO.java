@@ -1,7 +1,6 @@
 package com.tienda.usuarios.dto;
 
 import lombok.*;
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
