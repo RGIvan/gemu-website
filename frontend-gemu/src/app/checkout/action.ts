@@ -3,8 +3,6 @@
 import { emptyCart } from "@/app/(carts)/cart/action";
 import { EnrichedProduct } from "@/types/types";
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/libs/auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -23,30 +21,19 @@ interface CreateOrderParams {
   };
 }
 
-async function getAuthToken(
-  email: string,
-  password?: string
-): Promise<string | null> {
-  try {
-    const response = await fetch(`${API_URL}/usuarios/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        correoElectronico: email,
-        password: password || "dummy",
-      }),
-    });
+// Detectar si estamos en Railway (producción) o Docker (local)
+function getEndpoint(path: string): string {
+  // Railway: sin /api (el Gateway hace RewritePath)
+  // Docker local: con /api (rutas directas)
+  const isRailway = API_URL?.includes("railway.app");
 
-    if (response.ok) {
-      const data = await response.json();
-      return data.token;
-    }
-  } catch (error) {
-    console.error("Error getting auth token:", error);
+  if (isRailway) {
+    // Producción: /pedidos/crear
+    return `${API_URL}${path}`;
+  } else {
+    // Local Docker: /api/pedidos/crear
+    return `${API_URL}${path}`;
   }
-  return null;
 }
 
 export async function createOrder({
@@ -60,14 +47,13 @@ export async function createOrder({
 
     console.log("=== CREANDO PEDIDO ===");
     console.log("API_URL:", API_URL);
+    console.log("Endpoint pedidos:", getEndpoint("/pedidos/crear"));
 
     // 1. Crear el pedido
-    const pedidoResponse = await fetch(`${API_URL}/pedidos/crear`, {
+    const pedidoResponse = await fetch(getEndpoint("/pedidos/crear"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // Si tienes el token guardado en la sesión, úsalo aquí:
-        // "Authorization": `Bearer ${token}`,
       },
       body: JSON.stringify({
         usuarioId: parseInt(userId),
@@ -98,7 +84,9 @@ export async function createOrder({
 
     // 2. Crear la factura
     console.log("=== CREANDO FACTURA ===");
-    const facturaResponse = await fetch(`${API_URL}/facturas/crear`, {
+    console.log("Endpoint facturas:", getEndpoint("/facturas/crear"));
+
+    const facturaResponse = await fetch(getEndpoint("/facturas/crear"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
