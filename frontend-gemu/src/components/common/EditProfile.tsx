@@ -92,7 +92,7 @@ export default function EditProfile() {
         },
       });
 
-      toast.success("Perfil actualizado con éxito!");
+      toast.success("¡Perfil actualizado con éxito!");
     } catch (error: any) {
       console.error(error);
       toast.error(error?.message || "Error al actualizar el perfil");
