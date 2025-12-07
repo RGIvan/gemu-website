@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { prisma } from "@/libs/prisma";
 
 interface UserProfile {
   nombre: string;
