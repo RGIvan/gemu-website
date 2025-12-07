@@ -4,7 +4,7 @@ import { prisma } from "@/libs/prisma";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { userId, name, email, phone } = body;
+    const { userId, nombre, apellidos, correo_electronico, telefono } = body;
 
     if (!userId) {
       return NextResponse.json({ error: "userId requerido" }, { status: 400 });
@@ -14,18 +14,20 @@ export async function POST(req: NextRequest) {
     const updatedUser = await prisma.usuarios.update({
       where: { id: BigInt(userId) },
       data: {
-        nombre: name,
-        correo_electronico: email,
-        telefono: phone,
+        nombre: nombre,
+        apellidos: apellidos,
+        correo_electronico: correo_electronico,
+        telefono: telefono,
       },
     });
 
-    // Devuelve los datos con las propiedades que espera NextAuth
+    // Devuelve los datos
     return NextResponse.json({
       _id: updatedUser.id.toString(),
-      name: updatedUser.nombre,
-      email: updatedUser.correo_electronico,
-      phone: updatedUser.telefono,
+      nombre: updatedUser.nombre,
+      apellidos: updatedUser.apellidos,
+      correo_electronico: updatedUser.correo_electronico,
+      telefono: updatedUser.telefono,
     });
   } catch (error) {
     console.error("Error updating user:", error);
