@@ -167,7 +167,7 @@ export const Navbar = ({ session, totalItemsCart, totalWishlists }: Navbar) => {
       </div>
 
       {/* Derecha: Login/Usuario + Carrito + Wishlist */}
-      <ul className="flex items-center gap-2">
+      <ul className="flex items-center gap-1 sm:gap-2">
         {/* Login o Usuario */}
         {session?.user ? (
           <li className="items-center hidden lg:flex">
@@ -178,7 +178,7 @@ export const Navbar = ({ session, totalItemsCart, totalWishlists }: Navbar) => {
             <Link
               href="/login"
               aria-label="Iniciar sesión"
-              className="text-sm py-3 px-3 rounded-md transition-all text-[#EDEDED] hover:bg-[#1F1F1F] relative"
+              className="text-sm py-2 px-2 sm:py-3 sm:px-3 rounded-md transition-all text-[#EDEDED] hover:bg-[#1F1F1F] relative"
             >
               <svg
                 height="16"
