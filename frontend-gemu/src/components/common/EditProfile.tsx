@@ -18,6 +18,7 @@ interface UserProfile {
   apellidos: string;
   correo_electronico: string;
   telefono: string;
+  direccion: string;
 }
 
 export default function EditProfile() {
@@ -27,6 +28,7 @@ export default function EditProfile() {
     apellidos: "",
     correo_electronico: "",
     telefono: "",
+    direccion: "",
   });
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,6 +47,7 @@ export default function EditProfile() {
             apellidos: userData.apellidos || "",
             correo_electronico: userData.correo_electronico || "",
             telefono: userData.telefono || "",
+            direccion: userData.direccion || "",
           });
         }
       } catch (error) {
@@ -74,6 +77,7 @@ export default function EditProfile() {
           apellidos: user.apellidos,
           correo_electronico: user.correo_electronico,
           telefono: user.telefono || null,
+          direccion: user.direccion || null,
         }),
       });
 
@@ -89,6 +93,7 @@ export default function EditProfile() {
           name: `${updatedUser.nombre} ${updatedUser.apellidos}`,
           email: updatedUser.correo_electronico,
           phone: updatedUser.telefono,
+          address: user.direccion || null,
         },
       });
 
@@ -168,6 +173,17 @@ export default function EditProfile() {
             id="telefono"
             value={user.telefono}
             onChange={(e) => setUser({ ...user, telefono: e.target.value })}
+            className="col-span-3"
+          />
+        </div>
+        <div className="grid items-center grid-cols-4 gap-4">
+          <Label htmlFor="direccion" className="text-right">
+            Dirección
+          </Label>
+          <Input
+            id="direccion"
+            value={user.direccion}
+            onChange={(e) => setUser({ ...user, direccion: e.target.value })}
             className="col-span-3"
           />
         </div>

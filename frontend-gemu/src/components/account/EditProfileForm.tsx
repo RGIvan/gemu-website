@@ -53,7 +53,7 @@ export default function EditProfileForm({
           name: `${updatedUser.nombre} ${updatedUser.apellidos}`,
           email: updatedUser.correo_electronico,
           phone: updatedUser.telefono,
-          address: updatedUser.direccion,
+          address: user.direccion || null,
         },
       });
 

@@ -4,7 +4,14 @@ import { prisma } from "@/libs/prisma";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { userId, nombre, apellidos, correo_electronico, telefono } = body;
+    const {
+      userId,
+      nombre,
+      apellidos,
+      correo_electronico,
+      telefono,
+      direccion,
+    } = body;
 
     if (!userId) {
       return NextResponse.json({ error: "userId requerido" }, { status: 400 });
@@ -18,6 +25,7 @@ export async function POST(req: NextRequest) {
         apellidos: apellidos,
         correo_electronico: correo_electronico,
         telefono: telefono,
+        direccion: direccion,
       },
     });
 
@@ -28,6 +36,7 @@ export async function POST(req: NextRequest) {
       apellidos: updatedUser.apellidos,
       correo_electronico: updatedUser.correo_electronico,
       telefono: updatedUser.telefono,
+      direccion: updatedUser.direccion,
     });
   } catch (error) {
     console.error("Error updating user:", error);
