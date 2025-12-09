@@ -33,9 +33,9 @@ export const Navbar = ({ session, totalItemsCart, totalWishlists }: Navbar) => {
 
   const platforms = [
     { value: "PlayStation", label: "PlayStation" },
-    { value: "PlayStation", label: "PlayStation 2" },
-    { value: "Xbox", label: "Xbox 360" },
-    { value: "Nintendo", label: "Nintendo Switch" },
+    { value: "PlayStation 2", label: "PlayStation 2" },
+    { value: "Xbox 360", label: "Xbox 360" },
+    { value: "Nintendo Switch", label: "Nintendo Switch" },
   ];
 
   return (
