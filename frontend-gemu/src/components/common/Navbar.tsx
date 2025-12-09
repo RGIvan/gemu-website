@@ -135,6 +135,15 @@ export const Navbar = ({ session, totalItemsCart, totalWishlists }: Navbar) => {
                   <Link
                     className="flex items-center"
                     onClick={toggleHeader}
+                    href="/profile/edit"
+                  >
+                    <span>Editar perfil</span>
+                  </Link>
+                </li>
+                <li className="flex items-center justify-center">
+                  <Link
+                    className="flex items-center"
+                    onClick={toggleHeader}
                     href="/orders"
                   >
                     <span>Mis pedidos</span>
