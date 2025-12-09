@@ -104,7 +104,7 @@ export default function EditProfileForm({
       <div>
         <label className="block text-sm text-[#A1A1A1] mb-1">Dirección</label>
         <input
-          type="tel"
+          type="text"
           value={user.direccion}
           onChange={(e) => setUser({ ...user, direccion: e.target.value })}
           className="w-full h-10 px-3 bg-[#0A0A0A] border border-[#2E2E2E] rounded-md text-[#EDEDED]"
