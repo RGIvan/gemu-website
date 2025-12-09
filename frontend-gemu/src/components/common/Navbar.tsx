@@ -126,10 +126,24 @@ export const Navbar = ({ session, totalItemsCart, totalWishlists }: Navbar) => {
                   <Link
                     className="flex items-center"
                     onClick={toggleHeader}
+                    href="/profile"
+                  >
+                    <span>Ver perfil</span>
+                  </Link>
+                </li>
+                <li className="flex items-center justify-center">
+                  <Link
+                    className="flex items-center"
+                    onClick={toggleHeader}
                     href="/orders"
                   >
                     <span>Mis pedidos</span>
                   </Link>
+                </li>
+                <li className="flex items-center justify-center">
+                  <span className="text-[#A1A1A1]">
+                    {session.user.username || session.user.name?.split(" ")[0]}
+                  </span>
                 </li>
                 <li className="flex items-center justify-center">
                   <SignOutButton />
