@@ -6,9 +6,9 @@ import { useState } from "react";
 const platforms = [
   { value: "", label: "Todas" },
   { value: "PlayStation", label: "PlayStation" },
-  { value: "Xbox", label: "Xbox" },
-  { value: "Nintendo", label: "Nintendo" },
-  { value: "PC", label: "PC" },
+  { value: "PlayStation", label: "PlayStation 2" },
+  { value: "Xbox", label: "Xbox 360" },
+  { value: "Nintendo", label: "Nintendo Switch" },
 ];
 
 const FilterPlatform = () => {
