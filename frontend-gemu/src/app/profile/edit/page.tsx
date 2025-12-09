@@ -25,6 +25,7 @@ const EditProfilePage = async () => {
     apellidos: usuario.apellidos || "",
     correo_electronico: usuario.correo_electronico,
     telefono: usuario.telefono || "",
+    direccion: usuario.direccion || "",
   };
 
   return (

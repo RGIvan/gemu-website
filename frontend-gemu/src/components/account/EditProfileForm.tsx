@@ -11,6 +11,7 @@ interface UserData {
   apellidos: string;
   correo_electronico: string;
   telefono: string;
+  direccion: string;
 }
 
 export default function EditProfileForm({
@@ -37,6 +38,7 @@ export default function EditProfileForm({
           apellidos: user.apellidos,
           correo_electronico: user.correo_electronico,
           telefono: user.telefono || null,
+          direccion: user.direccion || null,
         }),
       });
 
@@ -51,6 +53,7 @@ export default function EditProfileForm({
           name: `${updatedUser.nombre} ${updatedUser.apellidos}`,
           email: updatedUser.correo_electronico,
           phone: updatedUser.telefono,
+          address: updatedUser.direccion,
         },
       });
 
@@ -94,6 +97,16 @@ export default function EditProfileForm({
           onChange={(e) =>
             setUser({ ...user, correo_electronico: e.target.value })
           }
+          className="w-full h-10 px-3 bg-[#0A0A0A] border border-[#2E2E2E] rounded-md text-[#EDEDED]"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm text-[#A1A1A1] mb-1">Dirección</label>
+        <input
+          type="tel"
+          value={user.direccion}
+          onChange={(e) => setUser({ ...user, direccion: e.target.value })}
           className="w-full h-10 px-3 bg-[#0A0A0A] border border-[#2E2E2E] rounded-md text-[#EDEDED]"
         />
       </div>
