@@ -5,14 +5,14 @@ if (!GATEWAY_BASE_URL) {
   throw new Error("La variable NEXT_PUBLIC_API_URL no está definida");
 }
 
-// En Railway: NEXT_PUBLIC_API_URL = https://...railway.app (sin /api)
-// En Docker: NEXT_PUBLIC_API_URL = http://gateway:8080/api (con /api)
-const needsApiPrefix = !GATEWAY_BASE_URL.endsWith("/api");
+// Detectar si estamos en Railway (producción)
+const isRailway = GATEWAY_BASE_URL.includes("railway.app");
 
 async function apiFetch(path: string, options: RequestInit) {
-  // Si la URL no termina en /api, el path no debe empezar con /api
   let finalPath = path;
-  if (!needsApiPrefix && path.startsWith("/api")) {
+
+  // En Railway, quitar /api del path porque el Gateway hace RewritePath
+  if (isRailway && path.startsWith("/api")) {
     finalPath = path.replace("/api", "");
   }
 
