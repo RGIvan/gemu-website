@@ -46,7 +46,7 @@ export const Images = ({
 
   // Ajustar aspect ratio según plataforma
   const isPS2 = platform?.toLowerCase().includes("playstation 2");
-  const aspectClass = isPS2 ? "aspect-[3/4]" : "aspect-square";
+  const aspectClass = isPS2 ? "aspect-[2/3]" : "aspect-square";
 
   return (
     <div className={!imageLoaded ? "relative" : ""}>
