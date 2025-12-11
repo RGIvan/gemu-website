@@ -91,6 +91,7 @@ const ProductsCart = async ({ session }: { session: Session }) => {
             price: item.price,
             quantity: item.quantity,
             total: item.total,
+            num_players: item.num_players,
             image: item.image || "/placeholder.png",
           }))}
           session={session}

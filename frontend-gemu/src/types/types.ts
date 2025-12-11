@@ -75,7 +75,7 @@ export interface EnrichedProduct {
   productId: string; // ID como string
   name: string; // nombre
   category: string; // categoria
-  num_jugadores: number; // número de jugadores
+  num_players: number; // número de jugadores
   price: number; // precio
   image: string; // 1 sola imagen (imagenUrl)
   quantity: number; // cantidad en carrito
