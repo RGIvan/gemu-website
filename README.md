@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![GEMU Logo](public/logo.png)
+![GEMU Logo](frontend-gemu/public/logo.png)
 
 **Plataforma e-commerce de videojuegos desarrollada con Next.js y microservicios Spring Boot**
 
@@ -12,7 +12,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 
-[Demo en vivo](https://gemu-website.vercel.app) · [Reportar Bug](https://github.com/RGIvan/gemu-website/issues) · [Solicitar Feature](https://github.com/RGIvan/gemu-website/issues)
+[Demo en vivo](https://tienda-gemu.vercel.app/) · [Reportar Bug](https://github.com/RGIvan/gemu-website/issues) · [Solicitar Feature](https://github.com/RGIvan/gemu-website/issues)
 
 </div>
 
@@ -48,25 +48,25 @@ GEMU es una plataforma de comercio electrónico especializada en la venta de vid
 
 ---
 
-## ✨ Características
+## �?Características
 
 ### Usuario
-- ✅ Registro e inicio de sesión (email/contraseña o Google)
-- ✅ Perfil editable (nombre, apellidos, teléfono, dirección)
-- ✅ Eliminación de cuenta
+- �?Registro e inicio de sesión (email/contraseña o Google)
+- �?Perfil editable (nombre, apellidos, teléfono, dirección)
+- �?Eliminación de cuenta
 
 ### Catálogo
-- ✅ Visualización de videojuegos con imágenes
-- ✅ Filtrado por plataforma
-- ✅ Búsqueda por nombre
-- ✅ Página de detalle de producto
+- �?Visualización de videojuegos con imágenes
+- �?Filtrado por plataforma
+- �?Búsqueda por nombre
+- �?Página de detalle de producto
 
 ### Compras
-- ✅ Carrito de compras (añadir, eliminar, modificar cantidad)
-- ✅ Lista de favoritos
-- ✅ Proceso de checkout completo
-- ✅ Historial de pedidos
-- ✅ Descarga de facturas en PDF
+- �?Carrito de compras (añadir, eliminar, modificar cantidad)
+- �?Lista de favoritos
+- �?Proceso de checkout completo
+- �?Historial de pedidos
+- �?Descarga de facturas en PDF
 
 ---
 
@@ -109,27 +109,7 @@ GEMU es una plataforma de comercio electrónico especializada en la venta de vid
 ## 🏗 Arquitectura
 
 ```
-┌─────────────────┐     ┌─────────────────────────────────────────┐
-│                 │     │              RAILWAY                     │
-│     VERCEL      │     │  ┌─────────────────────────────────┐    │
-│  ┌───────────┐  │     │  │         API GATEWAY             │    │
-│  │  Next.js  │──┼─────┼─▶│    (Spring Cloud Gateway)       │    │
-│  │  Frontend │  │     │  └──────────────┬──────────────────┘    │
-│  └───────────┘  │     │                 │                        │
-│                 │     │    ┌────────────┼────────────┐           │
-└─────────────────┘     │    ▼            ▼            ▼           │
-                        │ ┌──────┐   ┌──────┐   ┌──────┐          │
-                        │ │Users │   │Games │   │Orders│          │
-                        │ │ MS   │   │ MS   │   │ MS   │          │
-                        │ └──┬───┘   └──┬───┘   └──┬───┘          │
-                        │    │          │          │               │
-                        │    └──────────┼──────────┘               │
-                        │               ▼                          │
-                        │       ┌──────────────┐                   │
-                        │       │  PostgreSQL  │                   │
-                        │       └──────────────┘                   │
-                        └─────────────────────────────────────────┘
-```
+┌─────────────────�?    ┌─────────────────────────────────────────�?�?                �?    �?             RAILWAY                     �?�?    VERCEL      �?    �? ┌─────────────────────────────────�?   �?�? ┌───────────�? �?    �? �?        API GATEWAY             �?   �?�? �? Next.js  │──┼─────┼─▶│    (Spring Cloud Gateway)       �?   �?�? �? Frontend �? �?    �? └──────────────┬──────────────────�?   �?�? └───────────�? �?    �?                �?                       �?�?                �?    �?   ┌────────────┼────────────�?          �?└─────────────────�?    �?   �?           �?           �?          �?                        �?┌──────�?  ┌──────�?  ┌──────�?         �?                        �?│Users �?  │Games �?  │Orders�?         �?                        �?�?MS   �?  �?MS   �?  �?MS   �?         �?                        �?└──┬───�?  └──┬───�?  └──┬───�?         �?                        �?   �?         �?         �?              �?                        �?   └──────────┼──────────�?              �?                        �?              �?                         �?                        �?      ┌──────────────�?                  �?                        �?      �? PostgreSQL  �?                  �?                        �?      └──────────────�?                  �?                        └─────────────────────────────────────────�?```
 
 ### Microservicios
 
@@ -315,29 +295,27 @@ docker-compose logs -f   # Ver logs
 ```
 gemu-website/
 ├── frontend-gemu/
-│   ├── src/
-│   │   ├── app/                 # App Router
-│   │   │   ├── (auth)/          # Login, Register
-│   │   │   ├── (carts)/         # Cart, Wishlist
-│   │   │   ├── (user)/          # Profile, Orders
-│   │   │   ├── api/             # API Routes
-│   │   │   ├── checkout/        # Checkout flow
-│   │   │   └── profile/         # User profile
-│   │   ├── components/          # Componentes React
-│   │   ├── libs/                # Utilidades
-│   │   └── types/               # TypeScript types
-│   ├── prisma/                  # Schema DB
-│   └── public/                  # Assets
-│
-├── backend/
-│   ├── gateway/                 # API Gateway
-│   ├── microservicio-usuarios/
-│   ├── microservicio-videojuegos/
-│   ├── microservicio-pedidos/
-│   ├── microservicio-facturas/
-│   └── comun/                   # Entidades compartidas
-│
-└── docker-compose.yml
+�?  ├── src/
+�?  �?  ├── app/                 # App Router
+�?  �?  �?  ├── (auth)/          # Login, Register
+�?  �?  �?  ├── (carts)/         # Cart, Wishlist
+�?  �?  �?  ├── (user)/          # Profile, Orders
+�?  �?  �?  ├── api/             # API Routes
+�?  �?  �?  ├── checkout/        # Checkout flow
+�?  �?  �?  └── profile/         # User profile
+�?  �?  ├── components/          # Componentes React
+�?  �?  ├── libs/                # Utilidades
+�?  �?  └── types/               # TypeScript types
+�?  ├── prisma/                  # Schema DB
+�?  └── public/                  # Assets
+�?├── backend/
+�?  ├── gateway/                 # API Gateway
+�?  ├── microservicio-usuarios/
+�?  ├── microservicio-videojuegos/
+�?  ├── microservicio-pedidos/
+�?  ├── microservicio-facturas/
+�?  └── comun/                   # Entidades compartidas
+�?└── docker-compose.yml
 ```
 
 ---
@@ -368,6 +346,6 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 
 <div align="center">
 
-⭐ Si te ha gustado el proyecto, ¡dale una estrella!
+�?Si te ha gustado el proyecto, ¡dale una estrella!
 
 </div>
