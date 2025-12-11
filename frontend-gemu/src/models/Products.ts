@@ -10,6 +10,7 @@ export async function getAllProducts(): Promise<EnrichedProduct[]> {
       nombre: string;
       categoria: string;
       precio: number;
+      num_jugadores: number | null;
       imagenUrl?: string | null;
     }) => ({
       id: p.id,
@@ -18,6 +19,7 @@ export async function getAllProducts(): Promise<EnrichedProduct[]> {
       category: p.categoria,
       price: p.precio,
       quantity: 0,
+      num_players: 0,
       total: 0,
       image: p.imagenUrl || "",
     })
@@ -41,6 +43,7 @@ export async function getProductById(
     name: p.nombre,
     category: p.categoria,
     price: p.precio,
+    num_players: 0,
     quantity: 0,
     total: 0,
     image: p.imagenUrl || "",
