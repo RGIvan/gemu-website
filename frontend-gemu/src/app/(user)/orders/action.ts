@@ -42,6 +42,7 @@ export async function getCartItems(userId: string): Promise<EnrichedProduct[]> {
       quantity: item.quantity,
       num_players: item.num_players || 0,
       total: Number(product.precio) * item.quantity,
+      platform: product.plataforma || "",
     });
   }
 
@@ -130,6 +131,7 @@ export async function getUserOrders(
       total: item.subtotal
         ? Number(item.subtotal)
         : Number(item.precio_unitario) * item.cantidad,
+      platform: item.videojuegos?.plataforma || "",
     })),
     totalSinIVA: Number(o.total_sin_iva ?? 0),
     ivaTotal: Number(o.iva_total ?? 0),

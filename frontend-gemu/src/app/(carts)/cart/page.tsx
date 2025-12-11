@@ -84,7 +84,7 @@ const ProductsCart = async ({ session }: { session: Session }) => {
         <Products
           products={enrichedCart.map((item) => ({
             id: item.id,
-            productId: item.id.toString(), // BigInt a string
+            productId: item.id.toString(),
             _id: item.id.toString(),
             name: item.name,
             category: item.category,
@@ -93,6 +93,7 @@ const ProductsCart = async ({ session }: { session: Session }) => {
             total: item.total,
             num_players: item.num_players,
             image: item.image || "/placeholder.png",
+            platform: item.platform,
           }))}
           session={session}
           extraClassname="cart-ord-mobile"
