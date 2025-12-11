@@ -34,7 +34,7 @@ export const Products = ({
   isCartPage = false,
 }: ProductsProps) => {
   const gridClassname = [
-    "grid gap-x-3.5 gap-y-6 sm:gap-y-9",
+    "grid gap-x-3.5 gap-y-6 sm:gap-y-9 items-start",
     extraClassname === "colums-mobile" && "grid-cols-auto-fill-110",
     extraClassname === "cart-ord-mobile" && "grid-cols-1",
     "sm:grid-cols-auto-fill-250",
