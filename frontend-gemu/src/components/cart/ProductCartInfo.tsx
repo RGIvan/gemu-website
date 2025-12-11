@@ -21,7 +21,7 @@ const ProductCartInfo = ({ product }: Props) => {
         return;
       }
 
-      toast.success("Producto añadido al carrito");
+      toast.success("¡Producto añadido al carrito!");
     } catch (error) {
       console.error("Error al añadir el producto:", error);
       toast.error("No se pudo añadir el producto al carrito");
