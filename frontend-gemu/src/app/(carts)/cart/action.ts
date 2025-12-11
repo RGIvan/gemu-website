@@ -97,7 +97,7 @@ export async function getItems(userId: string): Promise<EnrichedProduct[]> {
       quantity: item.quantity,
       num_players: producto?.num_jugadores || 0,
       total: (producto?.precio || 0) * item.quantity,
-      plataforma: producto?.plataforma || "",
+      platform: producto?.plataforma || "",
     };
   });
 }
