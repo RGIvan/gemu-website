@@ -19,7 +19,11 @@ export const SingleProduct = ({ product, session }: SingleProductProps) => {
     <div className="flex flex-col items-center justify-center gap-8 lg:flex-row">
       {/* Imagen del producto */}
       <div className="w-full max-w-[400px]">
-        <ProductImages name={product.name} selectedVariant={product} />
+        <ProductImages
+          name={product.name}
+          selectedVariant={product}
+          platform={product.platform}
+        />
       </div>
 
       <div className="w-full max-w-[400px] flex flex-col items-center gap-5">
