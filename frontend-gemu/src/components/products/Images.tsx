@@ -20,7 +20,7 @@ const cloudinaryLoader: ImageLoader = ({ src, width, quality }) => {
 
 interface ImagesProps {
   image: string[]; // array de URLs
-  platform: string; // PS1, PS2, etc.
+  name: string;
   width: number;
   height: number;
   priority?: boolean;
@@ -29,7 +29,7 @@ interface ImagesProps {
 
 export const Images = ({
   image,
-  platform,
+  name,
   width,
   height,
   priority = false,
@@ -43,34 +43,22 @@ export const Images = ({
   const imageUrl =
     image[0] && image[0].trim() !== "" ? image[0] : "/placeholder.png";
 
-  // Determinamos la clase de aspecto según la plataforma
-  const aspectClass = (() => {
-    switch (platform.toUpperCase()) {
-      case "PlayStation 2":
-        return "aspect-[2/3]";
-      case "PlayStation":
-        return "aspect-[5/7]";
-      default:
-        return "aspect-square";
-    }
-  })();
-
   return (
-    <div className={`relative w-full max-w-img ${aspectClass}`}>
+    <div className={!imageLoaded ? "relative" : ""}>
       <Image
         loader={cloudinaryLoader}
         src={imageUrl}
-        alt={`${platform} cover`}
+        alt={name}
         width={width}
         height={height}
         priority={priority}
         sizes={sizes}
-        className="object-cover w-full h-full brightness-90"
+        className="object-cover w-full max-w-img aspect-square brightness-90"
         onLoad={handleImageLoadComplete}
       />
       {!imageLoaded && (
-        <div className="absolute top-0 left-0 w-full h-full bg-black">
-          <Skeleton className="w-full h-full rounded-b-none" />
+        <div className="absolute top-0 right-0 w-full aspect-[2/3] bg-black">
+          <Skeleton className="w-full rounded-b-none aspect-square" />
         </div>
       )}
     </div>
