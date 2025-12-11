@@ -44,9 +44,9 @@ export const Images = ({
   const imageUrl =
     image[0] && image[0].trim() !== "" ? image[0] : "/placeholder.png";
 
-  // Ajustar aspect ratio según plataforma
+  // PS2 usa object-contain para mostrar la imagen completa sin recortar
   const isPS2 = platform?.toLowerCase().includes("playstation 2");
-  const aspectClass = isPS2 ? "aspect-[2/3]" : "aspect-square";
+  const objectFitClass = isPS2 ? "object-contain" : "object-cover";
 
   return (
     <div className={!imageLoaded ? "relative" : ""}>
@@ -55,17 +55,15 @@ export const Images = ({
         src={imageUrl}
         alt={name}
         width={width}
-        height={isPS2 ? Math.round(height * 1.33) : height}
+        height={height}
         priority={priority}
         sizes={sizes}
-        className={`object-cover w-full max-w-img ${aspectClass} brightness-90`}
+        className={`${objectFitClass} w-full max-w-img aspect-square brightness-90`}
         onLoad={handleImageLoadComplete}
       />
       {!imageLoaded && (
-        <div
-          className={`absolute top-0 right-0 w-full ${aspectClass} bg-black`}
-        >
-          <Skeleton className={`w-full rounded-b-none ${aspectClass}`} />
+        <div className="absolute top-0 right-0 w-full bg-black aspect-square">
+          <Skeleton className="w-full rounded-b-none aspect-square" />
         </div>
       )}
     </div>
