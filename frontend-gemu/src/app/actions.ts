@@ -11,6 +11,7 @@ type VideojuegoDB = {
   precio: number;
   existencias: number;
   imagenUrl?: string | null;
+  num_jugadores: number | null;
 };
 
 /**
@@ -23,6 +24,7 @@ const mapToEnrichedProduct = (p: VideojuegoDB): EnrichedProduct => ({
   category: p.categoria,
   price: Number(p.precio),
   quantity: p.existencias,
+  num_players: Number(p.num_jugadores),
   total: Number(p.precio) * p.existencias,
   image: p.imagenUrl || "", // una sola imagen
 });
