@@ -4,12 +4,12 @@ import { FormEvent, useCallback, useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 const Signup = () => {
   const labelStyles = "w-full text-sm";
-  const [error, setError] = useState<string | undefined>();
-  const [success, setSuccess] = useState<string | undefined>();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -21,8 +21,7 @@ const Signup = () => {
   const handleSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      setError(undefined);
-      setSuccess(undefined);
+      setIsLoading(true);
 
       try {
         const formData = new FormData(event.currentTarget);
@@ -37,7 +36,7 @@ const Signup = () => {
           direccion: formData.get("direccion")?.toString() || "",
         });
 
-        setSuccess("✅ Usuario registrado correctamente. Redirigiendo...");
+        toast.success("Usuario registrado correctamente. Redirigiendo...");
         console.log("Usuario creado:", signupResponse.data);
 
         await signIn("credentials", {
@@ -54,10 +53,12 @@ const Signup = () => {
         if (error instanceof AxiosError) {
           const errorMessage =
             error.response?.data.message || "Error al registrar el usuario";
-          setError(errorMessage);
+          toast.error(errorMessage);
         } else {
-          setError("Error desconocido al registrar usuario");
+          toast.error("Error desconocido al registrar usuario");
         }
+      } finally {
+        setIsLoading(false);
       }
     },
     []
@@ -70,26 +71,6 @@ const Signup = () => {
         className="p-6 xs:p-10 w-full max-w-350 flex flex-col justify-between items-center gap-2.5	
                 border border-solid border-[#2E2E2E] bg-[#0A0A0A] rounded-md"
       >
-        {error && (
-          <div className="text-[#FF6166] flex items-center justify-center gap-2">
-            <svg
-              data-testid="geist-icon"
-              height="16"
-              strokeLinejoin="round"
-              viewBox="0 0 16 16"
-              width="16"
-              style={{ color: "currentColor" }}
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M5.30761 1.5L1.5 5.30761L1.5 10.6924L5.30761 14.5H10.6924L14.5 10.6924V5.30761L10.6924 1.5H5.30761ZM5.10051 0C4.83529 0 4.58094 0.105357 4.3934 0.292893L0.292893 4.3934C0.105357 4.58094 0 4.83529 0 5.10051V10.8995C0 11.1647 0.105357 11.4191 0.292894 11.6066L4.3934 15.7071C4.58094 15.8946 4.83529 16 5.10051 16H10.8995C11.1647 16 11.4191 15.8946 11.6066 15.7071L15.7071 11.6066C15.8946 11.4191 16 11.1647 16 10.8995V5.10051C16 4.83529 15.8946 4.58093 15.7071 4.3934L11.6066 0.292893C11.4191 0.105357 11.1647 0 10.8995 0H5.10051ZM8.75 3.75V4.5V8L8.75 8.75H7.25V8V4.5V3.75H8.75ZM8 12C8.55229 12 9 11.5523 9 11C9 10.4477 8.55229 10 8 10C7.44772 10 7 10.4477 7 11C7 11.5523 7.44772 12 8 12Z"
-                fill="currentColor"
-              ></path>
-            </svg>
-            <div className="text-sm">{error}</div>
-          </div>
-        )}
         <h1 className="w-full mb-5 text-2xl font-bold">Regístrate</h1>
 
         <label className={labelStyles}>Nombre:</label>
@@ -121,7 +102,7 @@ const Signup = () => {
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Contraseña"
-            className="w-full h-8 text-[#A1A1A1] border border-solid border-[#2E2E2E] bg-black py-1 px-2.5 rounded-l  text-13"
+            className="w-full h-8 text-[#A1A1A1] border border-solid border-[#2E2E2E] bg-black py-1 px-2.5 rounded-l text-13"
             name="password"
           />
           <button
@@ -190,21 +171,22 @@ const Signup = () => {
         />
 
         <button
-          className="w-full bg-black border border-solid border-[#2E2E2E] py-1.5 mt-2.5 rounded transition-all hover:bg-[#1F1F1F] hover:border-[#454545] text-13"
+          className="w-full bg-black border border-solid border-[#2E2E2E] py-1.5 mt-2.5 rounded transition-all hover:bg-[#1F1F1F] hover:border-[#454545] text-13 disabled:opacity-50"
           type="submit"
+          disabled={isLoading}
         >
-          Regístrate
+          {isLoading ? "Registrando..." : "Regístrate"}
         </button>
 
         <div className="relative flex items-center justify-center w-full h-10">
           <div className="absolute w-full h-px top-2/4 bg-[#2E2E2E]"></div>
-          <p className="z-10 flex items-center justify-center w-8 h-6 bg-background-secondary">
-            or
+          <p className="z-10 flex items-center justify-center w-8 h-6 bg-[#0A0A0A]">
+            o
           </p>
         </div>
 
         <button
-          className="flex text-[#A1A1A1] items-center gap-3 px-4 py-2 text-sm align-middle transition-all bg-black border border-solid rounded border-border-primary ease hover:bg-[#1F1F1F] hover:border-[#454545]"
+          className="flex text-[#A1A1A1] items-center gap-3 px-4 py-2 text-sm align-middle transition-all bg-black border border-solid rounded border-[#2E2E2E] ease hover:bg-[#1F1F1F] hover:border-[#454545]"
           onClick={() => signIn("google")}
           type="button"
         >
