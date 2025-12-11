@@ -77,6 +77,7 @@ const WishlistPage = async () => {
       price: videojuegos.precio,
       image: videojuegos.imagenUrl || "", // solo 1 imagen
       quantity: 1, // por defecto 1
+      num_players: videojuegos.num_jugadores || 0,
       total: videojuegos.precio, // quantity * price
     })
   );

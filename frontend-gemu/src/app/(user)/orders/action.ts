@@ -40,6 +40,7 @@ export async function getCartItems(userId: string): Promise<EnrichedProduct[]> {
       price: Number(product.precio),
       image: product.imagenUrl || "",
       quantity: item.quantity,
+      num_players: item.num_players || 0,
       total: Number(product.precio) * item.quantity,
     });
   }
@@ -122,6 +123,7 @@ export async function getUserOrders(
       productId: item.videojuegos?.id.toString() || "0",
       name: item.videojuegos?.nombre || "Desconocido",
       category: item.videojuegos?.categoria || "N/A",
+      num_players: item.videojuegos?.num_jugadores || 0,
       price: Number(item.precio_unitario),
       image: item.videojuegos?.imagenUrl || "",
       quantity: item.cantidad,
