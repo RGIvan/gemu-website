@@ -95,6 +95,7 @@ export async function getItems(userId: string): Promise<EnrichedProduct[]> {
       price: producto?.precio || 0,
       image: producto?.imagenUrl || "",
       quantity: item.quantity,
+      num_jugadores: producto?.num_jugadores || 0,
       total: (producto?.precio || 0) * item.quantity,
     };
   });
