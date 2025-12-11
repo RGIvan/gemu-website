@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![GEMU Logo](public/logo.png)
+![GEMU Logo](frontend-gemu/public/logo.png)
 
 **Plataforma e-commerce de videojuegos desarrollada con Next.js y microservicios Spring Boot**
 
@@ -12,7 +12,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 
-[Demo en vivo](https://gemu-website.vercel.app) · [Reportar Bug](https://github.com/RGIvan/gemu-website/issues) · [Solicitar Feature](https://github.com/RGIvan/gemu-website/issues)
+[Demo en vivo](https://tienda-gemu.vercel.app/) · [Reportar Bug](https://github.com/RGIvan/gemu-website/issues) · [Solicitar Feature](https://github.com/RGIvan/gemu-website/issues)
 
 </div>
 
