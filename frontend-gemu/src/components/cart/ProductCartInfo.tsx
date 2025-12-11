@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { CartItem } from "@/types/types";
-import { addItem, delOneItem, getItems } from "@/app/(carts)/cart/action";
+import { addItem, delOneItem } from "@/app/(carts)/cart/action";
 import { toast } from "sonner";
 
 interface Props {
@@ -32,16 +32,6 @@ const ProductCartInfo = ({ product }: Props) => {
     }
   }, [productId]);
 
-  const handleGetItem = useCallback(() => {
-    try {
-      getItems(productId);
-      toast.success("Sin stock suficiente");
-    } catch (error) {
-      console.error("Error en eliminar el producto:", error);
-      toast.error("No se pudo eliminar el producto del carrito");
-    }
-  }, [productId]);
-
   return (
     <div className="flex items-center justify-between gap-4 py-2 border-b">
       <div className="flex items-center gap-2">
@@ -54,12 +44,6 @@ const ProductCartInfo = ({ product }: Props) => {
         <span>{quantity}</span>
         <button
           onClick={handleAddItem}
-          className="px-2 py-1 border rounded hover:bg-green-100"
-        >
-          +
-        </button>
-        <button
-          onClick={handleGetItem}
           className="px-2 py-1 border rounded hover:bg-green-100"
         >
           +
