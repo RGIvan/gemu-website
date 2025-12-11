@@ -35,7 +35,7 @@
 
 ## 🎯 Sobre el Proyecto
 
-GEMU es una plataforma de comercio electrónico especializada en la venta de videojuegos de múltiples plataformas. Desarrollada como Proyecto Integrado del CFGS en Diseño de Aplicaciones Web, la aplicación demuestra el uso de tecnologías modernas y una arquitectura de microservicios escalable.
+GEMU es una plataforma de comercio electrónico especializada en la venta de videojuegos de múltiples plataformas. Desarrollada como Proyecto Integrado del CFGS en Diseño de Aplicaciones Multiplataforma, la aplicación demuestra el uso de tecnologías modernas y una arquitectura de microservicios escalable.
 
 ### ¿Por qué GEMU?
 
