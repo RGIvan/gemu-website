@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![GEMU Logo](frontend-gemu/public/logo.png)
+![GEMU Logo](public/logo.png)
 
 **Plataforma e-commerce de videojuegos desarrollada con Next.js y microservicios Spring Boot**
 
@@ -12,7 +12,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 
-[Demo en vivo](https://tienda-gemu.vercel.app/) · [Reportar Bug](https://github.com/RGIvan/gemu-website/issues) · [Solicitar Feature](https://github.com/RGIvan/gemu-website/issues)
+[Demo en vivo](https://gemu-website.vercel.app) · [Reportar Bug](https://github.com/RGIvan/gemu-website/issues) · [Solicitar Feature](https://github.com/RGIvan/gemu-website/issues)
 
 </div>
 
@@ -48,74 +48,88 @@ GEMU es una plataforma de comercio electrónico especializada en la venta de vid
 
 ---
 
-## �?Características
+## ✨ Características
 
 ### Usuario
-
-- �?Registro e inicio de sesión (email/contraseña o Google)
-- �?Perfil editable (nombre, apellidos, teléfono, dirección)
-- �?Eliminación de cuenta
+- ✅ Registro e inicio de sesión (email/contraseña o Google)
+- ✅ Perfil editable (nombre, apellidos, teléfono, dirección)
+- ✅ Eliminación de cuenta
 
 ### Catálogo
-
-- �?Visualización de videojuegos con imágenes
-- �?Filtrado por plataforma
-- �?Búsqueda por nombre
-- �?Página de detalle de producto
+- ✅ Visualización de videojuegos con imágenes
+- ✅ Filtrado por plataforma
+- ✅ Búsqueda por nombre
+- ✅ Página de detalle de producto
 
 ### Compras
-
-- �?Carrito de compras (añadir, eliminar, modificar cantidad)
-- �?Lista de favoritos
-- �?Proceso de checkout completo
-- �?Historial de pedidos
-- �?Descarga de facturas en PDF
+- ✅ Carrito de compras (añadir, eliminar, modificar cantidad)
+- ✅ Lista de favoritos
+- ✅ Proceso de checkout completo
+- ✅ Historial de pedidos
+- ✅ Descarga de facturas en PDF
 
 ---
 
 ## 🛠 Tecnologías
 
 ### Frontend
-
-| Tecnología       | Uso                                  |
-| ---------------- | ------------------------------------ |
-| **Next.js 14**   | Framework React con App Router y SSR |
-| **React 18**     | Biblioteca de interfaces de usuario  |
-| **TypeScript**   | Tipado estático                      |
-| **Tailwind CSS** | Estilos utility-first                |
-| **NextAuth.js**  | Autenticación                        |
-| **Prisma**       | ORM para base de datos               |
-| **jsPDF**        | Generación de facturas PDF           |
-| **Sonner**       | Notificaciones toast                 |
+| Tecnología | Uso |
+|------------|-----|
+| **Next.js 14** | Framework React con App Router y SSR |
+| **React 18** | Biblioteca de interfaces de usuario |
+| **TypeScript** | Tipado estático |
+| **Tailwind CSS** | Estilos utility-first |
+| **NextAuth.js** | Autenticación |
+| **Prisma** | ORM para base de datos |
+| **jsPDF** | Generación de facturas PDF |
+| **Sonner** | Notificaciones toast |
 
 ### Backend
-
-| Tecnología               | Uso                         |
-| ------------------------ | --------------------------- |
-| **Java 17**              | Lenguaje de programación    |
-| **Spring Boot 3**        | Framework de microservicios |
-| **Spring Cloud Gateway** | API Gateway                 |
-| **Spring Data JPA**      | Acceso a datos              |
-| **Spring Security**      | Seguridad y JWT             |
-| **Maven**                | Gestión de dependencias     |
+| Tecnología | Uso |
+|------------|-----|
+| **Java 17** | Lenguaje de programación |
+| **Spring Boot 3** | Framework de microservicios |
+| **Spring Cloud Gateway** | API Gateway |
+| **Spring Data JPA** | Acceso a datos |
+| **Spring Security** | Seguridad y JWT |
+| **Maven** | Gestión de dependencias |
 
 ### Base de Datos e Infraestructura
-
-| Tecnología          | Uso                        |
-| ------------------- | -------------------------- |
-| **PostgreSQL**      | Base de datos principal    |
+| Tecnología | Uso |
+|------------|-----|
+| **PostgreSQL** | Base de datos principal |
 | **Redis (Upstash)** | Almacenamiento del carrito |
-| **Docker**          | Contenedorización          |
-| **Railway**         | Despliegue backend         |
-| **Vercel**          | Despliegue frontend        |
-| **Cloudinary**      | Almacenamiento de imágenes |
+| **Docker** | Contenedorización |
+| **Railway** | Despliegue backend |
+| **Vercel** | Despliegue frontend |
+| **Cloudinary** | Almacenamiento de imágenes |
 
 ---
 
 ## 🏗 Arquitectura
 
-````
-┌─────────────────�?    ┌─────────────────────────────────────────�?�?                �?    �?             RAILWAY                     �?�?    VERCEL      �?    �? ┌─────────────────────────────────�?   �?�? ┌───────────�? �?    �? �?        API GATEWAY             �?   �?�? �? Next.js  │──┼─────┼─▶│    (Spring Cloud Gateway)       �?   �?�? �? Frontend �? �?    �? └──────────────┬──────────────────�?   �?�? └───────────�? �?    �?                �?                       �?�?                �?    �?   ┌────────────┼────────────�?          �?└─────────────────�?    �?   �?           �?           �?          �?                        �?┌──────�?  ┌──────�?  ┌──────�?         �?                        �?│Users �?  │Games �?  │Orders�?         �?                        �?�?MS   �?  �?MS   �?  �?MS   �?         �?                        �?└──┬───�?  └──┬───�?  └──┬───�?         �?                        �?   �?         �?         �?              �?                        �?   └──────────┼──────────�?              �?                        �?              �?                         �?                        �?      ┌──────────────�?                  �?                        �?      �? PostgreSQL  �?                  �?                        �?      └──────────────�?                  �?                        └─────────────────────────────────────────�?```
+```
+┌─────────────────┐     ┌─────────────────────────────────────────┐
+│                 │     │              RAILWAY                     │
+│     VERCEL      │     │  ┌─────────────────────────────────┐    │
+│  ┌───────────┐  │     │  │         API GATEWAY             │    │
+│  │  Next.js  │──┼─────┼─▶│    (Spring Cloud Gateway)       │    │
+│  │  Frontend │  │     │  └──────────────┬──────────────────┘    │
+│  └───────────┘  │     │                 │                        │
+│                 │     │    ┌────────────┼────────────┐           │
+└─────────────────┘     │    ▼            ▼            ▼           │
+                        │ ┌──────┐   ┌──────┐   ┌──────┐          │
+                        │ │Users │   │Games │   │Orders│          │
+                        │ │ MS   │   │ MS   │   │ MS   │          │
+                        │ └──┬───┘   └──┬───┘   └──┬───┘          │
+                        │    │          │          │               │
+                        │    └──────────┼──────────┘               │
+                        │               ▼                          │
+                        │       ┌──────────────┐                   │
+                        │       │  PostgreSQL  │                   │
+                        │       └──────────────┘                   │
+                        └─────────────────────────────────────────┘
+```
 
 ### Microservicios
 
@@ -143,7 +157,7 @@ GEMU es una plataforma de comercio electrónico especializada en la venta de vid
 ```bash
 git clone https://github.com/RGIvan/gemu-website.git
 cd gemu-website
-````
+```
 
 ### Opción 1: Docker (Recomendado)
 
@@ -158,14 +172,12 @@ docker-compose logs -f
 ### Opción 2: Manual
 
 #### Backend (cada microservicio)
-
 ```bash
 cd backend/microservicio-usuarios
 mvn spring-boot:run
 ```
 
 #### Frontend
-
 ```bash
 cd frontend-gemu
 npm install
@@ -251,37 +263,33 @@ docker-compose logs -f   # Ver logs
 ## 📡 API Endpoints
 
 ### Usuarios
-
-| Método | Endpoint               | Descripción        |
-| ------ | ---------------------- | ------------------ |
-| POST   | `/usuarios/crear`      | Registrar usuario  |
-| POST   | `/usuarios/login`      | Iniciar sesión     |
-| GET    | `/usuarios/{id}`       | Obtener usuario    |
-| PUT    | `/usuarios/actualizar` | Actualizar usuario |
-| DELETE | `/usuarios/{id}`       | Eliminar usuario   |
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/usuarios/crear` | Registrar usuario |
+| POST | `/usuarios/login` | Iniciar sesión |
+| GET | `/usuarios/{id}` | Obtener usuario |
+| PUT | `/usuarios/actualizar` | Actualizar usuario |
+| DELETE | `/usuarios/{id}` | Eliminar usuario |
 
 ### Videojuegos
-
-| Método | Endpoint                               | Descripción            |
-| ------ | -------------------------------------- | ---------------------- |
-| GET    | `/videojuegos`                         | Listar todos           |
-| GET    | `/videojuegos/{id}`                    | Obtener por ID         |
-| GET    | `/videojuegos/plataforma/{plataforma}` | Filtrar por plataforma |
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/videojuegos` | Listar todos |
+| GET | `/videojuegos/{id}` | Obtener por ID |
+| GET | `/videojuegos/plataforma/{plataforma}` | Filtrar por plataforma |
 
 ### Pedidos
-
-| Método | Endpoint                | Descripción        |
-| ------ | ----------------------- | ------------------ |
-| POST   | `/pedidos/crear`        | Crear pedido       |
-| GET    | `/pedidos/usuario/{id}` | Pedidos de usuario |
-| GET    | `/pedidos/{id}`         | Obtener pedido     |
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/pedidos/crear` | Crear pedido |
+| GET | `/pedidos/usuario/{id}` | Pedidos de usuario |
+| GET | `/pedidos/{id}` | Obtener pedido |
 
 ### Facturas
-
-| Método | Endpoint                | Descripción       |
-| ------ | ----------------------- | ----------------- |
-| POST   | `/facturas/crear`       | Crear factura     |
-| GET    | `/facturas/pedido/{id}` | Factura de pedido |
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/facturas/crear` | Crear factura |
+| GET | `/facturas/pedido/{id}` | Factura de pedido |
 
 ---
 
@@ -307,27 +315,29 @@ docker-compose logs -f   # Ver logs
 ```
 gemu-website/
 ├── frontend-gemu/
-�?  ├── src/
-�?  �?  ├── app/                 # App Router
-�?  �?  �?  ├── (auth)/          # Login, Register
-�?  �?  �?  ├── (carts)/         # Cart, Wishlist
-�?  �?  �?  ├── (user)/          # Profile, Orders
-�?  �?  �?  ├── api/             # API Routes
-�?  �?  �?  ├── checkout/        # Checkout flow
-�?  �?  �?  └── profile/         # User profile
-�?  �?  ├── components/          # Componentes React
-�?  �?  ├── libs/                # Utilidades
-�?  �?  └── types/               # TypeScript types
-�?  ├── prisma/                  # Schema DB
-�?  └── public/                  # Assets
-�?├── backend/
-�?  ├── gateway/                 # API Gateway
-�?  ├── microservicio-usuarios/
-�?  ├── microservicio-videojuegos/
-�?  ├── microservicio-pedidos/
-�?  ├── microservicio-facturas/
-�?  └── comun/                   # Entidades compartidas
-�?└── docker-compose.yml
+│   ├── src/
+│   │   ├── app/                 # App Router
+│   │   │   ├── (auth)/          # Login, Register
+│   │   │   ├── (carts)/         # Cart, Wishlist
+│   │   │   ├── (user)/          # Profile, Orders
+│   │   │   ├── api/             # API Routes
+│   │   │   ├── checkout/        # Checkout flow
+│   │   │   └── profile/         # User profile
+│   │   ├── components/          # Componentes React
+│   │   ├── libs/                # Utilidades
+│   │   └── types/               # TypeScript types
+│   ├── prisma/                  # Schema DB
+│   └── public/                  # Assets
+│
+├── backend/
+│   ├── gateway/                 # API Gateway
+│   ├── microservicio-usuarios/
+│   ├── microservicio-videojuegos/
+│   ├── microservicio-pedidos/
+│   ├── microservicio-facturas/
+│   └── comun/                   # Entidades compartidas
+│
+└── docker-compose.yml
 ```
 
 ---
@@ -358,6 +368,6 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 
 <div align="center">
 
-�?Si te ha gustado el proyecto, ¡dale una estrella!
+⭐ Si te ha gustado el proyecto, ¡dale una estrella!
 
 </div>
