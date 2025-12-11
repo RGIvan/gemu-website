@@ -15,8 +15,6 @@ interface AddToCartProps {
 export default function AddToCart({ product, session }: AddToCartProps) {
   const [isPending, startTransition] = useTransition();
 
-  const isMaxReached = product.quantity >= product.quantity;
-
   console.log("🛒 CLICK - Session:", session);
   console.log("🛒 CLICK - Product:", product);
 
@@ -55,11 +53,7 @@ export default function AddToCart({ product, session }: AddToCartProps) {
       {isPending ? (
         <Loader height={20} width={20} />
       ) : session?.user ? (
-        isMaxReached ? (
-          "Stock máximo alcanzado"
-        ) : (
-          "Añadir al carrito"
-        )
+        "Añadir al carrito"
       ) : (
         "Inicia sesión para comprar"
       )}
