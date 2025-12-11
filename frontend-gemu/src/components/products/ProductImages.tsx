@@ -12,11 +12,13 @@ import { EnrichedProduct } from "@/types/types";
 interface ProductImagesProps {
   name: string;
   selectedVariant: EnrichedProduct | null;
+  platform?: string;
 }
 
 export const ProductImages = ({
   name,
   selectedVariant,
+  platform,
 }: ProductImagesProps) => {
   // Si no hay imagen disponible
   if (!selectedVariant?.image) {
@@ -45,6 +47,7 @@ export const ProductImages = ({
                 height={576}
                 priority={true}
                 sizes="(max-width: 994px) 100vw, (max-width: 1304px) 50vw, (max-width: 1500px) 25vw, 33vw"
+                platform={platform}
               />
             </CarouselItem>
           </CarouselContent>
@@ -61,6 +64,7 @@ export const ProductImages = ({
             height={1275}
             priority={true}
             sizes="(max-width: 1024px) 100vw, (max-width: 1300px) 50vw, (max-width: 1536px) 33vw"
+            platform={platform}
           />
         </div>
       </div>

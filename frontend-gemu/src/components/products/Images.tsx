@@ -19,12 +19,13 @@ const cloudinaryLoader: ImageLoader = ({ src, width, quality }) => {
 };
 
 interface ImagesProps {
-  image: string[]; // array de URLs
+  image: string[];
   name: string;
   width: number;
   height: number;
   priority?: boolean;
   sizes: string;
+  platform?: string;
 }
 
 export const Images = ({
@@ -34,14 +35,18 @@ export const Images = ({
   height,
   priority = false,
   sizes,
+  platform,
 }: ImagesProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleImageLoadComplete = () => setImageLoaded(true);
 
-  // Tomamos la primera URL válida o fallback
   const imageUrl =
     image[0] && image[0].trim() !== "" ? image[0] : "/placeholder.png";
+
+  // Ajustar aspect ratio según plataforma
+  const isPS2 = platform?.toLowerCase().includes("playstation 2");
+  const aspectClass = isPS2 ? "aspect-[3/4]" : "aspect-square";
 
   return (
     <div className={!imageLoaded ? "relative" : ""}>
@@ -50,15 +55,17 @@ export const Images = ({
         src={imageUrl}
         alt={name}
         width={width}
-        height={height}
+        height={isPS2 ? Math.round(height * 1.33) : height}
         priority={priority}
         sizes={sizes}
-        className="object-cover w-full max-w-img aspect-square brightness-90"
+        className={`object-cover w-full max-w-img ${aspectClass} brightness-90`}
         onLoad={handleImageLoadComplete}
       />
       {!imageLoaded && (
-        <div className="absolute top-0 right-0 w-full aspect-[2/3] bg-black">
-          <Skeleton className="w-full rounded-b-none aspect-square" />
+        <div
+          className={`absolute top-0 right-0 w-full ${aspectClass} bg-black`}
+        >
+          <Skeleton className={`w-full rounded-b-none ${aspectClass}`} />
         </div>
       )}
     </div>

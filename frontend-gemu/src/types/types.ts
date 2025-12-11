@@ -80,6 +80,7 @@ export interface EnrichedProduct {
   image: string; // 1 sola imagen (imagenUrl)
   quantity: number; // cantidad en carrito
   total: number; // price * quantity
+  platform?: string;
 }
 
 // -----------------------------

@@ -79,6 +79,7 @@ export const Products = ({
                 height={425}
                 priority={index === 0}
                 sizes="(max-width: 640px) 100vw, (max-width: 1154px) 33vw, (max-width: 1536px) 25vw, 20vw"
+                platform={product.platform}
               />
             </Link>
 

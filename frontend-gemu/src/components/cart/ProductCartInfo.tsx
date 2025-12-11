@@ -12,9 +12,15 @@ interface Props {
 const ProductCartInfo = ({ product }: Props) => {
   const { productId, quantity, price } = product;
 
-  const handleAddItem = useCallback(() => {
+  const handleAddItem = useCallback(async () => {
     try {
-      addItem(productId, price); // size/color opcionales
+      const result = await addItem(productId, price);
+
+      if (result?.error) {
+        toast.error(result.error);
+        return;
+      }
+
       toast.success("Producto añadido al carrito");
     } catch (error) {
       console.error("Error al añadir el producto:", error);
@@ -22,9 +28,9 @@ const ProductCartInfo = ({ product }: Props) => {
     }
   }, [productId, price]);
 
-  const handleDelItem = useCallback(() => {
+  const handleDelItem = useCallback(async () => {
     try {
-      delOneItem(productId, undefined, undefined); // size/color opcionales
+      await delOneItem(productId, undefined, undefined);
       toast.success("Producto eliminado del carrito");
     } catch (error) {
       console.error("Error en eliminar el producto:", error);
