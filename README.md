@@ -88,7 +88,7 @@ GEMU es una plataforma de comercio electrónico especializada en la venta de vid
 | Tecnología | Uso |
 |------------|-----|
 | **Java 17** | Lenguaje de programación |
-| **Spring Boot 3** | Framework de microservicios |
+| **Spring Boot 3.5.6** | Framework de microservicios |
 | **Spring Cloud Gateway** | API Gateway |
 | **Spring Data JPA** | Acceso a datos |
 | **Spring Security** | Seguridad y JWT |
