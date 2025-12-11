@@ -28,7 +28,7 @@ export const SingleProduct = ({ product, session }: SingleProductProps) => {
             <h1 className="text-base font-semibold">{product.name}</h1>
             <span className="text-sm">{product.price}€</span>
             <span className="text-sm">
-              Número de jugadores: {product.num_players}
+              Número de jugadores: {product.num_jugadores}
             </span>
             {product.category && <p className="text-sm">{product.category}</p>}
           </div>
