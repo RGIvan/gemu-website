@@ -59,7 +59,9 @@ export default function EditProfileForm({
 
       toast.success("¡Perfil actualizado con éxito!");
       router.refresh();
-      router.push("/profile");
+      setTimeout(() => {
+        window.location.href = "/profile";
+      }, 500);
     } catch (error: any) {
       console.error(error);
       toast.error(error?.message || "Error al actualizar el perfil");
