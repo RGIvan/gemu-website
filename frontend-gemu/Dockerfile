@@ -13,6 +13,8 @@ RUN npm install
 # Copiamos el resto del proyecto
 COPY . .
 
+RUN npx prisma generate
+
 EXPOSE 3000
 
 CMD ["npm", "run", "dev", "--", "--port", "3000", "--hostname", "0.0.0.0"]
