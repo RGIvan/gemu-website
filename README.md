@@ -75,7 +75,7 @@ GEMU es una plataforma de comercio electrónico especializada en la venta de vid
 ### Frontend
 | Tecnología | Uso |
 |------------|-----|
-| **Next.js 14** | Framework React con App Router y SSR |
+| **Next.js 16.2** | Framework React con App Router y SSR |
 | **React 18** | Biblioteca de interfaces de usuario |
 | **TypeScript** | Tipado estático |
 | **Tailwind CSS** | Estilos utility-first |
