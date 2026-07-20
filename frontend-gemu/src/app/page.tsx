@@ -7,16 +7,18 @@ import { authOptions } from "@/libs/auth";
 import type { Session } from "next-auth";
 
 interface HomeProps {
-  searchParams: { platform?: string };
+  searchParams: Promise<{ platform?: string }>;
 }
 
 const Home = async ({ searchParams }: HomeProps) => {
+  const params = await searchParams;
+
   return (
     <section className="pt-14">
       <Suspense
         fallback={<ProductSkeleton extraClassname="" numberProducts={18} />}
       >
-        <AllProducts platform={searchParams.platform} />
+        <AllProducts platform={params.platform} />
       </Suspense>
     </section>
   );
